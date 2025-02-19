@@ -14,7 +14,11 @@ const Dashboard = () => {
       { path: '/my-account', label: 'My Account' },
     ],
     temporaryExamples: [
-      { path: '/report', label: 'Report Dialog Example' },
+      {
+        path: '/security-dialog',
+        label: 'Security Dialog Example (Delete, Block, Materials)',
+      },
+      { path: '/report', label: 'Report Dialog Example (Report or Block)' },
       { path: '/delete', label: 'Delete User Dialog Example' },
       { path: '/invite', label: 'Invitation' },
       { path: '/error-400', label: 'Error 400' },
@@ -40,17 +44,14 @@ const Dashboard = () => {
         {title}
       </Typography>
       {routes.map((route) => (
-        <Box
-          key={route.path}
-          sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}
-        >
+        <Box key={route.path} sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="body1" sx={{ marginRight: 2 }}>
             {route.path}
           </Typography>
           <Button
             variant="text"
             href={route.path}
-            sx={{ textDecoration: 'none', color: '#007bff' }}
+            sx={{ textDecoration: 'none', color: '#007bff', p: 0 }}
           >
             {route.label}
           </Button>

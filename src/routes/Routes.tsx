@@ -26,6 +26,7 @@ import Dashboard from 'pages/Dashboard'
 import EmailVerifiedMessage from 'pages/EmailVerifiedMessage'
 import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
 import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
+import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -110,6 +111,10 @@ const routes: RouteObject[] = [
   {
     path: 'dashboard',
     element: <Dashboard />,
+  },
+  {
+    path: 'security-dialog',
+    element: <SecurityDialogExamplePage />,
   },
   {
     path: 'report',
