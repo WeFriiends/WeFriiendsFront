@@ -6,6 +6,7 @@ import { PhotoModal } from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
 import createTheme from 'styles/createTheme'
 import { UserPicsType } from 'types/FirstProfile'
+import { useProfileStore } from 'zustand/store'
 
 interface UploadPhotosProps {
   isPhotoSubmitted?: boolean
@@ -22,6 +23,7 @@ const UploadPhotos = ({
   setIsSubmitClicked,
   onPicChange,
 }: UploadPhotosProps) => {
+  const { removePhoto } = useProfileStore()
   const { classes } = useStyles()
   const [isDeleteModalOpened, setIsDeleteModalOpened] = useState<boolean>(false)
   const [isPhotoModalOpened, setIsPhotoModalOpened] = useState<boolean>(false)
@@ -58,6 +60,7 @@ const UploadPhotos = ({
     setUserPics(updatedPicArray)
     setIsDeleteModalOpened(false)
     shiftPics(updatedPicArray)
+    removePhoto(chosenId)
   }
 
   return (

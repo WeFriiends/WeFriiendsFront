@@ -41,8 +41,8 @@ interface ProfileActions {
     token: string | null
   ) => Promise<{ status: number }>
   deleteProfile: (token: string | null) => Promise<void>
-  addPhoto: (photoUrl: UserPicsType) => void
-  removePhoto: (photoUrl: string) => void
+  addPhoto: (photo: UserPicsType) => void
+  removePhoto: (photoId: string) => void
 }
 
 type ProfileStore = ProfileState & ProfileActions
@@ -141,7 +141,22 @@ export const useProfileStore = create<ProfileStore>()(
           }
         })
       },
-      //removePhoto: (photoId: string) => console.log('removePhoto', photoId),
+      removePhoto: (photoId: string) => {
+        set((state) => {
+          if (!state.data) {
+            return state
+          }
+
+          return {
+            data: {
+              ...state.data,
+              photos: [
+                ...(state.data.photos?.filter((p) => p.id !== photoId) || []),
+              ],
+            },
+          }
+        })
+      },
     }
   })
 )
