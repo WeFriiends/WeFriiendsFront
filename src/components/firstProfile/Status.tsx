@@ -16,7 +16,16 @@ const STATUSES: Array<string> = [
   "Let's take the dogs for a walk",
 ]
 
-const Status = () => {
+type StatusProps = {
+  isTitleShown?: boolean
+  isFormHelperTextShown?: boolean
+  formHelperText?: React.ReactNode
+}
+const Status: React.FC<StatusProps> = ({
+  isTitleShown = true,
+  isFormHelperTextShown = true,
+  formHelperText,
+}) => {
   const { classes } = useStyles()
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
@@ -37,14 +46,22 @@ const Status = () => {
 
   return (
     <>
-      <Typography variant="h1" className={classes.title}>
-        What are you looking for?
-      </Typography>
-      <FormHelperText>
-        This will be your status. You can always change it
-        <br />
-        Please, choose 3 statuses maximum
-      </FormHelperText>
+      {isTitleShown && (
+        <Typography variant="h1" className={classes.title}>
+          What are you looking for?
+        </Typography>
+      )}
+      {isFormHelperTextShown && (
+        <FormHelperText>
+          {formHelperText || (
+            <>
+              This will be your status. You can always change it
+              <br />
+              Please, choose 3 statuses maximum
+            </>
+          )}
+        </FormHelperText>
+      )}
 
       <Box className={classes.phraseWrapper}>
         {STATUSES.map((phrase) => (
