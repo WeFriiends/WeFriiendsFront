@@ -4,6 +4,6 @@
  * @returns True if validation passes, otherwise false.
  */
 export const validateAboutMe = (value: string): boolean => {
-  const regex = /^(?!.*[<>&'])(.{0,1}|$)/u
+  const regex = /^(?!.*[<>&]).*$/s
   return regex.test(value)
 }
