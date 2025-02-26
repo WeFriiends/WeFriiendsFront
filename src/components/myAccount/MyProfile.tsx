@@ -5,6 +5,7 @@ import theme from '../../styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 import PhotoCarousel from '../userProfile/PhotoCarousel'
 import UploadPhotos from '../firstProfile/uploadPhotos/UploadPhotos'
+import Status from 'components/firstProfile/Status'
 import Interests from '../firstProfile/interests/Interests'
 import PrimaryButton from '../../common/components/PrimaryButton'
 
@@ -41,6 +42,16 @@ const MyProfile: React.FC = () => {
       {isEditing ? (
         <>
           <UploadPhotos onPicChange={handlePicChange} />
+          <Box className={classes.titleContainer}>
+            <Typography className={classes.titleStatus}>
+              I&apos;m Here For
+            </Typography>
+          </Box>
+          <Status
+            isTitleShown={false}
+            isFormHelperTextShown={true}
+            formHelperText=" Please, choose 3 statuses maximum"
+          />
           <Box className={classes.interests}>
             <Interests isAboutMeShown={true} />
           </Box>
@@ -75,6 +86,28 @@ const useStyles = makeStyles()({
       fontSize: 24,
       fontWeight: 500,
     },
+  },
+  titleContainer: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    maxWidth: '100%',
+    width: '100%',
+    height: '42px',
+    borderRadius: '20px',
+    backgroundColor: '#FEDED2',
+    marginTop: '50px',
+    marginBottom: '15px',
+  },
+  titleStatus: {
+    position: 'absolute',
+    fontFamily: 'Inter',
+    fontWeight: 600,
+    fontSize: '18px',
+    alignItems: 'center',
+    top: '20%',
+    color: theme.palette.text.primary,
   },
   interests: {
     display: 'flex',
