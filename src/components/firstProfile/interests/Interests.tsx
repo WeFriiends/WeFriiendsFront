@@ -169,7 +169,7 @@ const AboutMeSection = ({
       </Box>
       {hasAboutMeError && (
         <FormHelperText className={classes.errorBox} component="div">
-          <h4>Please remove unsupported sybmols</h4>
+          <h4>Please remove unsupported symbols</h4>
           <p>You cannot use symbols &lt; &gt; &amp; &apos;</p>
         </FormHelperText>
       )}
