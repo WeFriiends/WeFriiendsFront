@@ -17,6 +17,9 @@ interface Profile {
   photos: UserPicsType[]
   gender: string
   reasons: string[]
+  friendsAgeMin?: number
+  friendsAgeMax?: number
+  friendsDistance?: number
 }
 
 interface ErrorResponse {
