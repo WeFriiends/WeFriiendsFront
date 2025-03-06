@@ -20,10 +20,16 @@ const MyAccount: React.FC = () => {
     loading,
     updateProfile: updateProfileAction,
   } = useProfileStore()
+  const [friendsDistance, setFriendsDistance] = useState<number>(
+    profile?.friendsDistance || 20
+  )
   const [errorLocation, setErrorLocation] = useState<string | null>(null)
   const [noticeLocation, setNoticeLocation] = useState<string | null>(
     'To change your address, type a street name along with the house number, then wait for suggestions.'
   )
+  const [noticeFriendsDistance, setNoticeFriendsDistance] = useState<
+    string | null
+  >('')
   const [, setAddress] = useState<Address | null>(null)
   const token = useBearerToken()
 
@@ -39,6 +45,36 @@ const MyAccount: React.FC = () => {
       })
     }
   }, [profile])
+  const timeoutSliderChange = React.useRef<NodeJS.Timeout | null>(null)
+
+  const handleDistanceChange = async (newFriendsDistance: number) => {
+    setNoticeFriendsDistance('Updating...')
+    setFriendsDistance(newFriendsDistance)
+
+    if (timeoutSliderChange.current) {
+      clearTimeout(timeoutSliderChange.current) // Clear previous timeout
+    }
+
+    timeoutSliderChange.current = setTimeout(async () => {
+      console.log('change') // Only logs the last change after 3 seconds
+      if (token) {
+        try {
+          const response = await updateProfileAction(
+            { friendsDistance: newFriendsDistance },
+            token
+          )
+
+          if (response.status === 200) {
+            setNoticeLocation('Updated!')
+          } else {
+            setErrorLocation('Failed to update the distance. Please try again.')
+          }
+        } catch (error) {
+          console.error('Error updating distance:', error)
+        }
+      }
+    }, 1000)
+  }
 
   const handleGetManualAddress = async (value: any) => {
     // Assume `value` is the selected address object (e.g., from LocationInputAutocomplete)
@@ -134,11 +170,19 @@ const MyAccount: React.FC = () => {
             <br />
             <br />
 
-            <DistanceControl>
+            <DistanceControl
+              value={friendsDistance}
+              onChange={handleDistanceChange}
+            >
               <Typography variant="body2" className={classes.descriptionSlider}>
                 Distance from location (100 km max)
               </Typography>
             </DistanceControl>
+            {noticeFriendsDistance && (
+              <FormHelperText sx={{ textAlign: 'left' }} error={false}>
+                {noticeFriendsDistance}
+              </FormHelperText>
+            )}
           </Box>
           <Box className={classes.settingsItem}>
             <AgeRangeControl />

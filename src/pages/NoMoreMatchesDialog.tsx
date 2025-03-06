@@ -33,6 +33,10 @@ const NoMoreMatchesDialog = forwardRef(
       handleOpenNoMoreMatchesDialog,
     }))
 
+    function handleDistanceChange() {
+      // todo: updating the friendsDistanse
+    }
+
     return (
       <CommonModal
         isOpened={isModalVisible}
@@ -54,7 +58,7 @@ const NoMoreMatchesDialog = forwardRef(
           </Typography>
           <Box className={classes.slidersWrapper}>
             <Box className={classes.slider}>
-              <DistanceControl>
+              <DistanceControl value={20} onChange={handleDistanceChange}>
                 <Typography
                   variant="h2"
                   className={`${classes.subtitle} ${classes.noBottomMargin}`}
