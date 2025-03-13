@@ -112,7 +112,7 @@ const routes: RouteObject[] = [
     element: <RealtimeDatabaseChatExamplePage />,
   },
   {
-    path: 'firestore-chat',
+    path: 'firestore-chat example',
     element: <FirestoreChatExamplePage />,
   },
   {
