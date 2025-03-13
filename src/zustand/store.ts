@@ -32,7 +32,7 @@ interface ProfileState {
   loading: boolean
   success: boolean
   error: boolean
-  data: Profile
+  data: Profile | null
   errorData: ErrorResponse | null
 }
 
@@ -55,14 +55,7 @@ const initialState: ProfileState = {
   loading: true,
   success: false,
   error: false,
-  data: {
-    name: '',
-    dateOfBirth: '',
-    location: { lat: 0, lng: 0 },
-    gender: '',
-    reasons: [],
-    photos: [],
-  },
+  data: null,
   errorData: null,
 }
 
