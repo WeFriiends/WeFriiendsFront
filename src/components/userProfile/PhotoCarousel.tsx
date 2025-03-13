@@ -2,6 +2,7 @@ import React from 'react'
 import Carousel from 'react-material-ui-carousel'
 import UserPic from './UserPic'
 import { UserPhoto } from 'types/UserProfileData'
+import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material'
 
 interface PhotoCarouselProps {
   items: UserPhoto[]
@@ -40,6 +41,8 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items }) => {
           opacity: '0.5',
         },
       }}
+      NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
+      PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
     >
       {items.map((item: UserPhoto, i: number) => (
         <UserPic key={i} src={item.src} />
