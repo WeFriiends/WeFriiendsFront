@@ -17,12 +17,14 @@ const DistanceControl: React.FC = () => {
   const [noticeFriendsDistance, setNoticeFriendsDistance] = useState<
     string | null
   >(null)
+  const [errorFriendsDistance, setErrorFriendsDistance] = useState<
+    string | null
+  >(null)
 
   const timeoutSliderChange = useRef<NodeJS.Timeout | null>(null)
 
   const handleDistanceChange = (newFriendsDistance: number) => {
     setFriendsDistance(newFriendsDistance)
-    setNoticeFriendsDistance('Updating...')
 
     if (timeoutSliderChange.current) {
       clearTimeout(timeoutSliderChange.current) // Очистка предыдущего таймера
@@ -30,6 +32,7 @@ const DistanceControl: React.FC = () => {
 
     timeoutSliderChange.current = setTimeout(async () => {
       console.log('Updating friendsDistance:', newFriendsDistance)
+      setNoticeFriendsDistance('Loading...')
 
       if (!token) {
         setNoticeFriendsDistance(
@@ -43,11 +46,11 @@ const DistanceControl: React.FC = () => {
           { friendsDistance: newFriendsDistance },
           token
         )
-
         if (response.status === 200) {
-          setNoticeFriendsDistance('Updated!')
+          setErrorFriendsDistance(null)
+          setNoticeFriendsDistance(null)
         } else {
-          setNoticeFriendsDistance(
+          setErrorFriendsDistance(
             'Failed to update the distance. Please try again.'
           )
         }
@@ -67,16 +70,18 @@ const DistanceControl: React.FC = () => {
   return (
     <>
       <RangeSliderDistance
-        value={loading ? 0 : friendsDistance}
+        value={friendsDistance}
         onChange={handleDistanceChange}
       >
         <Typography variant="body2">
           Distance from location (100 km max)
+          {(loading || noticeFriendsDistance) && <> Loading...</>}
         </Typography>
       </RangeSliderDistance>
-      {noticeFriendsDistance && (
-        <FormHelperText sx={{ textAlign: 'left' }} error={false}>
-          {noticeFriendsDistance}
+
+      {errorFriendsDistance && (
+        <FormHelperText error={true} sx={{ textAlign: 'left' }}>
+          {errorFriendsDistance}
         </FormHelperText>
       )}
     </>
