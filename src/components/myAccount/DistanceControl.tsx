@@ -1,36 +1,84 @@
-import RangeSlider from './RangeSlider'
 import * as React from 'react'
+import { Typography, FormHelperText } from '@mui/material'
+import RangeSliderDistance from './RangeSliderDistance'
+import { useProfileStore } from '../../zustand/store'
+import useBearerToken from '../../hooks/useBearToken'
+import { useEffect, useRef, useState } from 'react'
 
-type DistanceControlProps = {
-  children: React.ReactNode
-  value: number
-  onChange: (newValue: number) => void
-}
+const DistanceControl: React.FC = () => {
+  const {
+    data: profile,
+    loading,
+    updateProfile: updateProfileAction,
+  } = useProfileStore()
+  const token = useBearerToken()
 
-const DistanceControl: React.FC<DistanceControlProps> = ({
-  children,
-  value,
-  onChange,
-}) => {
-  function addUnitInKm(value: number) {
-    return `${value} km`
+  const [friendsDistance, setFriendsDistance] = useState<number>(0)
+  const [noticeFriendsDistance, setNoticeFriendsDistance] = useState<
+    string | null
+  >(null)
+
+  const timeoutSliderChange = useRef<NodeJS.Timeout | null>(null)
+
+  const handleDistanceChange = (newFriendsDistance: number) => {
+    setFriendsDistance(newFriendsDistance)
+    setNoticeFriendsDistance('Updating...')
+
+    if (timeoutSliderChange.current) {
+      clearTimeout(timeoutSliderChange.current) // Очистка предыдущего таймера
+    }
+
+    timeoutSliderChange.current = setTimeout(async () => {
+      console.log('Updating friendsDistance:', newFriendsDistance)
+
+      if (!token) {
+        setNoticeFriendsDistance(
+          'Authentication error. Please try logging in again.'
+        )
+        return
+      }
+
+      try {
+        const response = await updateProfileAction(
+          { friendsDistance: newFriendsDistance },
+          token
+        )
+
+        if (response.status === 200) {
+          setNoticeFriendsDistance('Updated!')
+        } else {
+          setNoticeFriendsDistance(
+            'Failed to update the distance. Please try again.'
+          )
+        }
+      } catch (error) {
+        console.error('Error updating distance:', error)
+        setNoticeFriendsDistance('Failed to update. Network or server error.')
+      }
+    }, 1000)
   }
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    onChange(newValue as number) // Call the parent’s function to update the database
-  }
+  useEffect(() => {
+    if (profile?.friendsDistance !== undefined) {
+      setFriendsDistance(profile.friendsDistance)
+    }
+  }, [profile])
 
   return (
     <>
-      {children}
-      <RangeSlider
-        ariaLabel="Distance from location"
-        getAriaValueText={addUnitInKm}
-        valueLabelFormat={addUnitInKm}
-        value={value}
-        onChange={handleSliderChange}
-        valueLabelDisplay="on"
-      ></RangeSlider>
+      <RangeSliderDistance
+        value={loading ? 0 : friendsDistance}
+        onChange={handleDistanceChange}
+      >
+        <Typography variant="body2">
+          Distance from location (100 km max)
+        </Typography>
+      </RangeSliderDistance>
+      {noticeFriendsDistance && (
+        <FormHelperText sx={{ textAlign: 'left' }} error={false}>
+          {noticeFriendsDistance}
+        </FormHelperText>
+      )}
     </>
   )
 }
