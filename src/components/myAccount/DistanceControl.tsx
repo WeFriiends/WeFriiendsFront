@@ -31,7 +31,6 @@ const DistanceControl: React.FC = () => {
     }
 
     timeoutSliderChange.current = setTimeout(async () => {
-      console.log('Updating friendsDistance:', newFriendsDistance)
       setNoticeFriendsDistance('Loading...')
 
       if (!token) {
