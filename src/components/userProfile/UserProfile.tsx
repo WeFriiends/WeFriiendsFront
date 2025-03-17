@@ -183,7 +183,6 @@ const useStyles = makeStyles()(() => {
     },
     distance: {
       fontSize: 18,
-      fontWeight: 500,
       lineHeight: '20px',
       paddingLeft: 4,
     },
