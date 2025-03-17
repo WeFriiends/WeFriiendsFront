@@ -189,7 +189,7 @@ const useStyles = makeStyles()(() => {
       fontSize: 16,
       fontWeight: 500,
       lineHeight: '20px',
-      paddingBottom: 15,
+      paddingBottom: 10,
       paddingTop: 35,
     },
     text: {
@@ -274,8 +274,10 @@ const useStyles = makeStyles()(() => {
     },
     tagsList: {
       display: 'flex',
-      gap: 15,
+      columnGap: 15,
+      rowGap: 10,
       flexWrap: 'wrap',
+      paddingTop: 0,
     },
     tag: {
       backgroundColor: ' #EEEEEE',
