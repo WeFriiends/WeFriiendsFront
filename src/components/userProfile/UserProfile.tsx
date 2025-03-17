@@ -129,7 +129,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 className={classes.sendReport}
                 onClick={handleOpenReportDialog}
               >
-                Report a user
+                Block a user
               </Typography>
               <ReportDialog ref={reportDialogRef} />
               <Typography className={classes.textReport}>
