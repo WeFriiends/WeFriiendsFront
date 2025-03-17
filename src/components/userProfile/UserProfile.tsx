@@ -76,9 +76,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               </Box>
             </Box>
           </AccordionSummary>
-          <AccordionDetails
-            sx={{ overflow: 'auto', maxHeight: 'calc(49vh - 340px)' }}
-          >
+          <AccordionDetails>
             <List className={classes.reasons}>
               {user.reasons.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
