@@ -149,6 +149,7 @@ const useStyles = makeStyles()(() => {
     mainGrid: {
       display: ' grid',
       position: 'relative',
+      boxShadow: '0px 0px 7px 1px #B3B3B324',
     },
     iconsAbove: {
       display: 'flex',
@@ -214,6 +215,7 @@ const useStyles = makeStyles()(() => {
       zIndex: 5,
     },
     accordion: {
+      boxShadow: 'none',
       position: 'relative',
       zIndex: 10,
       '&::before': {
