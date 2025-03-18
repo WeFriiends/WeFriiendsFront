@@ -54,6 +54,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
 
         <div className={classes.carousel}>
           <PhotoCarousel items={user.photo} />
+          <Box className={classes.gradientOverlay} />{' '}
+          {/* Додаємо градієнт тут */}
         </div>
 
         <Accordion className={classes.accordion}>
@@ -146,6 +148,7 @@ const useStyles = makeStyles()(() => {
   return {
     mainGrid: {
       display: ' grid',
+      position: 'relative',
     },
     iconsAbove: {
       display: 'flex',
@@ -158,6 +161,7 @@ const useStyles = makeStyles()(() => {
     },
 
     carousel: {
+      position: 'relative',
       gridRow: '1/9',
       gridColumn: '1/2',
     },
@@ -199,24 +203,30 @@ const useStyles = makeStyles()(() => {
       borderRadius: 20,
       padding: '7px 15px',
     },
-    accordion: {
-      zIndex: 100,
-      paddingTop: 100,
-      marginTop: -206,
+    gradientOverlay: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      height: '185px',
       background:
-        'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 49.79%)',
+        'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)',
+      zIndex: 5,
+    },
+    accordion: {
+      position: 'relative',
+      zIndex: 10,
       '&::before': {
-        height: 0,
+        display: 'none',
       },
       '&.Mui-expanded': {
-        marginTop: -206,
+        margin: 0,
       },
     },
     reasons: {
       display: 'grid',
       gridTemplateColumns: '180px 180px ',
       gap: 15,
-
       '&MuiList-root': {
         paddingBottom: 0,
       },
