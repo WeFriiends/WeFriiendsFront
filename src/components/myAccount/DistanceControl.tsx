@@ -55,7 +55,7 @@ const DistanceControl: React.FC = () => {
         }
       } catch (error) {
         console.error('Error updating distance:', error)
-        setNoticeFriendsDistance('Failed to update. Network or server error.')
+        setErrorFriendsDistance('Failed to update. Network or server error.')
       }
     }, 1000)
   }
