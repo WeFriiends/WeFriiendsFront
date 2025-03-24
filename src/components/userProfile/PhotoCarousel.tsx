@@ -29,7 +29,7 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items }) => {
       indicatorContainerProps={{
         style: {
           position: 'absolute',
-          marginTop: '-537px',
+          marginTop: '-535px',
           zIndex: 200,
         },
       }}
