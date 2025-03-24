@@ -195,7 +195,7 @@ const useStyles = makeStyles()(() => {
       fontSize: 18,
       lineHeight: '20px',
       paddingLeft: 4,
-      fontWeight: 500,
+      fontWeight: 400,
     },
     title: {
       color: '#F1562A',
