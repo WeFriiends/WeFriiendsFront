@@ -59,7 +59,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         <Accordion className={classes.accordion}>
-          <AccordionSummary expandIcon={<img src="/img/arrow-down.svg" />}>
+          <AccordionSummary
+            expandIcon={<img src="/img/arrow-down.svg" />}
+            sx={{
+              '& .MuiAccordionSummary-content.Mui-expanded': {
+                margin: '12px 0',
+              },
+            }}
+          >
             <Box>
               <Box sx={{ display: 'flex' }}>
                 <Typography className={classes.name}>
