@@ -19,6 +19,7 @@ const useStyles = makeStyles()(() => {
       width: '100%',
       height: '535px',
       objectFit: 'cover',
+      display: 'block',
     },
   }
 })
