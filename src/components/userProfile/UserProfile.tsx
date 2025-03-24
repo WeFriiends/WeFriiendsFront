@@ -176,7 +176,7 @@ const useStyles = makeStyles()(() => {
 
     name: {
       color: '#F46B5D',
-      fontSize: 44,
+      fontSize: 40,
       fontWeight: 600,
       lineHeight: '40px',
     },
@@ -195,6 +195,7 @@ const useStyles = makeStyles()(() => {
       fontSize: 18,
       lineHeight: '20px',
       paddingLeft: 4,
+      fontWeight: 500,
     },
     title: {
       color: '#F1562A',
