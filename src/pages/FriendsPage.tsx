@@ -27,7 +27,7 @@ const FriendsPage = () => {
     <Box className={classes.friendsPage}>
       <Friends onClick={selectFriend} />
       {friendsData ? (
-        <Box sx={{ paddingLeft: '30px' }}>
+        <Box sx={{ paddingRight: '20px' }}>
           <UserProfile user={friendsData} />
           <UserProfileButton startChat={startChat} />
         </Box>
@@ -55,7 +55,10 @@ const useStyles = makeStyles()({
   },
   friendsPage: {
     display: 'grid',
-    gridTemplateColumns: '376px 575px',
+    gridTemplateColumns: '376px 588px',
     height: '71vh',
+    '&> *:nth-child(2)': {
+      paddingLeft: 118,
+    },
   },
 })

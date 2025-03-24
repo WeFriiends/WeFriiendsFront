@@ -17,7 +17,7 @@ const useStyles = makeStyles()(() => {
   return {
     foto: {
       width: '100%',
-      height: '51vh',
+      height: '535px',
       objectFit: 'cover',
     },
   }

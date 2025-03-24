@@ -213,6 +213,7 @@ const useStyles = makeStyles()(() => {
       background:
         'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)',
       zIndex: 5,
+      pointerEvents: 'none',
     },
     accordion: {
       boxShadow: 'none',
