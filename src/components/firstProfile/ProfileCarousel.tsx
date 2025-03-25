@@ -27,13 +27,12 @@ import {
 import { Dayjs } from 'dayjs'
 import { validateLocation } from './utils/validateLocation'
 import { Address } from './profile'
-import { useProfileStore } from 'zustand/store'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
 
 const ProfileCarousel = () => {
-  const photos = useProfileStore((state) => state.data.photos)
+  //const photos = useProfileStore((state) => state.data.photos)
   const { classes } = useStyles()
   const token = useBearerToken()
   const {
@@ -141,7 +140,7 @@ const ProfileCarousel = () => {
     url: string | null
   }
 
-  const [, setPhotos] = useState<UserPicsType[]>([])
+  const [photos, setPhotos] = useState<UserPicsType[]>([])
   const handlePicChange = (photos: UserPicsType[]) => {
     setPhotos(photos)
   }

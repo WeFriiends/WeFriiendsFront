@@ -5,7 +5,7 @@ import { makeStyles } from 'tss-react/mui'
 import theme from '../styles/createTheme'
 import { useNavigate } from 'react-router-dom'
 import AgeRangeControl from '../components/myAccount/AgeRangeControl'
-import DistanceControl from '../components/myAccount/DistanceControl'
+import RangeSliderDistance from '../components/myAccount/RangeSliderDistance'
 
 interface NoMoreMatchesDialogProps {
   ref: Ref<{ handleOpenNoMoreMatchesDialog: () => void }>
@@ -33,6 +33,10 @@ const NoMoreMatchesDialog = forwardRef(
       handleOpenNoMoreMatchesDialog,
     }))
 
+    function handleDistanceChange() {
+      // todo: updating the friendsDistanse
+    }
+
     return (
       <CommonModal
         isOpened={isModalVisible}
@@ -54,14 +58,14 @@ const NoMoreMatchesDialog = forwardRef(
           </Typography>
           <Box className={classes.slidersWrapper}>
             <Box className={classes.slider}>
-              <DistanceControl>
+              <RangeSliderDistance value={20} onChange={handleDistanceChange}>
                 <Typography
                   variant="h2"
                   className={`${classes.subtitle} ${classes.noBottomMargin}`}
                 >
                   Distance
                 </Typography>
-              </DistanceControl>
+              </RangeSliderDistance>
             </Box>
             <Box className={classes.slider}>
               <AgeRangeControl />
