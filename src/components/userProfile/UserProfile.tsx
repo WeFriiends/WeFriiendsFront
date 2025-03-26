@@ -195,7 +195,6 @@ const useStyles = makeStyles()(() => {
       fontSize: 18,
       lineHeight: '20px',
       paddingLeft: 4,
-      fontWeight: 400,
     },
     title: {
       color: '#F1562A',
@@ -214,10 +213,10 @@ const useStyles = makeStyles()(() => {
     },
     gradientOverlay: {
       position: 'absolute',
-      bottom: 0,
+      bottom: 106,
       left: 0,
       width: '100%',
-      height: '185px',
+      height: '79px',
       background:
         'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)',
       zIndex: 5,
@@ -227,11 +226,13 @@ const useStyles = makeStyles()(() => {
       boxShadow: 'none',
       position: 'relative',
       zIndex: 10,
+      marginTop: -106,
       '&::before': {
         display: 'none',
       },
       '&.Mui-expanded': {
         margin: 0,
+        marginTop: -106,
       },
     },
     reasons: {
