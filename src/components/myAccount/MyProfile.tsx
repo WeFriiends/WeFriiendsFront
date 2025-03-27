@@ -1,72 +1,41 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useRef } from 'react'
 import { Box, Typography } from '@mui/material'
 import theme from '../../styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 import PhotoCarousel from '../userProfile/PhotoCarousel'
-import UploadPhotos from '../firstProfile/uploadPhotos/UploadPhotos'
-import Status from 'components/firstProfile/Status'
-import Interests from '../firstProfile/interests/Interests'
 import PrimaryButton from '../../common/components/PrimaryButton'
+import ChangeProfileDialog from './ChangeProfileDialog'
 
 const MyProfile: React.FC = () => {
   const { classes } = useStyles()
+  const changeProfileDialogRef = useRef<{
+    handleOpenChangeProfileDialog: () => void
+  }>(null)
+
   const userPhoto = [
     { src: '/img/photo_Elena_2.jpg' },
     { src: '/img/photo_Elena.jpg' },
     { src: '/img/photo_Elena_3.jpg' },
   ]
-  const [isEditing, setIsEditing] = React.useState(false)
-  const handleEditClick = () => {
-    setIsEditing(true)
-  }
-  const handleSaveClick = () => {
-    setIsEditing(false)
+
+  const handleOpenChangeProfileDialog = () => {
+    changeProfileDialogRef.current?.handleOpenChangeProfileDialog()
   }
 
-  interface UserPicsType {
-    id: string
-    url: string | null
-  }
-
-  const [, setPhotos] = useState<UserPicsType[]>([])
-  const handlePicChange = (photos: UserPicsType[]) => {
-    setPhotos(photos)
-  }
   return (
     <>
       <Typography variant="h1" className={classes.title}>
         My profile
       </Typography>
-      <PhotoCarousel items={userPhoto} />
-      {isEditing ? (
-        <>
-          <UploadPhotos onPicChange={handlePicChange} />
-          <Box className={classes.titleContainer}>
-            <Typography className={classes.titleStatus}>
-              I&apos;m Here For
-            </Typography>
-          </Box>
-          <Status
-            isTitleShown={false}
-            isFormHelperTextShown={true}
-            formHelperText=" Please, choose 3 statuses maximum"
-          />
-          <Box className={classes.interests}>
-            <Interests isAboutMeShown={true} />
-          </Box>
-          <Box className={classes.buttonContainer}>
-            <PrimaryButton label="Save" onClickHandler={handleSaveClick} />
-          </Box>
-        </>
-      ) : (
-        <Box className={classes.buttonContainer}>
-          <PrimaryButton
-            label="Change Profile"
-            onClickHandler={handleEditClick}
-          />
-        </Box>
-      )}
+      <PhotoCarousel className={classes.carouselWrapper} items={userPhoto} />
+      <Box className={classes.buttonContainer}>
+        <PrimaryButton
+          label="Change profile"
+          onClickHandler={handleOpenChangeProfileDialog}
+        />
+      </Box>
+      <ChangeProfileDialog ref={changeProfileDialogRef} />
     </>
   )
 }
@@ -119,5 +88,11 @@ const useStyles = makeStyles()({
     display: 'flex',
     justifyContent: 'center',
     marginTop: theme.spacing(2),
+  },
+  carouselWrapper: {
+    paddingTop: 30,
+    '&>div>div>div>div': {
+      transform: 'none !important',
+    },
   },
 })

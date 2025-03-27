@@ -6,8 +6,10 @@ import useBearerToken from '../../hooks/useBearToken'
 import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
 import { useEffect, useState } from 'react'
 import { Address } from '../firstProfile/profile'
+import { makeStyles } from 'tss-react/mui'
 
 const LocationControl: React.FC = () => {
+  const { classes } = useStyles()
   const {
     data: profile,
     loading,
@@ -87,7 +89,12 @@ const LocationControl: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h2">Location</Typography>
+      <Typography
+        variant="h2"
+        className={`${classes.subtitle} ${classes.noBottomMargin}`}
+      >
+        Location
+      </Typography>
       <LocationInputAutocomplete
         onLocationSelected={handleGetManualAddress}
         onLocationChanged={handleLocationChanged}
@@ -114,3 +121,17 @@ const LocationControl: React.FC = () => {
 }
 
 export default LocationControl
+
+const useStyles = makeStyles()({
+  subtitle: {
+    fontSize: 16,
+    lineHeight: '22px',
+    marginTop: 15,
+    marginBottom: 20,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  noBottomMargin: {
+    marginBottom: 0,
+  },
+})
