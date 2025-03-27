@@ -1,9 +1,5 @@
 import { useState } from 'react'
-import {
-  Box,
-  Typography,
-  IconButton,
-} from '@mui/material'
+import { Box, Typography, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from 'styles/createTheme'
 import LanguageSelector from './languageSelector'
