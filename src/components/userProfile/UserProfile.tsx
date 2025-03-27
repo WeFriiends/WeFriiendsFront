@@ -54,8 +54,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
 
         <div className={classes.carousel}>
           <PhotoCarousel items={user.photo} />
-          <Box className={classes.gradientOverlay} />{' '}
-          {/* Додаємо градієнт тут */}
+          <Box className={classes.gradientOverlay} />
         </div>
 
         <Accordion className={classes.accordion}>

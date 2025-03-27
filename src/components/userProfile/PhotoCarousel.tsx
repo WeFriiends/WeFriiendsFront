@@ -29,7 +29,7 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items }) => {
       indicatorContainerProps={{
         style: {
           position: 'absolute',
-          marginTop: '-535px',
+          marginTop: -535,
           zIndex: 200,
         },
       }}
@@ -43,6 +43,7 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items }) => {
       }}
       NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
       PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
+      sx={{ height: 535 }}
     >
       {items.map((item: UserPhoto, i: number) => (
         <UserPic key={i} src={item.src} />
