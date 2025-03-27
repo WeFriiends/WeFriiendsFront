@@ -121,7 +121,6 @@ const useStyles = makeStyles()({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'center',
-    marginTop: theme.spacing(2),
   },
   carouselWrapper: {
     paddingTop: 30,

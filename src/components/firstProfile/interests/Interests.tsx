@@ -211,7 +211,7 @@ const useStyles = makeStyles()(() => ({
     flexDirection: 'column',
     maxWidth: '100%',
     width: '100%',
-    margin: '20px 0 40px',
+    margin: '20px 0 0',
   },
   aboutMeContainer: {
     position: 'relative',
