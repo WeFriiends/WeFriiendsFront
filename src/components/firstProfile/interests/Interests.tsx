@@ -182,13 +182,7 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    maxWidth: '540px',
-    width: '540px',
-    justifyContent: 'center',
-    '@media (max-width: 600px)': {
-      maxWidth: '280px',
-      width: '280px',
-    },
+    width: '100%',
   },
 
   titleContainer: {

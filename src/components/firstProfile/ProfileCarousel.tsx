@@ -27,6 +27,7 @@ import {
 import { Dayjs } from 'dayjs'
 import { validateLocation } from './utils/validateLocation'
 import { Address } from './profile'
+import AuthPagesWrapper from './AuthPagesWrapper'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
@@ -256,7 +257,9 @@ const ProfileCarousel = () => {
     }
   }
   return (
-    <>
+    <AuthPagesWrapper
+      width={activeStep == 5 || activeStep == 6 ? 580 : undefined}
+    >
       {activeStep > 0 && <ArrowBackButton stepBackHandler={handleBack} />}
       <GenericCarousel
         items={carouselData}
@@ -278,7 +281,7 @@ const ProfileCarousel = () => {
         backButton={<></>}
         nextButton={<></>}
       />
-    </>
+    </AuthPagesWrapper>
   )
 }
 

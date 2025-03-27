@@ -49,6 +49,7 @@ const ChangeProfileDialog = forwardRef(
         modalTitle={'Delete User'}
         modalDescription={'Confirm to delete user.'}
         onClose={handleClose}
+        width={600}
       >
         <UploadPhotos onPicChange={handlePicChange} />
         <Box className={classes.titleContainer}>

@@ -6,7 +6,7 @@ import LoadingScreen from 'common/svg/Loader'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
-import AuthPagesWrapper from '../authPagesWrapper/AuthPagesWrapper'
+import AuthPagesWrapper from '../firstProfile/AuthPagesWrapper'
 
 const UserAuthentication = () => {
   const { classes } = useStyles()

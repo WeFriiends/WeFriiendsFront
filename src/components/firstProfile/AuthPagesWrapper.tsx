@@ -5,14 +5,21 @@ import theme from '../../styles/createTheme'
 import React, { ReactNode } from 'react'
 
 type AuthPagesWrapperProps = {
+  width?: 580
   children: ReactNode
 }
 
-const AuthPagesWrapper: React.FC<AuthPagesWrapperProps> = ({ children }) => {
+const AuthPagesWrapper: React.FC<AuthPagesWrapperProps> = ({
+  width,
+  children,
+}) => {
   const { classes } = useStyles()
   return (
     <Box className={classes.authWrapper}>
-      <Box className={classes.authContent}>
+      <Box
+        className={classes.authContent}
+        sx={{ maxWidth: width ? width : 390 }}
+      >
         <Logo />
         {children}
       </Box>
@@ -33,14 +40,13 @@ const useStyles = makeStyles()({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    margin: '0 20px',
-    padding: '50px 0',
+    padding: '50px 20px',
+    width: '100%',
     [theme.breakpoints.up(390)]: {
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: 350,
       margin: '0 auto',
       maxHeight: '100%',
       minHeight: 650,
