@@ -42,11 +42,6 @@ export const LanguageItem = ({
       </IconButton>
       {isLanguageOpen && (
         <>
-          <LanguageSelector
-            onSelectedLanguages={handleSelectedLanguages}
-            selectedLanguages={selectedLanguages}
-          />
-
           <Box className={classes.chipContainer}>
             {selectedLanguages.map((language, index) => (
               <ChipWithClose
@@ -60,6 +55,10 @@ export const LanguageItem = ({
               />
             ))}
           </Box>
+          <LanguageSelector
+            onSelectedLanguages={handleSelectedLanguages}
+            selectedLanguages={selectedLanguages}
+          />
         </>
       )}
     </Box>
@@ -69,7 +68,6 @@ export const LanguageItem = ({
 const useStyles = makeStyles()(() => {
   return {
     chipContainer: {
-      margin: '40px 0 15px',
       display: 'flex',
       alignItems: 'center',
       gap: '10px',

@@ -60,25 +60,31 @@ const useStyles = makeStyles()({
     width: 350,
     marginBottom: 50,
     maxWidth: '100%',
+    order: 2,
     [theme.breakpoints.up(850)]: {
+      order: 1,
       width: 350,
     },
   },
   twoColumnLayoutColRight: {
-    width: 450,
+    width: 350,
     maxWidth: '100%',
-    overflow: 'auto',
+    order: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: 450,
+    },
     [theme.breakpoints.up(850)]: {
       width: 450,
+      order: 2,
     },
   },
 
   title: {
     paddingTop: 60,
     paddingBottom: 10,
-    textAlign: 'center',
-    fontSize: 32,
-    fontWeight: 600,
+    textAlign: 'left',
+    fontSize: 24,
+    fontWeight: 500,
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
       paddingBottom: 20,

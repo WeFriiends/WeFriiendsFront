@@ -112,7 +112,7 @@ const useStyles = makeStyles()({
     maxWidth: 1024,
     padding: '0 30px',
     [theme.breakpoints.down('lg')]: {
-      padding: '0 10px',
+      padding: '0 20px',
     },
   },
   name: {
@@ -122,6 +122,7 @@ const useStyles = makeStyles()({
     color: '#F1562A',
     paddingLeft: 25,
     position: 'relative',
+    wordBreak: 'break-word',
   },
   navList: {
     display: 'flex',

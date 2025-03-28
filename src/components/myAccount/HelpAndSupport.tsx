@@ -126,7 +126,7 @@ const useStyles = makeStyles()({
     fontSize: 20,
     fontWeight: 500,
     lineHeight: '20px',
-    marginTop: 200,
+    marginTop: 70,
     paddingBottom: 20,
   },
   subtitle: {

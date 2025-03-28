@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, FormHelperText } from '@mui/material'
+import { Typography, FormHelperText, Box } from '@mui/material'
 import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomplete'
 import { useProfileStore } from '../../zustand/store'
 import useBearerToken from '../../hooks/useBearToken'
@@ -88,7 +88,7 @@ const LocationControl: React.FC = () => {
   }
 
   return (
-    <>
+    <Box sx={{ overflow: 'hidden' }}>
       <Typography
         variant="h2"
         className={`${classes.subtitle} ${classes.noBottomMargin}`}
@@ -116,7 +116,7 @@ const LocationControl: React.FC = () => {
       <FormHelperText sx={{ textAlign: 'left' }} error={false}>
         {noticeLocation}
       </FormHelperText>
-    </>
+    </Box>
   )
 }
 
