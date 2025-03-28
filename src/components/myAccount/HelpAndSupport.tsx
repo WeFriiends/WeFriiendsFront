@@ -10,8 +10,7 @@ import useBearerToken from '../../hooks/useBearToken'
 const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
   const { logout } = useAuth0()
-  const { deleteProfile } =
-    useProfileStore()
+  const { deleteProfile } = useProfileStore()
   const token = useBearerToken()
 
   const handleLogout = () => {
