@@ -28,6 +28,7 @@ import { Dayjs } from 'dayjs'
 import { validateLocation } from './utils/validateLocation'
 import { Address } from './profile'
 import AuthPagesWrapper from './AuthPagesWrapper'
+import Loader from '../../common/svg/Loader'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
@@ -46,6 +47,7 @@ const ProfileCarousel = () => {
   const [showGenderWithError, setShowGenderWithError] = useState(false)
   const [isPhotoSubmitted, setIsPhotoSubmitted] = useState(false)
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const [isProfileCreating, setIsProfileCreating] = useState(false)
   const [hasAboutMeError, setHasAboutMeError] = useState(false)
 
   const [nameChange, setNameChange] = useState(getItemFromLocalStorage('name'))
@@ -214,6 +216,7 @@ const ProfileCarousel = () => {
     if (!isPhotoSubmitted) {
       setIsSubmitClicked(true)
     } else {
+      setIsProfileCreating(true)
       const {
         name,
         dob,
@@ -240,47 +243,60 @@ const ProfileCarousel = () => {
         'userPicsStorage',
         'userPreferences',
       ])
-      await createProfile(
-        {
-          name,
-          dateOfBirth: dob,
-          gender,
-          location: { lat, lng, country, city, street, houseNumber },
-          reasons: selectedStatuses,
-          photos,
-          userPreferences,
-          userPicsStorage: [],
-        },
-        token
-      )
-      navigate('/friends')
+      try {
+        await createProfile(
+          {
+            name,
+            dateOfBirth: dob,
+            gender,
+            location: { lat, lng, country, city, street, houseNumber },
+            reasons: selectedStatuses,
+            photos,
+            userPreferences,
+            userPicsStorage: [],
+          },
+          token
+        )
+        setIsProfileCreating(false)
+        navigate('/friends')
+      } catch (error: any) {
+        setIsProfileCreating(false)
+        console.error(error)
+        throw new Error(error.message)
+      }
     }
   }
   return (
     <AuthPagesWrapper
       width={activeStep == 5 || activeStep == 6 ? 580 : undefined}
     >
-      {activeStep > 0 && <ArrowBackButton stepBackHandler={handleBack} />}
-      <GenericCarousel
-        items={carouselData}
-        renderItem={(item) => item.component}
-        activeStep={activeStep}
-      />
-      {activeStep < carouselDataLength - 1 && (
-        <PrimaryButton onClickHandler={handleNext} label="Next" />
+      {isProfileCreating ? (
+        <Loader />
+      ) : (
+        <>
+          {activeStep > 0 && <ArrowBackButton stepBackHandler={handleBack} />}
+          <GenericCarousel
+            items={carouselData}
+            renderItem={(item) => item.component}
+            activeStep={activeStep}
+          />
+          {activeStep < carouselDataLength - 1 && (
+            <PrimaryButton onClickHandler={handleNext} label="Next" />
+          )}
+          {activeStep === carouselDataLength - 1 && (
+            <PrimaryButton onClickHandler={onSubmit} label="Submit" />
+          )}
+          <MobileStepper
+            className={classes.stepper}
+            variant="dots"
+            steps={carouselData.length}
+            position="static"
+            activeStep={activeStep}
+            backButton={<></>}
+            nextButton={<></>}
+          />
+        </>
       )}
-      {activeStep === carouselDataLength - 1 && (
-        <PrimaryButton onClickHandler={onSubmit} label="Submit" />
-      )}
-      <MobileStepper
-        className={classes.stepper}
-        variant="dots"
-        steps={carouselData.length}
-        position="static"
-        activeStep={activeStep}
-        backButton={<></>}
-        nextButton={<></>}
-      />
     </AuthPagesWrapper>
   )
 }
