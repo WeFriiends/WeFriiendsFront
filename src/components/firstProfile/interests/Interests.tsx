@@ -14,6 +14,7 @@ interface InterestsProps {
   hasAboutMeError?: boolean
   setHasAboutMeError?: (value: boolean) => void
 }
+
 const Interests = ({
   isAboutMeShown = false,
   hasAboutMeError = false,
@@ -147,8 +148,7 @@ const AboutMeSection = ({
         <TextField
           id="aboutMe"
           type="text"
-          placeholder=" Add smth interesting about you.
-        Please note, you have 1000 symbols."
+          placeholder="Add smth interesting about you. Please note, you have 1000 symbols."
           value={aboutMe}
           onChange={onChange}
           multiline
