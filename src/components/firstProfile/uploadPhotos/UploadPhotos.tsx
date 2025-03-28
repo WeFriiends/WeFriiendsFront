@@ -64,9 +64,9 @@ const UploadPhotos = ({
   }
 
   return (
-    <Box className={classes.mainBox}>
+    <>
       {!isPhotoSubmitted && (
-        <Box className={classes.hintContainer}>
+        <>
           <Typography
             className={isSubmitClicked ? classes.errorTitle : classes.title}
           >
@@ -75,7 +75,7 @@ const UploadPhotos = ({
           <Typography className={classes.hint}>
             Your first uploaded photo will be used as your avatar
           </Typography>
-        </Box>
+        </>
       )}
       <FormHelperText
         className={isPicHuge ? classes.errorMsg : classes.hintMsg}
@@ -110,23 +110,14 @@ const UploadPhotos = ({
           />
         ))}
       </Box>
-    </Box>
+    </>
   )
 }
 
 export default UploadPhotos
 
 const useStyles = makeStyles()(() => ({
-  mainBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-    paddingTop: 50,
-  },
   picContainer: {
-    width: '95vw',
     maxWidth: 349,
     height: 'auto',
     display: 'flex',
@@ -134,10 +125,7 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 20,
-    margin: 20,
-  },
-  hintContainer: {
-    height: 43,
+    margin: '20px auto',
   },
   title: {
     fontWeight: 600,

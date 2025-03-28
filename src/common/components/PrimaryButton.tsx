@@ -5,12 +5,14 @@ type NextStepButtonProps = {
   onClickHandler: () => void
   disabled?: boolean
   label: string
+  className?: string
 }
 
 const PrimaryButton: React.FC<NextStepButtonProps> = ({
   onClickHandler,
   disabled,
   label,
+  className,
 }) => {
   const { classes } = useStyles()
   return (
@@ -18,7 +20,7 @@ const PrimaryButton: React.FC<NextStepButtonProps> = ({
       onClick={onClickHandler}
       className={`${classes.button} ${
         disabled ? classes.disabledButton : classes.activeButton
-      }`}
+      } ${className}`}
       disabled={disabled}
       disableRipple
     >
@@ -41,7 +43,7 @@ const useStyles = makeStyles()((theme) => {
       maxWidth: 350,
       width: '100%',
       height: 60,
-      lineHeight: '60px',
+      lineHeight: '52px',
       padding: 0,
       textAlign: 'center',
       fontSize: 18,

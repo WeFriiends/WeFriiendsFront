@@ -1,13 +1,15 @@
 import * as React from 'react'
-import { Typography, FormHelperText } from '@mui/material'
+import { Typography, FormHelperText, Box } from '@mui/material'
 import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomplete'
 import { useProfileStore } from '../../zustand/store'
 import useBearerToken from '../../hooks/useBearToken'
 import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
 import { useEffect, useState } from 'react'
 import { Address } from '../firstProfile/profile'
+import { makeStyles } from 'tss-react/mui'
 
 const LocationControl: React.FC = () => {
+  const { classes } = useStyles()
   const {
     data: profile,
     loading,
@@ -86,8 +88,13 @@ const LocationControl: React.FC = () => {
   }
 
   return (
-    <>
-      <Typography variant="h2">Location</Typography>
+    <Box sx={{ overflow: 'hidden' }}>
+      <Typography
+        variant="h2"
+        className={`${classes.subtitle} ${classes.noBottomMargin}`}
+      >
+        Location
+      </Typography>
       <LocationInputAutocomplete
         onLocationSelected={handleGetManualAddress}
         onLocationChanged={handleLocationChanged}
@@ -109,8 +116,22 @@ const LocationControl: React.FC = () => {
       <FormHelperText sx={{ textAlign: 'left' }} error={false}>
         {noticeLocation}
       </FormHelperText>
-    </>
+    </Box>
   )
 }
 
 export default LocationControl
+
+const useStyles = makeStyles()({
+  subtitle: {
+    fontSize: 16,
+    lineHeight: '22px',
+    marginTop: 15,
+    marginBottom: 20,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  noBottomMargin: {
+    marginBottom: 0,
+  },
+})

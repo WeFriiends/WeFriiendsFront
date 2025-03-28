@@ -14,6 +14,7 @@ interface InterestsProps {
   hasAboutMeError?: boolean
   setHasAboutMeError?: (value: boolean) => void
 }
+
 const Interests = ({
   isAboutMeShown = false,
   hasAboutMeError = false,
@@ -147,8 +148,7 @@ const AboutMeSection = ({
         <TextField
           id="aboutMe"
           type="text"
-          placeholder=" Add smth interesting about you.
-        Please note, you have 1000 symbols."
+          placeholder="Add smth interesting about you. Please note, you have 1000 symbols."
           value={aboutMe}
           onChange={onChange}
           multiline
@@ -182,13 +182,7 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    maxWidth: '540px',
-    width: '540px',
-    justifyContent: 'center',
-    '@media (max-width: 600px)': {
-      maxWidth: '280px',
-      width: '280px',
-    },
+    width: '100%',
   },
 
   titleContainer: {
@@ -217,7 +211,7 @@ const useStyles = makeStyles()(() => ({
     flexDirection: 'column',
     maxWidth: '100%',
     width: '100%',
-    margin: '20px 0 40px',
+    margin: '20px 0 0',
   },
   aboutMeContainer: {
     position: 'relative',

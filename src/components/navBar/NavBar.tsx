@@ -58,13 +58,13 @@ const NavBar = () => {
             src={
               typeof profile?.photos?.[0] === 'string'
                 ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/avatar_elena.jpg'
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
             }
             sx={{ width: 56, height: 56 }}
           ></Avatar>
           {!loading ? (
             <Typography className={classes.name}>
-              {profile?.name || 'UserName'}
+              {profile?.name || 'Loading...'}
             </Typography>
           ) : (
             <Typography className={classes.name}>Loading...</Typography>
@@ -112,7 +112,7 @@ const useStyles = makeStyles()({
     maxWidth: 1024,
     padding: '0 30px',
     [theme.breakpoints.down('lg')]: {
-      padding: '0 10px',
+      padding: '0 20px',
     },
   },
   name: {
@@ -122,6 +122,7 @@ const useStyles = makeStyles()({
     color: '#F1562A',
     paddingLeft: 25,
     position: 'relative',
+    wordBreak: 'break-word',
   },
   navList: {
     display: 'flex',

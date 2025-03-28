@@ -16,17 +16,8 @@ const MyAccount: React.FC = () => {
       <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
         <Box className={classes.twoColumnLayoutColLeft}>
           <Typography variant="h1" className={classes.title}>
-            My account
+            Search preferences
           </Typography>
-          <Box className={classes.settingsDescription}>
-            <Typography variant="h2" className={classes.subtitle}>
-              Settings
-            </Typography>
-            <Typography variant="body2" className={classes.description}>
-              Indicate what is important to you <br />
-              and we will show you the best options.
-            </Typography>
-          </Box>
           <Box className={classes.settingsItem}>
             <LocationControl />
             <br />
@@ -69,25 +60,31 @@ const useStyles = makeStyles()({
     width: 350,
     marginBottom: 50,
     maxWidth: '100%',
+    order: 2,
     [theme.breakpoints.up(850)]: {
+      order: 1,
       width: 350,
     },
   },
   twoColumnLayoutColRight: {
-    width: 450,
+    width: 350,
     maxWidth: '100%',
-    overflow: 'auto',
+    order: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: 450,
+    },
     [theme.breakpoints.up(850)]: {
       width: 450,
+      order: 2,
     },
   },
 
   title: {
     paddingTop: 60,
     paddingBottom: 10,
-    textAlign: 'center',
-    fontSize: 32,
-    fontWeight: 600,
+    textAlign: 'left',
+    fontSize: 24,
+    fontWeight: 500,
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
       paddingBottom: 20,
@@ -96,24 +93,11 @@ const useStyles = makeStyles()({
       fontWeight: 500,
     },
   },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: '22px',
-    marginTop: 15,
-    marginBottom: 20,
-  },
   noBottomMargin: {
     marginBottom: 0,
   },
-  description: {
-    lineHeight: 1.3,
-    marginBottom: 30,
-  },
   descriptionSlider: {
     lineHeight: 1.3,
-  },
-  settingsDescription: {
-    marginBottom: 50,
   },
   settingsItem: {
     marginBottom: 30,
