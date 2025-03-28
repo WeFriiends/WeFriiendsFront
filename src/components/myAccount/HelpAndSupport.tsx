@@ -4,10 +4,15 @@ import IconNewTab from '../../common/svg/IconNewTab'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useProfileStore } from '../../zustand/store'
+import useBearerToken from '../../hooks/useBearToken'
 
 const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
   const { logout } = useAuth0()
+  const { deleteProfile } =
+    useProfileStore()
+  const token = useBearerToken()
 
   const handleLogout = () => {
     logout({
@@ -15,6 +20,19 @@ const HelpAndSupport: React.FC = () => {
         returnTo: window.location.origin,
       },
     })
+  }
+
+  const deleteAccount = async () => {
+    // deletes user only from MongoDB
+    // todo: delete from auth0
+    if (token) {
+      try {
+        await deleteProfile(token)
+        logout({ logoutParams: { returnTo: window.location.origin } })
+      } catch (err) {
+        console.error('Error deleting account:', err)
+      }
+    }
   }
 
   const linksSecurityTips = [
@@ -103,12 +121,7 @@ const HelpAndSupport: React.FC = () => {
         Log out
       </Button>
       <hr className={classes.separator} />
-      <Link
-        className={classes.linkOrange}
-        href="https://wefriiends.com/documents/privacy.html"
-        target="_blank"
-        rel="noopener"
-      >
+      <Link className={classes.linkOrange} onClick={deleteAccount}>
         Delete account
       </Link>
       <hr className={classes.separator} />
@@ -172,6 +185,7 @@ const useStyles = makeStyles()({
     display: 'block',
     padding: 0,
     textTransform: 'none',
+    cursor: 'pointer',
   },
   version: {
     fontSize: 14,

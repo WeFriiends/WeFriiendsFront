@@ -58,13 +58,13 @@ const NavBar = () => {
             src={
               typeof profile?.photos?.[0] === 'string'
                 ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/avatar_elena.jpg'
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
             }
             sx={{ width: 56, height: 56 }}
           ></Avatar>
           {!loading ? (
             <Typography className={classes.name}>
-              {profile?.name || 'UserName'}
+              {profile?.name || 'Loading...'}
             </Typography>
           ) : (
             <Typography className={classes.name}>Loading...</Typography>

@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import theme from '../../styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
@@ -16,11 +15,21 @@ const MyProfile: React.FC = () => {
   }>(null)
   const { data: profile, loading } = useProfileStore()
 
-  const userPhoto = [
-    { src: '/img/photo_Elena_2.jpg' },
-    { src: '/img/photo_Elena.jpg' },
-    { src: '/img/photo_Elena_3.jpg' },
+  const defaultPhotos = [
+    { src: '/img/placeholders/girl_big.svg' },
+    { src: '/img/placeholders/girl_big.svg' },
+    { src: '/img/placeholders/girl_big.svg' },
   ]
+
+  const [userPhotos, setUserPhotos] = useState(defaultPhotos)
+
+  useEffect(() => {
+    if (profile?.photos?.length) {
+      setUserPhotos(
+        profile.photos.map((photo) => ({ src: photo as unknown as string }))
+      )
+    }
+  }, [profile?.photos])
 
   const handleOpenChangeProfileDialog = () => {
     changeProfileDialogRef.current?.handleOpenChangeProfileDialog()
@@ -35,7 +44,7 @@ const MyProfile: React.FC = () => {
             src={
               typeof profile?.photos?.[0] === 'string'
                 ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/avatar_elena.jpg'
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
             }
           />
           <Typography variant="h1" className={classes.name}>
@@ -44,7 +53,7 @@ const MyProfile: React.FC = () => {
               ? '...'
               : profile?.dateOfBirth
               ? getAge(profile.dateOfBirth)
-              : 'Unknown'}
+              : '...'}
           </Typography>
         </Box>
         <PrimaryButton
@@ -56,7 +65,7 @@ const MyProfile: React.FC = () => {
       <Typography variant="h1" className={classes.title}>
         My profile
       </Typography>
-      <PhotoCarousel className={classes.carouselWrapper} items={userPhoto} />
+      <PhotoCarousel className={classes.carouselWrapper} items={userPhotos} />
       <Box className={classes.buttonContainer}>
         <PrimaryButton
           label="Change profile"
