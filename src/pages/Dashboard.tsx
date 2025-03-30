@@ -15,7 +15,6 @@ const Dashboard = () => {
       { path: '/email-confirmed', label: 'email-confirmed' },
       { path: '/account-created', label: 'account-created' },
       { path: '/email-already-confirmed', label: 'email-already-confirmed' },
-      { path: '/logout', label: 'logout' },
     ],
     temporaryExamples: [
       {
@@ -35,6 +34,7 @@ const Dashboard = () => {
         path: '/account',
         label: 'User Account (works only after login and first profile)',
       },
+      { path: '/logout', label: 'logout' },
       { path: '/dashboard', label: 'Dashboard' },
     ],
   }
