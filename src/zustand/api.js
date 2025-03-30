@@ -30,6 +30,7 @@ const request = async (method, url, data = {}, token = null) => {
 export const createProfile = (profileData, token) =>
   request('post', '/', profileData, token)
 export const getProfile = (token) => request('get', '/', {}, token)
+export const checkProfile = (token) => request('get', '/check', {}, token)
 export const updateProfile = (profileData, token) =>
   request('patch', '/', profileData, token)
 export const deleteProfile = (token) => request('delete', '/', {}, token)

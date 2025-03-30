@@ -2,12 +2,22 @@ import { useAuth0 } from '@auth0/auth0-react'
 import Loader from 'common/svg/Loader'
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useProfileStore } from '../zustand/store'
 
 const AuthCallbackPage = () => {
   const { handleRedirectCallback } = useAuth0()
   const navigate = useNavigate()
   const location = useLocation()
   const shouldRedirect = useRef(true)
+
+  const { hasProfile, loading } = useProfileStore()
+  useEffect(() => {
+    if (hasProfile === false) {
+      navigate('/fill-profile')
+    } else if (hasProfile === true) {
+      navigate('/friends')
+    }
+  }, [loading])
 
   useEffect(() => {
     const urlSearchParams = () => {
@@ -22,19 +32,18 @@ const AuthCallbackPage = () => {
       try {
         const { message, errorDescription, code, state } = urlSearchParams()
 
-        if (message?.includes('Your email was verified'))
+        if (message?.includes('Your email was verified')) {
           navigate('/email-confirmed')
-        else if (message?.includes('This URL can be used only once'))
+        } else if (message?.includes('This URL can be used only once')) {
           navigate('/email-already-confirmed')
-        else if (
+        } else if (
           errorDescription?.includes(
             'Please verify your email before logging in'
           )
-        )
+        ) {
           navigate('/account-created')
-        else if (code && state) {
+        } else if (code && state) {
           await handleRedirectCallback()
-          navigate('/fill-profile')
         } else {
           console.error('No valid callback parameters found in URL: ', {
             message,

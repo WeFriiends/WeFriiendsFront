@@ -5,8 +5,6 @@ import NameInput from './name/NameInput'
 import DateOfBirthPicker from './DateOfBirthPicker'
 import PrimaryButton from 'common/components/PrimaryButton'
 import { createProfile } from 'actions/profile'
-import useBearerToken from 'hooks/useBearToken'
-import { useNavigate } from 'react-router-dom'
 import GenderPick from './GenderPick'
 import ArrowBackButton from 'common/components/ArrowBackButton'
 import Status from './Status'
@@ -29,6 +27,7 @@ import { validateLocation } from './utils/validateLocation'
 import { Address } from './profile'
 import AuthPagesWrapper from './AuthPagesWrapper'
 import Loader from '../../common/svg/Loader'
+import { useAuthStore } from '../../zustand/store'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
@@ -36,7 +35,7 @@ import Loader from '../../common/svg/Loader'
 const ProfileCarousel = () => {
   //const photos = useProfileStore((state) => state.data.photos)
   const { classes } = useStyles()
-  const token = useBearerToken()
+  const token = useAuthStore((state) => state.token)
   const {
     activeStep,
     handleBack,
@@ -210,7 +209,11 @@ const ProfileCarousel = () => {
   const carouselDataLength = carouselData.length
 
   // send values to backend
-  const navigate = useNavigate()
+
+  if (!token) {
+    console.error('Token is absent.')
+    return
+  }
 
   const onSubmit = async () => {
     if (!isPhotoSubmitted) {
@@ -258,7 +261,9 @@ const ProfileCarousel = () => {
           token
         )
         setIsProfileCreating(false)
-        navigate('/friends')
+        window.location.href = '/friends' // page reload needed
+        // todo: it can be replaced to navigate if we add store update after profile creating, or
+        //  rewrite profile.ts to createProfile() from api.js
       } catch (error: any) {
         setIsProfileCreating(false)
         console.error(error)

@@ -12,14 +12,14 @@ import { generateNavigationConfig } from '../../helpers/navigationConfigHelper'
 import { NavigationItems } from '../navigationItems/NavigationItems'
 import theme from '../../styles/createTheme'
 import { Outlet, useNavigate } from 'react-router-dom'
-import useProfileData from '../../hooks/useProfileData'
+import { useProfileStore } from '../../zustand/store'
 
 const NavBar = () => {
   const { classes } = useStyles()
   const { activePage, setNewActivePage } = useActivePage()
   const navigationConfig = generateNavigationConfig()
   const navigate = useNavigate()
-  const { profile, loading } = useProfileData()
+  const { data: profile, loading } = useProfileStore()
 
   // Set current active menu item if we open the corresponding link
   useEffect(() => {

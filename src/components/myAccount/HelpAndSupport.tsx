@@ -4,14 +4,13 @@ import IconNewTab from '../../common/svg/IconNewTab'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useProfileStore } from '../../zustand/store'
-import useBearerToken from '../../hooks/useBearToken'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 
 const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
   const { logout } = useAuth0()
   const { deleteProfile } = useProfileStore()
-  const token = useBearerToken()
+  const token = useAuthStore((state) => state.token)
 
   const handleLogout = () => {
     logout({

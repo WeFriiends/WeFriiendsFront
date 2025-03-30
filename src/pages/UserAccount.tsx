@@ -1,7 +1,6 @@
 import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useProfileStore } from '../zustand/store'
-import useBearerToken from 'hooks/useBearToken'
+import { useAuthStore, useProfileStore } from '../zustand/store'
 import Loader from '../common/svg/Loader'
 
 const UserAccount = () => {
@@ -13,7 +12,8 @@ const UserAccount = () => {
     deleteProfile,
     updateProfile: updateProfileAction,
   } = useProfileStore()
-  const token = useBearerToken()
+
+  const token = useAuthStore((state) => state.token)
 
   const deleteAccount = async () => {
     // deletes user only from MongoDB

@@ -1,7 +1,18 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { createProfile, getProfile, updateProfile, deleteProfile } from './api'
+import {
+  createProfile,
+  getProfile,
+  checkProfile,
+  updateProfile,
+  deleteProfile,
+} from './api'
 import { UserPicsType } from '../types/FirstProfile'
+
+interface AuthState {
+  token: string | null
+  setToken: (token: string) => void
+}
 
 interface Profile {
   name: string
@@ -33,12 +44,14 @@ interface ProfileState {
   success: boolean
   error: boolean
   data: Profile | null
+  hasProfile: boolean | null
   errorData: ErrorResponse | null
 }
 
 interface ProfileActions {
   createProfile: (profileData: Profile, token: string | null) => Promise<void>
   getProfile: (token: string | null) => Promise<void>
+  checkProfile: (token: string | null) => boolean
   updateProfile: (
     profileData: Partial<Profile>,
     token: string | null
@@ -56,10 +69,17 @@ const initialState: ProfileState = {
   success: false,
   error: false,
   data: null,
+  hasProfile: null,
   errorData: null,
 }
 
 // Zustand store
+
+export const useAuthStore = create<AuthState>((set) => ({
+  token: null,
+  setToken: (token) => set({ token }),
+}))
+
 export const useProfileStore = create<ProfileStore>()(
   devtools(
     (set) => {
@@ -93,7 +113,7 @@ export const useProfileStore = create<ProfileStore>()(
           }
         } catch (error) {
           handleError(error, actionName)
-          throw error
+          throw new Error('Error in connection with backend or endpoint!')
         }
       }
 
@@ -108,6 +128,29 @@ export const useProfileStore = create<ProfileStore>()(
         // It is used everywhere to fetch data from the database and display it on the front-end
         getProfile: async (token) =>
           await fetchData(() => getProfile(token), 'getProfile'),
+
+        // It is used to check if the user has profile data, if the first profile carousel has been filled out and stored to the database
+        checkProfile: async (token) => {
+          set({
+            loading: true,
+            success: false,
+            error: false,
+            hasProfile: null,
+            errorData: null,
+          })
+          try {
+            const response = await checkProfile(token)
+            if (response.status >= 200 && response.status < 300) {
+              set({ loading: false, success: true, hasProfile: response.data })
+              return response
+            } else {
+              console.error(`Unexpected status: ${response.status}`)
+            }
+          } catch (error) {
+            handleError(error, 'checkProfile')
+            throw new Error('Error in connection with backend or endpoint!')
+          }
+        },
 
         // It is used on the /my-account page to change the address (to be used for more options)
         updateProfile: async (profileData, token) => {
