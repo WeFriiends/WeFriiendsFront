@@ -119,7 +119,12 @@ const HelpAndSupport: React.FC = () => {
         Log out
       </Button>
       <hr className={classes.separator} />
-      <Link className={classes.linkOrange} onClick={deleteAccount}>
+      <Link
+        className={classes.linkOrange}
+        href="https://wefriiends.com/documents/privacy.html"
+        target="_blank"
+        rel="noopener"
+      >
         Delete account
       </Link>
       <hr className={classes.separator} />

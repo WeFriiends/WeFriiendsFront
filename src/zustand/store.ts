@@ -44,14 +44,12 @@ interface ProfileState {
   success: boolean
   error: boolean
   data: Profile | null
-  hasProfile: boolean | null
   errorData: ErrorResponse | null
 }
 
 interface ProfileActions {
   createProfile: (profileData: Profile, token: string | null) => Promise<void>
   getProfile: (token: string | null) => Promise<void>
-  checkProfile: (token: string | null) => boolean
   updateProfile: (
     profileData: Partial<Profile>,
     token: string | null
