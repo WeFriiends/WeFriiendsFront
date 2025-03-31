@@ -57,7 +57,7 @@ const useStyles = makeStyles()({
     display: 'grid',
     gridTemplateColumns: '376px 588px',
     height: '71vh',
-    '&> *:nth-child(2)': {
+    '&> *:nth-of-type(2)': {
       paddingLeft: 118,
     },
   },
