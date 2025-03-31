@@ -1,19 +1,8 @@
 import { useState } from 'react'
-import {
-  Box,
-  Typography,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Link as MuiLink,
-} from '@mui/material'
+import { Box, Typography, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from 'styles/createTheme'
 import LanguageSelector from './languageSelector'
-import CloseIcon from '@mui/icons-material/Close'
 import { ArrowRightBtn } from './ArrowRightBtn'
 import { ChipWithClose } from './ChipWithClose'
 
@@ -27,7 +16,7 @@ export const LanguageItem = ({
   const { classes } = useStyles()
 
   const [isLanguageOpen, setIsLanguageOpen] = useState(false)
-  const [isLanguagePopUpOpen, setIsLanguagePopUpOpen] = useState(false)
+  const [, setIsLanguagePopUpOpen] = useState(false)
 
   const handleSelectedLanguages = (languages: string[]) => {
     onSetSelectedLanguages(languages)
@@ -52,56 +41,26 @@ export const LanguageItem = ({
         />
       </IconButton>
       {isLanguageOpen && (
-        <Box className={classes.chipContainer}>
-          {selectedLanguages.map((language, index) => (
-            <ChipWithClose
-              onClose={() => {
-                onSetSelectedLanguages(
-                  selectedLanguages.filter((l) => l !== language)
-                )
-              }}
-              key={index}
-              label={language}
-            />
-          ))}
-          <MuiLink
-            className={classes.muiLink}
-            component="button"
-            variant="body2"
-            sx={{ marginLeft: 'auto' }}
-            onClick={() => setIsLanguagePopUpOpen(true)}
-          >
-            add more
-          </MuiLink>
-        </Box>
-      )}
-      <Dialog
-        open={isLanguagePopUpOpen}
-        onClose={() => setIsLanguageOpen(false)}
-        className={classes.dialog}
-      >
-        <DialogActions>
-          <Button
-            onClick={() => setIsLanguagePopUpOpen(false)}
-            sx={{
-              position: 'absolute',
-              top: '16px',
-              right: '1px',
-            }}
-          >
-            <CloseIcon sx={{ color: theme.palette.text.primary }} />
-          </Button>
-        </DialogActions>
-        <DialogTitle className={classes.dialogTitle}>
-          Languages you speak
-        </DialogTitle>
-        <DialogContent>
+        <>
+          <Box className={classes.chipContainer}>
+            {selectedLanguages.map((language, index) => (
+              <ChipWithClose
+                onClose={() => {
+                  onSetSelectedLanguages(
+                    selectedLanguages.filter((l) => l !== language)
+                  )
+                }}
+                key={index}
+                label={language}
+              />
+            ))}
+          </Box>
           <LanguageSelector
             onSelectedLanguages={handleSelectedLanguages}
             selectedLanguages={selectedLanguages}
           />
-        </DialogContent>
-      </Dialog>
+        </>
+      )}
     </Box>
   )
 }
@@ -109,7 +68,6 @@ export const LanguageItem = ({
 const useStyles = makeStyles()(() => {
   return {
     chipContainer: {
-      margin: '40px 0 15px',
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
@@ -174,7 +132,7 @@ const useStyles = makeStyles()(() => {
       flexDirection: 'column',
       maxWidth: '100%',
       width: '100%',
-      margin: '20px 0 40px',
+      margin: '20px 0 0',
     },
     item: {
       position: 'relative',
@@ -195,38 +153,6 @@ const useStyles = makeStyles()(() => {
       top: '0',
       width: '24px',
       height: '24px',
-    },
-    dialog: {
-      '& .MuiDialog-paper': {
-        width: '430px',
-        height: '396px',
-        borderRadius: '20px',
-        padding: '26px 40px 36px',
-        position: 'relative',
-        '@media (max-width: 600px)': {
-          maxWidth: '280px',
-          width: '280px',
-          padding: '16px 20px',
-        },
-      },
-    },
-    dialogTitle: {
-      fontFamily: 'Inter',
-      fontWeight: 600,
-      fontSize: '18px',
-      color: theme.palette.text.primary,
-      maxWidth: '100%',
-      height: '42px',
-      margin: '20px 0 60px',
-      backgroundColor: '#FEDED2',
-      borderRadius: '20px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '@media (max-width: 600px)': {
-        fontSize: '14px',
-        margin: '40px 0',
-      },
     },
   }
 })

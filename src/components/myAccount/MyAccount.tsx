@@ -1,144 +1,28 @@
 import * as React from 'react'
-import { Box, Grid, Typography, FormHelperText } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
-import AgeRangeControl from './AgeRangeControl'
-import DistanceControl from './DistanceControl'
-import { useProfileStore } from '../../zustand/store'
-import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomplete'
-import { Address } from '../firstProfile/profile'
-import { useEffect, useState } from 'react'
 import HelpAndSupport from './HelpAndSupport'
 import MyProfile from './MyProfile'
-import useBearerToken from '../../hooks/useBearToken'
-import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
+import DistanceControl from './DistanceControl'
+import LocationControl from './LocationControl'
+import AgeRangeControl from './AgeRangeControl'
 
 const MyAccount: React.FC = () => {
   const { classes } = useStyles()
-  const {
-    data: profile,
-    loading,
-    updateProfile: updateProfileAction,
-  } = useProfileStore()
-  const [errorLocation, setErrorLocation] = useState<string | null>(null)
-  const [noticeLocation, setNoticeLocation] = useState<string | null>(
-    'To change your address, type a street name along with the house number, then wait for suggestions.'
-  )
-  const [, setAddress] = useState<Address | null>(null)
-  const token = useBearerToken()
-
-  useEffect(() => {
-    if (profile?.location) {
-      setAddress({
-        country: profile.location.country || '',
-        city: profile.location.city || '',
-        street: profile.location.street || '',
-        houseNumber: profile.location.houseNumber || '',
-        lat: profile.location.lat || 0,
-        lng: profile.location.lng || 0,
-      })
-    }
-  }, [profile])
-
-  const handleGetManualAddress = async (value: any) => {
-    // Assume `value` is the selected address object (e.g., from LocationInputAutocomplete)
-
-    const resolvedAddress = getResolvedAddress(value)
-
-    if (resolvedAddress) {
-      // Обновляем адрес на сервере
-      setErrorLocation('Changing...')
-      if (token) {
-        try {
-          const response = await updateProfileAction(
-            {
-              location: {
-                lat: resolvedAddress.lat,
-                lng: resolvedAddress.lng,
-                country: resolvedAddress.country,
-                city: resolvedAddress.city,
-                street: resolvedAddress.street,
-                houseNumber: resolvedAddress.houseNumber,
-              },
-            },
-            token
-          )
-
-          if (response.status === 200) {
-            setErrorLocation('')
-            setNoticeLocation('The address has been successfully changed.')
-          } else {
-            setErrorLocation('Failed to update address. Please try again.')
-          }
-        } catch (err) {
-          console.error('Error updating address:', err)
-          setErrorLocation('Failed to update address.')
-        }
-      } else {
-        console.error('Token is not available.')
-        setErrorLocation('Authentication error. Please try logging in again.')
-      }
-    } else {
-      setErrorLocation(
-        'Invalid location data, accuracy up to house number is needed.'
-      )
-    }
-  }
-
-  const handleLocationChanged = () => {
-    setErrorLocation('')
-    setNoticeLocation('')
-  }
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
         <Box className={classes.twoColumnLayoutColLeft}>
           <Typography variant="h1" className={classes.title}>
-            My account
+            Search preferences
           </Typography>
-          <Box className={classes.settingsDescription}>
-            <Typography variant="h2" className={classes.subtitle}>
-              Settings
-            </Typography>
-            <Typography variant="body2" className={classes.description}>
-              Indicate what is important to you <br />
-              and we will show you the best options.
-            </Typography>
-          </Box>
           <Box className={classes.settingsItem}>
-            <Typography variant="h2" className={classes.subtitle}>
-              Location
-            </Typography>
-            <LocationInputAutocomplete
-              onLocationSelected={handleGetManualAddress}
-              onLocationChanged={handleLocationChanged}
-              defaultValue={
-                loading
-                  ? 'Loading...'
-                  : `${profile?.location.country || ''}, ${
-                      profile?.location.city || ''
-                    }, ${profile?.location.street || ''}${
-                      profile?.location.houseNumber
-                        ? `, ${profile.location.houseNumber}`
-                        : ''
-                    }`
-              }
-            />
-            <FormHelperText sx={{ textAlign: 'left' }} error={true}>
-              {errorLocation}
-            </FormHelperText>
-            <FormHelperText sx={{ textAlign: 'left' }} error={false}>
-              {noticeLocation}
-            </FormHelperText>
+            <LocationControl />
             <br />
             <br />
-
-            <DistanceControl>
-              <Typography variant="body2" className={classes.descriptionSlider}>
-                Distance from location (100 km max)
-              </Typography>
-            </DistanceControl>
+            <DistanceControl />
           </Box>
           <Box className={classes.settingsItem}>
             <AgeRangeControl />
@@ -176,25 +60,31 @@ const useStyles = makeStyles()({
     width: 350,
     marginBottom: 50,
     maxWidth: '100%',
+    order: 2,
     [theme.breakpoints.up(850)]: {
+      order: 1,
       width: 350,
     },
   },
   twoColumnLayoutColRight: {
-    width: 450,
+    width: 350,
     maxWidth: '100%',
-    overflow: 'auto',
+    order: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: 450,
+    },
     [theme.breakpoints.up(850)]: {
       width: 450,
+      order: 2,
     },
   },
 
   title: {
     paddingTop: 60,
     paddingBottom: 10,
-    textAlign: 'center',
-    fontSize: 32,
-    fontWeight: 600,
+    textAlign: 'left',
+    fontSize: 24,
+    fontWeight: 500,
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
       paddingBottom: 20,
@@ -203,24 +93,11 @@ const useStyles = makeStyles()({
       fontWeight: 500,
     },
   },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: '22px',
-    marginTop: 15,
-    marginBottom: 20,
-  },
   noBottomMargin: {
     marginBottom: 0,
   },
-  description: {
-    lineHeight: 1.3,
-    marginBottom: 30,
-  },
   descriptionSlider: {
     lineHeight: 1.3,
-  },
-  settingsDescription: {
-    marginBottom: 50,
   },
   settingsItem: {
     marginBottom: 30,
