@@ -46,6 +46,7 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items, className }) => {
         }}
         NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
         PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
+        sx={{ height: 535 }}
       >
         {items.map((item: UserPhoto, i: number) => (
           <UserPic key={i} src={item.src} />
