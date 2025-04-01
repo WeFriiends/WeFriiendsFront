@@ -54,10 +54,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
 
         <div className={classes.carousel}>
           <PhotoCarousel items={user.photo} />
+          <Box className={classes.gradientOverlay} />
         </div>
 
         <Accordion className={classes.accordion}>
-          <AccordionSummary expandIcon={<img src="/img/arrow-down.svg" />}>
+          <AccordionSummary
+            expandIcon={<img src="/img/arrow-down.svg" />}
+            sx={{
+              '& .MuiAccordionSummary-content.Mui-expanded': {
+                margin: '12px 0',
+              },
+            }}
+          >
             <Box>
               <Box sx={{ display: 'flex' }}>
                 <Typography className={classes.name}>
@@ -76,9 +84,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               </Box>
             </Box>
           </AccordionSummary>
-          <AccordionDetails
-            sx={{ overflow: 'auto', maxHeight: 'calc(49vh - 340px)' }}
-          >
+          <AccordionDetails>
             <List className={classes.reasons}>
               {user.reasons.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
@@ -129,7 +135,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 className={classes.sendReport}
                 onClick={handleOpenReportDialog}
               >
-                Report a user
+                Block a user
               </Typography>
               <ReportDialog ref={reportDialogRef} />
               <Typography className={classes.textReport}>
@@ -148,6 +154,8 @@ const useStyles = makeStyles()(() => {
   return {
     mainGrid: {
       display: ' grid',
+      position: 'relative',
+      boxShadow: '0px 0px 7px 1px #B3B3B324',
     },
     iconsAbove: {
       display: 'flex',
@@ -160,13 +168,14 @@ const useStyles = makeStyles()(() => {
     },
 
     carousel: {
+      position: 'relative',
       gridRow: '1/9',
       gridColumn: '1/2',
     },
 
     name: {
       color: '#F46B5D',
-      fontSize: 44,
+      fontSize: 40,
       fontWeight: 600,
       lineHeight: '40px',
     },
@@ -183,7 +192,6 @@ const useStyles = makeStyles()(() => {
     },
     distance: {
       fontSize: 18,
-      fontWeight: 500,
       lineHeight: '20px',
       paddingLeft: 4,
     },
@@ -192,7 +200,7 @@ const useStyles = makeStyles()(() => {
       fontSize: 16,
       fontWeight: 500,
       lineHeight: '20px',
-      paddingBottom: 15,
+      paddingBottom: 10,
       paddingTop: 35,
     },
     text: {
@@ -202,24 +210,34 @@ const useStyles = makeStyles()(() => {
       borderRadius: 20,
       padding: '7px 15px',
     },
-    accordion: {
-      zIndex: 100,
-      paddingTop: 100,
-      marginTop: -206,
+    gradientOverlay: {
+      position: 'absolute',
+      bottom: 106,
+      left: 0,
+      width: '100%',
+      height: '79px',
       background:
-        'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 49.79%)',
+        'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)',
+      zIndex: 5,
+      pointerEvents: 'none',
+    },
+    accordion: {
+      boxShadow: 'none',
+      position: 'relative',
+      zIndex: 10,
+      marginTop: -106,
       '&::before': {
-        height: 0,
+        display: 'none',
       },
       '&.Mui-expanded': {
-        marginTop: -206,
+        margin: 0,
+        marginTop: -106,
       },
     },
     reasons: {
       display: 'grid',
       gridTemplateColumns: '180px 180px ',
       gap: 15,
-
       '&MuiList-root': {
         paddingBottom: 0,
       },
@@ -277,8 +295,10 @@ const useStyles = makeStyles()(() => {
     },
     tagsList: {
       display: 'flex',
-      gap: 15,
+      columnGap: 15,
+      rowGap: 10,
       flexWrap: 'wrap',
+      paddingTop: 0,
     },
     tag: {
       backgroundColor: ' #EEEEEE',
