@@ -6,12 +6,15 @@ const Dashboard = () => {
     notAuthed: [{ path: '/', label: 'Register/Login page' }],
     authed: [
       { path: '/callback', label: 'Auth Callback' },
-      { path: '/fill-profile', label: 'Fill Profile' },
+      { path: '/my-account', label: 'My Account' },
       { path: '/friends', label: 'Friends' },
+      { path: '/fill-profile', label: 'Fill Profile' },
       { path: '/messages', label: 'Messages' },
       { path: '/who-liked-you', label: 'Your Likes List' },
       { path: '/near-me', label: 'Near Me' },
-      { path: '/my-account', label: 'My Account' },
+      { path: '/email-confirmed', label: 'email-confirmed' },
+      { path: '/account-created', label: 'account-created' },
+      { path: '/email-already-confirmed', label: 'email-already-confirmed' },
     ],
     temporaryExamples: [
       {
@@ -31,6 +34,7 @@ const Dashboard = () => {
         path: '/account',
         label: 'User Account (works only after login and first profile)',
       },
+      { path: '/logout', label: 'logout' },
       { path: '/dashboard', label: 'Dashboard' },
     ],
   }

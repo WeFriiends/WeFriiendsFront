@@ -3,9 +3,8 @@ import { Box, Typography, FormHelperText } from '@mui/material'
 import RangeSlider from './RangeSlider'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
-import { useProfileStore } from '../../zustand/store'
-import useBearerToken from '../../hooks/useBearToken'
 import { useEffect, useRef, useState } from 'react'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 
 const minAgeDiff = 1
 const ageRangeMin = 18
@@ -18,7 +17,8 @@ const AgeRangeControl = () => {
     loading,
     updateProfile: updateProfileAction,
   } = useProfileStore()
-  const token = useBearerToken()
+
+  const token = useAuthStore((state) => state.token)
 
   const [ageRange, setAgeRange] = useState<number[]>([ageRangeMin, ageRangeMax])
   const [noticeAgeRange, setNoticeAgeRange] = useState<string | null>(null)

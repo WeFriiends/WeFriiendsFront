@@ -1,20 +1,17 @@
 import { Box, Button, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Logo from 'components/logo/Logo'
-import { useAuth0 } from '@auth0/auth0-react'
 import theme from '../styles/createTheme'
+import { useNavigate } from 'react-router-dom'
 
 const EmailVerifiedMessage = () => {
   const { classes } = useStyles()
-  const { loginWithRedirect } = useAuth0()
+  const navigate = useNavigate()
 
-  const handleLogin = async () => {
-    await loginWithRedirect({
-      appState: {
-        returnTo: 'fill-profile',
-      },
-    })
+  const handleGoToHomePage = () => {
+    navigate('/')
   }
+
   return (
     <Box className={classes.mainBox}>
       <Logo />
@@ -24,7 +21,7 @@ const EmailVerifiedMessage = () => {
       <Button
         className={classes.startButton}
         variant="contained"
-        onClick={handleLogin}
+        onClick={handleGoToHomePage}
       >
         let’s start!
       </Button>

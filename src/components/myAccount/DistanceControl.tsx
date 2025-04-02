@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { Typography, FormHelperText } from '@mui/material'
 import RangeSliderDistance from './RangeSliderDistance'
-import { useProfileStore } from '../../zustand/store'
-import useBearerToken from '../../hooks/useBearToken'
 import { useEffect, useRef, useState } from 'react'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 
 const DistanceControl: React.FC = () => {
   const {
@@ -11,7 +10,8 @@ const DistanceControl: React.FC = () => {
     loading,
     updateProfile: updateProfileAction,
   } = useProfileStore()
-  const token = useBearerToken()
+
+  const token = useAuthStore((state) => state.token)
 
   const [friendsDistance, setFriendsDistance] = useState<number>(0)
   const [noticeFriendsDistance, setNoticeFriendsDistance] = useState<

@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Typography, FormHelperText, Box } from '@mui/material'
 import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomplete'
-import { useProfileStore } from '../../zustand/store'
-import useBearerToken from '../../hooks/useBearToken'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
 import { useEffect, useState } from 'react'
 import { Address } from '../firstProfile/profile'
@@ -22,7 +21,7 @@ const LocationControl: React.FC = () => {
   )
 
   const [, setAddress] = useState<Address | null>(null)
-  const token = useBearerToken()
+  const token = useAuthStore((state) => state.token)
 
   useEffect(() => {
     if (profile?.location) {

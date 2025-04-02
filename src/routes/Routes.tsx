@@ -5,12 +5,7 @@ import LoadingScreen from 'common/svg/Loader'
 import YourLikesList from 'pages/YourLikesList'
 import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
-// import MessagesAndFriends from 'pages/MessagesAndFriends'
-// import Invitation from '../components/invitation/Invitation'
-// import ErrorPage from 'pages/ErrorPage'
-// import Messages from 'pages/Messages'
 import FirstProfile from 'pages/FirstProfile'
-// import NameProfile from 'components/firstProfile/NameProfile'
 import Friends from 'pages/FriendsPage'
 import Invitation from '../components/invitation/Invitation'
 import ErrorPage from 'pages/ErrorPage'
@@ -27,6 +22,7 @@ import EmailVerifiedMessage from 'pages/EmailVerifiedMessage'
 import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
 import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
 import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
+import Logout from '../pages/Logout'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -51,7 +47,6 @@ const routes: RouteObject[] = [
   { path: 'email-already-confirmed', element: <EmailAlreadyConfirmed /> },
   {
     path: 'fill-profile',
-    // element: <FirstProfile />,
     element: <AuthGuard component={FirstProfile} />,
   },
   {
@@ -85,12 +80,14 @@ const routes: RouteObject[] = [
       {
         path: 'near-me',
         element: <NearMe />,
-        // element: <AuthGuard component={NearMe} />,
       },
       {
         path: 'my-account',
         element: <MyAccount />,
-        // element: <AuthGuard component={NearMe} />,
+      },
+      {
+        path: 'logout',
+        element: <Logout />,
       },
       {
         path: 'new-match',
