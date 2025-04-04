@@ -16,12 +16,12 @@ const FriendsPage = () => {
 
   const navigate = useNavigate()
 
-  const NoMoreMatchesDialogRef = useRef<{
+  const FiltersDialogRef = useRef<{
     handleOpenNoMoreMatchesDialog: () => void
   }>(null)
 
-  const handleOpenNoMoreMatchesDialog = () => {
-    NoMoreMatchesDialogRef.current?.handleOpenNoMoreMatchesDialog()
+  const handleOpenFiltersDialog = () => {
+    FiltersDialogRef.current?.handleOpenNoMoreMatchesDialog()
   }
 
   const selectFriend = (user: UserProfileData) => {
@@ -42,16 +42,17 @@ const FriendsPage = () => {
         </Box>
       ) : (
         <Box>
-          <Link
-            className={classes.filters}
-            onClick={handleOpenNoMoreMatchesDialog}
-          >
+          <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
             filters
           </Link>
           <Swipes />
         </Box>
       )}
-      <NoMoreMatchesDialog ref={NoMoreMatchesDialogRef} />
+      <NoMoreMatchesDialog
+        ref={FiltersDialogRef}
+        title="Filters"
+        description=" "
+      />
     </Box>
   )
 }

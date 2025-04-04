@@ -9,6 +9,8 @@ import RangeSliderDistance from '../components/myAccount/RangeSliderDistance'
 
 interface NoMoreMatchesDialogProps {
   ref: Ref<{ handleOpenNoMoreMatchesDialog: () => void }>
+  title: string
+  description: string
 }
 
 const NoMoreMatchesDialog = forwardRef(
@@ -40,21 +42,17 @@ const NoMoreMatchesDialog = forwardRef(
     return (
       <CommonModal
         isOpened={isModalVisible}
-        modalTitle={'You’re running out of people.'}
-        modalDescription={
-          'You’re running out of people. Please, change search settings'
-        }
+        modalTitle={props.title}
+        modalDescription={props.description}
         onClose={handleClose}
         height={605}
       >
         <Box className={classes.noMatchesContainer}>
           <Typography variant="h2" className={classes.title}>
-            You’re running out of people. <br />
-            Please, change search settings
+            {props.title}
           </Typography>
           <Typography variant="body2" className={classes.description}>
-            Try to change age range or increase
-            <br /> the distance
+            {props.description}
           </Typography>
           <Box className={classes.slidersWrapper}>
             <Box className={classes.slider}>
@@ -111,6 +109,7 @@ const useStyles = makeStyles()({
   description: {
     textAlign: 'center',
     lineHeight: 1.2,
+    padding: '0 40px',
   },
   btnContainer: {
     marginTop: 25,
