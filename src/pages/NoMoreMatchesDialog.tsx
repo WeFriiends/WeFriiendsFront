@@ -10,7 +10,7 @@ import RangeSliderDistance from '../components/myAccount/RangeSliderDistance'
 interface NoMoreMatchesDialogProps {
   ref: Ref<{ handleOpenNoMoreMatchesDialog: () => void }>
   title: string
-  description: string
+  description?: string
 }
 
 const NoMoreMatchesDialog = forwardRef(
@@ -43,7 +43,7 @@ const NoMoreMatchesDialog = forwardRef(
       <CommonModal
         isOpened={isModalVisible}
         modalTitle={props.title}
-        modalDescription={props.description}
+        modalDescription={props.description || ''}
         onClose={handleClose}
         height={605}
       >

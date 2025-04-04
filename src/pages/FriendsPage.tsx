@@ -48,11 +48,7 @@ const FriendsPage = () => {
           <Swipes />
         </Box>
       )}
-      <NoMoreMatchesDialog
-        ref={FiltersDialogRef}
-        title="Filters"
-        description=" "
-      />
+      <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
     </Box>
   )
 }
