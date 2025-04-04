@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Box, Link } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
@@ -7,6 +7,7 @@ import { UserProfileData } from 'types/UserProfileData'
 import Friends from 'components/tabsMessagesFriends/Friends'
 import { useNavigate } from 'react-router-dom'
 import Swipes from 'components/swipes/Swipes'
+import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 
 const FriendsPage = () => {
   const { classes } = useStyles()
@@ -14,6 +15,14 @@ const FriendsPage = () => {
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
   const navigate = useNavigate()
+
+  const NoMoreMatchesDialogRef = useRef<{
+    handleOpenNoMoreMatchesDialog: () => void
+  }>(null)
+
+  const handleOpenNoMoreMatchesDialog = () => {
+    NoMoreMatchesDialogRef.current?.handleOpenNoMoreMatchesDialog()
+  }
 
   const selectFriend = (user: UserProfileData) => {
     setFriendsData(user)
@@ -33,10 +42,16 @@ const FriendsPage = () => {
         </Box>
       ) : (
         <Box>
-          <Link className={classes.filters}>filters</Link>
+          <Link
+            className={classes.filters}
+            onClick={handleOpenNoMoreMatchesDialog}
+          >
+            filters
+          </Link>
           <Swipes />
         </Box>
       )}
+      <NoMoreMatchesDialog ref={NoMoreMatchesDialogRef} />
     </Box>
   )
 }
