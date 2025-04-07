@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   collection,
-  doc,
   addDoc,
   deleteDoc,
-  onSnapshot,
+  doc,
   orderBy,
   query,
   limitToLast,
+  onSnapshot,
 } from 'firebase/firestore'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../../styles/createTheme'
@@ -31,158 +31,219 @@ interface Message {
 
 interface ChatRoomProps {
   roomId: string
-  userName: string // Add userName prop
+  userName: string
 }
+
+const CACHE_DURATION = 5 * 60 * 1000
 
 const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
   const { classes } = useStyles()
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
-  const messagesCollectionRef = collection(db, 'rooms', roomId, 'messages')
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const q = query(
-      messagesCollectionRef,
-      orderBy('timestamp', 'asc'), // Sort by timestamp in descending order
-      limitToLast(100) // Limit to the last 10 messages (adjust as needed)
-    )
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messagesData: Message[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        sender: doc.data().sender,
-        content: doc.data().content,
-        timestamp: doc.data().timestamp,
-        readStatus: doc.data().readStatus,
-      }))
-      setMessages(messagesData)
-    })
+  const messagesCollectionRef = collection(db, 'rooms', roomId, 'messages')
+  const cacheKey = `${roomId}-messages-cache`
 
-    return () => unsubscribe()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const prevRoomIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (prevRoomIdRef.current !== roomId) {
+      console.log('📌 roomId has changed:', prevRoomIdRef.current, '→', roomId)
+      prevRoomIdRef.current = roomId
+    }
+  }, [roomId])
+
+  useEffect(() => {
+    let didCancel = false
+
+    const unsubscribe = onSnapshot(
+      query(
+        messagesCollectionRef,
+        orderBy('timestamp', 'asc'),
+        limitToLast(20)
+      ),
+      (snapshot) => {
+        if (didCancel) return
+
+        const freshMessages: Message[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          sender: doc.data().sender,
+          content: doc.data().content,
+          timestamp: new Date(doc.data().timestamp),
+          readStatus: doc.data().readStatus,
+        }))
+
+        setMessages((prev) => {
+          const prevStr = JSON.stringify(prev)
+          const freshStr = JSON.stringify(freshMessages)
+          if (prevStr !== freshStr) {
+            console.log('📡 Updating messages...')
+            localStorage.setItem(
+              cacheKey,
+              JSON.stringify({ messages: freshMessages, timestamp: Date.now() })
+            )
+            return freshMessages
+          } else {
+            console.log('⚠️ No changes in messages')
+            return prev
+          }
+        })
+      },
+      (error) => {
+        console.error('Error subscribing to message updates:', error)
+        setError('Failed to load messages. Please try again later.')
+      }
+    )
+
+    return () => {
+      didCancel = true
+      unsubscribe()
+    }
+  }, [roomId])
+
+  useEffect(() => {
+    console.log('🔄 Checking cache for messages')
+
+    const stored = localStorage.getItem(cacheKey)
+    if (stored) {
+      const { messages: cachedMessages, timestamp } = JSON.parse(stored)
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        console.log('✅ Using cached messages:', cachedMessages)
+        setMessages(cachedMessages)
+        return
+      }
+    }
+    console.log('❌ No valid cache, loading messages from Firestore')
+  }, [roomId])
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() !== '') {
-      try {
-        await addDoc(messagesCollectionRef, {
-          sender: userName, // Use userName prop for sender
-          content: newMessage,
-          timestamp: Date.now(),
-          readStatus: false,
-        })
-        setNewMessage('')
-        setError(null) // Clear any previous error
-      } catch (error: any) {
-        console.error('Error sending message:', error)
-        setError('Failed to send message. Please try again later.')
-      }
+    if (!newMessage.trim()) return
+
+    const newMessageObj: Message = {
+      id: `${Date.now()}`,
+      sender: userName,
+      content: newMessage,
+      timestamp: new Date(),
+      readStatus: false,
+    }
+
+    try {
+      console.log('📡: Sending new message:', newMessageObj)
+      await addDoc(messagesCollectionRef, newMessageObj)
+      setNewMessage('')
+      setError(null)
+
+      console.log('✅: Message sent:', newMessageObj)
+    } catch (error: any) {
+      console.error('Error sending message:', error)
+      setError('Failed to send message. Please try again later.')
     }
   }
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
+      console.log('🗑️ Deleting message with ID:', messageId)
       await deleteDoc(doc(db, 'rooms', roomId, 'messages', messageId))
-      setError(null) // Clear any previous error
+
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      )
+      setError(null)
+      console.log('✅ Message deleted:', messageId)
     } catch (error: any) {
       console.error('Error deleting message:', error)
       setError('Failed to delete message. Please try again later.')
     }
   }
+
   return (
-    <>
-      <Box>
-        <Box className={classes.header}>
-          <Box className={classes.userInHeader}>
-            <Avatar
-              src={'/img/photo_Elena.jpg'}
-              sx={{ width: 50, height: 50 }}
-            />
-            <Typography
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                fontSize: 20,
-              }}
-            >
-              {roomId}, {userName} {' is chatting'}
-            </Typography>
-          </Box>
-          <ChatMenu />
+    <Box>
+      <Box className={classes.header}>
+        <Box className={classes.userInHeader}>
+          <Avatar src={'/img/photo_Elena.jpg'} sx={{ width: 50, height: 50 }} />
+          <Typography
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 600,
+              fontSize: 20,
+            }}
+          >
+            {roomId}, {userName} {' is chatting'}
+          </Typography>
         </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '20px',
-          }}
-        >
-          <Box className={classes.messagesArea}>
-            {messages.map((message: Message) => (
-              <Box
-                key={message.id}
-                sx={{
-                  alignSelf:
-                    message.sender === userName ? 'flex-end' : 'flex-start',
-                  backgroundColor:
-                    message.sender === userName ? '#FEDED2' : '#EEEEEE',
-                }}
-                className={classes.message}
-              >
-                <Typography className={classes.messageAuthor}>
-                  {message.sender}
-                  {': '}
-                </Typography>
-                <Typography className={classes.messageText}>
-                  {message.content}
-                </Typography>
-                <Typography
-                  className={classes.messageDate}
-                  sx={{
-                    textAlign: message.sender === userName ? 'right' : 'left',
-                  }}
-                >
-                  {new Date(message.timestamp).toLocaleString([], {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Typography>
-                <Button
-                  variant="text"
-                  onClick={() => handleDeleteMessage(message.id)}
-                >
-                  Delete
-                </Button>
-              </Box>
-            ))}
-          </Box>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          <Box className={classes.sendMessageSection}>
-            <TextareaAutosize
-              minRows={1}
-              maxRows={10}
-              placeholder={`Type a message as ${userName}`}
-              className={classes.textArea}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              // onChange={handleInputChange}
-            />
-            <img src="/img/messages/lol.svg" alt="lol" />
-            <Button
-              onClick={handleSendMessage}
-              className={classes.sendBtn}
-              variant="outlined"
+        <ChatMenu />
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: '20px',
+        }}
+      >
+        <Box className={classes.messagesArea}>
+          {messages.map((message: Message) => (
+            <Box
+              key={message.id}
+              sx={{
+                alignSelf:
+                  message.sender === userName ? 'flex-end' : 'flex-start',
+                backgroundColor:
+                  message.sender === userName ? '#FEDED2' : '#EEEEEE',
+              }}
+              className={classes.message}
             >
-              Send
-            </Button>
-          </Box>
+              <Typography className={classes.messageAuthor}>
+                {message.sender}:{' '}
+              </Typography>
+              <Typography className={classes.messageText}>
+                {message.content}
+              </Typography>
+              <Typography
+                className={classes.messageDate}
+                sx={{
+                  textAlign: message.sender === userName ? 'right' : 'left',
+                }}
+              >
+                {new Date(message.timestamp).toLocaleString([], {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Typography>
+              <Button
+                variant="text"
+                onClick={() => handleDeleteMessage(message.id)}
+              >
+                Delete
+              </Button>
+            </Box>
+          ))}
+        </Box>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <Box className={classes.sendMessageSection}>
+          <TextareaAutosize
+            minRows={1}
+            maxRows={10}
+            placeholder={`Type a message as ${userName}`}
+            className={classes.textArea}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <img src="/img/messages/lol.svg" alt="lol" />
+          <Button
+            onClick={handleSendMessage}
+            className={classes.sendBtn}
+            variant="outlined"
+          >
+            Send
+          </Button>
         </Box>
       </Box>
-    </>
+    </Box>
   )
 }
 
@@ -250,7 +311,7 @@ const useStyles = makeStyles()({
     outline: 'none',
   },
   sendBtn: {
-    border: '2px solid  #F1562A',
+    border: '2px solid #F1562A',
     borderRadius: 10,
     padding: '6px 40.5px',
     textTransform: 'lowercase',
