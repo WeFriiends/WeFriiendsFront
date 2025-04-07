@@ -3,7 +3,6 @@ import { Box, Button, Typography } from '@mui/material'
 import { CommonModal } from 'common/components/CommonModal'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../styles/createTheme'
-import { useNavigate } from 'react-router-dom'
 import AgeRangeControl from '../components/myAccount/AgeRangeControl'
 import RangeSliderDistance from '../components/myAccount/RangeSliderDistance'
 
@@ -16,12 +15,7 @@ interface NoMoreMatchesDialogProps {
 const NoMoreMatchesDialog = forwardRef(
   (props: NoMoreMatchesDialogProps, ref) => {
     const { classes } = useStyles()
-    const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false)
-
-    const handleChangeLocation = () => {
-      navigate('/my-account')
-    }
 
     const handleOpenNoMoreMatchesDialog = () => {
       setIsModalVisible(true)
@@ -80,13 +74,13 @@ const NoMoreMatchesDialog = forwardRef(
               OK
             </Button>
             <Button
-              onClick={handleChangeLocation}
+              onClick={handleClose}
               className={`${classes.okBtn} ${classes.linkBtn}`}
               disableFocusRipple
               disableRipple
               disableElevation
             >
-              change location
+              cancel
             </Button>
           </Box>
         </Box>
