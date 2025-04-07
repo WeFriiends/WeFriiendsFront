@@ -27,7 +27,11 @@ const Dashboard = () => {
       { path: '/error-400', label: 'Error 400' },
       { path: '/error-500', label: 'Error 500' },
       { path: '*', label: 'Error Page (Catch-All)' },
-      { path: '/new-match', label: 'New Match' },
+      {
+        path: '/realtime-database-chat',
+        label: 'Firebase/Realtime database chat example',
+      },
+      { path: '/firestore-chat', label: 'Firebase/Firestore chat example' },
     ],
     temporary: [
       {
