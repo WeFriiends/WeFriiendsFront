@@ -1,12 +1,10 @@
+import React from 'react'
 import GenericCarousel from '../../common/components/Carousel'
 import useHandleCarousel from 'hooks/useHandleCarousel'
 import NameInput from './name/NameInput'
 import DateOfBirthPicker from './DateOfBirthPicker'
 import PrimaryButton from 'common/components/PrimaryButton'
-import { getItemsFromLocalStorage } from 'utils/localStorage'
 import { createProfile } from 'actions/profile'
-import useBearerToken from 'hooks/useBearToken'
-import { useNavigate } from 'react-router-dom'
 import GenderPick from './GenderPick'
 import ArrowBackButton from 'common/components/ArrowBackButton'
 import Status from './Status'
@@ -22,17 +20,22 @@ import { validateGender } from './utils/validateGender'
 import {
   setItemToLocalStorage,
   getItemFromLocalStorage,
+  getItemsFromLocalStorage,
 } from 'utils/localStorage'
 import { Dayjs } from 'dayjs'
 import { validateLocation } from './utils/validateLocation'
 import { Address } from './profile'
+import AuthPagesWrapper from './AuthPagesWrapper'
+import Loader from '../../common/svg/Loader'
+import { useAuthStore } from '../../zustand/store'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
 
 const ProfileCarousel = () => {
+  //const photos = useProfileStore((state) => state.data.photos)
   const { classes } = useStyles()
-  const token = useBearerToken()
+  const token = useAuthStore((state) => state.token)
   const {
     activeStep,
     handleBack,
@@ -41,7 +44,10 @@ const ProfileCarousel = () => {
   const [showNameWithError, setShowNameWithError] = useState(false)
   const [showDobWithError, setShowDobWithError] = useState(false)
   const [showGenderWithError, setShowGenderWithError] = useState(false)
-  const [showLocationWithError, setShowLocationWithError] = useState(false)
+  const [isPhotoSubmitted, setIsPhotoSubmitted] = useState(false)
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const [isProfileCreating, setIsProfileCreating] = useState(false)
+  const [hasAboutMeError, setHasAboutMeError] = useState(false)
 
   const [nameChange, setNameChange] = useState(getItemFromLocalStorage('name'))
   const [dobChange, setDobChange] = useState(getItemFromLocalStorage('dob'))
@@ -113,10 +119,8 @@ const ProfileCarousel = () => {
         setItemToLocalStorage('houseNumber', locationChange.houseNumber)
         setItemToLocalStorage('lat', locationChange.lat)
         setItemToLocalStorage('lng', locationChange.lng)
-        setShowLocationWithError(false)
         proceedToNextStep()
       } else {
-        setShowLocationWithError(true)
         return
       }
     } else if (activeStep === 4) {
@@ -124,11 +128,23 @@ const ProfileCarousel = () => {
       proceedToNextStep()
     } else if (activeStep === 5) {
       // Lifestyle and About me
-      proceedToNextStep()
+      if (!hasAboutMeError) {
+        proceedToNextStep()
+      }
     } else if (activeStep === 6) {
       // Photo
       proceedToNextStep()
     }
+  }
+
+  interface UserPicsType {
+    id: string
+    url: string | null
+  }
+
+  const [photos, setPhotos] = useState<UserPicsType[]>([])
+  const handlePicChange = (photos: UserPicsType[]) => {
+    setPhotos(photos)
   }
 
   const carouselData = [
@@ -160,12 +176,7 @@ const ProfileCarousel = () => {
       label: 'genderPick',
     },
     {
-      component: (
-        <UserLocation
-          onLocationChange={handleLocationChange}
-          showWithError={showLocationWithError}
-        />
-      ),
+      component: <UserLocation onLocationChange={handleLocationChange} />,
       label: 'userLocation',
     },
     {
@@ -173,11 +184,24 @@ const ProfileCarousel = () => {
       label: 'status',
     },
     {
-      component: <Interests />,
+      component: (
+        <Interests
+          hasAboutMeError={hasAboutMeError}
+          setHasAboutMeError={setHasAboutMeError}
+        />
+      ),
       label: 'interests',
     },
     {
-      component: <UploadPhotos />,
+      component: (
+        <UploadPhotos
+          isPhotoSubmitted={isPhotoSubmitted}
+          setIsPhotoSubmitted={setIsPhotoSubmitted}
+          isSubmitClicked={isSubmitClicked}
+          setIsSubmitClicked={setIsSubmitClicked}
+          onPicChange={handlePicChange}
+        />
+      ),
       label: 'uploadPhotos',
     },
   ]
@@ -185,72 +209,100 @@ const ProfileCarousel = () => {
   const carouselDataLength = carouselData.length
 
   // send values to backend
-  const navigate = useNavigate()
+
+  if (!token) {
+    console.error('Token is absent.')
+    return
+  }
 
   const onSubmit = async () => {
-    const {
-      name,
-      dob,
-      gender,
-      lat,
-      lng,
-      country,
-      city,
-      street,
-      houseNumber,
-      selectedStatuses,
-      photos,
-    } = getItemsFromLocalStorage([
-      'name',
-      'dob',
-      'gender',
-      'lat',
-      'lng',
-      'country',
-      'city',
-      'street',
-      'houseNumber',
-      'selectedStatuses',
-      'userPicsStorage',
-    ])
-    await createProfile(
-      {
+    if (!isPhotoSubmitted) {
+      setIsSubmitClicked(true)
+    } else {
+      setIsProfileCreating(true)
+      const {
         name,
-        dateOfBirth: dob,
+        dob,
         gender,
-        location: { lat, lng, country, city, street, houseNumber },
-        reasons: selectedStatuses,
-        photos,
-      },
-      token
-    )
-    navigate('/friends')
+        lat,
+        lng,
+        country,
+        city,
+        street,
+        houseNumber,
+        selectedStatuses,
+        userPreferences,
+      } = getItemsFromLocalStorage([
+        'name',
+        'dob',
+        'gender',
+        'lat',
+        'lng',
+        'country',
+        'city',
+        'street',
+        'houseNumber',
+        'selectedStatuses',
+        'userPicsStorage',
+        'userPreferences',
+      ])
+      try {
+        await createProfile(
+          {
+            name,
+            dateOfBirth: dob,
+            gender,
+            location: { lat, lng, country, city, street, houseNumber },
+            reasons: selectedStatuses,
+            photos,
+            userPreferences,
+            userPicsStorage: [],
+          },
+          token
+        )
+        setIsProfileCreating(false)
+        window.location.href = '/friends' // page reload needed
+        // todo: it can be replaced to navigate if we add store update after profile creating, or
+        //  rewrite profile.ts to createProfile() from api.js
+      } catch (error: any) {
+        setIsProfileCreating(false)
+        console.error(error)
+        throw new Error(error.message)
+      }
+    }
   }
   return (
-    <>
-      {activeStep > 0 && <ArrowBackButton stepBackHandler={handleBack} />}
-      <GenericCarousel
-        items={carouselData}
-        renderItem={(item) => item.component}
-        activeStep={activeStep}
-      />
-
-      {activeStep < carouselDataLength - 1 && (
-        <PrimaryButton onClickHandler={handleNext} label="Next" />
+    <AuthPagesWrapper
+      width={activeStep == 5 || activeStep == 6 ? 580 : undefined}
+    >
+      {isProfileCreating ? (
+        <Loader />
+      ) : (
+        <>
+          {activeStep > 0 && <ArrowBackButton stepBackHandler={handleBack} />}
+          <GenericCarousel
+            items={carouselData}
+            renderItem={(item) => item.component}
+            activeStep={activeStep}
+          />
+          {activeStep < carouselDataLength - 1 && (
+            <PrimaryButton onClickHandler={handleNext} label="Next" />
+          )}
+          {activeStep === carouselDataLength - 1 && (
+            <PrimaryButton onClickHandler={onSubmit} label="Submit" />
+          )}
+          <MobileStepper
+            className={classes.stepper}
+            variant="dots"
+            steps={carouselData.length}
+            position="static"
+            activeStep={activeStep}
+            backButton={<></>}
+            nextButton={<></>}
+          />
+        </>
       )}
-      {activeStep === carouselDataLength - 1 && (
-        <PrimaryButton onClickHandler={onSubmit} label="Submit" />
-      )}
-      <MobileStepper
-        className={classes.stepper}
-        variant="dots"
-        steps={carouselData.length}
-        position="static"
-        activeStep={activeStep}
-        backButton={<></>}
-        nextButton={<></>}
-      />
-    </>
+    </AuthPagesWrapper>
   )
 }
 

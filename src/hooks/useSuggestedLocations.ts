@@ -46,7 +46,7 @@ export const useSuggestedLocations = (
 
   useEffect(() => {
     async function getSuggestions() {
-      if (debouncedValue.length < 5) {
+      if (debouncedValue.length < 4) {
         setAddresses([])
         return
       }
@@ -74,6 +74,7 @@ export const useSuggestedLocations = (
         console.error(error)
       }
     }
+
     getSuggestions()
   }, [debouncedValue, limit])
 

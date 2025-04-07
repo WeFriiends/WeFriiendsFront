@@ -1,35 +1,38 @@
 import React, { useRef } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import UserPicsType from './UploadPhotos'
+import { UserPicsType } from '../../../types/FirstProfile'
 import createTheme from 'styles/createTheme'
-
-interface UserPicsType {
-  id: string
-  url: string | null
-}
+import { useProfileStore } from 'zustand/store'
 
 interface SlotType {
   id: string
   bgPic: string | null
   userPics: UserPicsType[]
-  setUserPics: (newPics: UserPicsType[]) => void
   setIsDeleteModalOpened(isOpened: boolean): void
   setChosenId: (chosenId: string) => void
   setIsPhotoModalOpened: (isPhotoModalOpened: boolean) => void
   setChosenUrl: (chosenUrl: string) => void
+  onFileSelected?: (fileUrl: string, file: File) => void
+  shiftPics: (array: UserPicsType[]) => void
+  setIsPicHuge(isPicTrue: boolean): void
+  setIsSubmitClicked?: (value: boolean) => void
 }
 
 const UploadSlot: React.FC<SlotType> = ({
   id,
   bgPic,
-  setUserPics,
   userPics,
   setIsDeleteModalOpened,
   setChosenId,
   setIsPhotoModalOpened,
   setChosenUrl,
+  onFileSelected,
+  shiftPics,
+  setIsPicHuge,
+  setIsSubmitClicked,
 }) => {
+  const { addPhoto } = useProfileStore()
   const { classes } = useStyles()
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -38,34 +41,36 @@ const UploadSlot: React.FC<SlotType> = ({
     const file = event.target.files?.[0] as File | undefined
 
     if (file) {
+      const fileUrl = URL.createObjectURL(file)
+
+      if (onFileSelected) {
+        onFileSelected(fileUrl, file)
+      }
+      const maxFileSize = 5 * 1024 * 1024
+      if (file.size >= maxFileSize) {
+        setIsPicHuge(true)
+        return
+      }
+
+      setIsPicHuge(false)
       const reader = new FileReader()
-      reader.readAsDataURL(file)
+      reader.readAsArrayBuffer(file)
 
       reader.onloadend = () => {
-        const base64data = reader.result
+        const arrayBuffer = reader.result as ArrayBuffer
+        const blob = new Blob([arrayBuffer], { type: file.type })
 
-        // Создаем новый объект Image
-        const img = new Image()
-        img.src = base64data as string
-
-        // Ждем, пока изображение загрузится, и получаем его размеры
-        img.onload = () => {
-          const newPic = {
-            id: id,
-            url: base64data as string,
-          }
-
-          const newUserPicsStorage = userPics.map((elem: UserPicsType) =>
-            elem.id === id ? newPic : elem
-          )
-
-          localStorage.setItem(
-            'userPicsStorage',
-            JSON.stringify(newUserPicsStorage)
-          )
-
-          setUserPics(newUserPicsStorage)
+        const newPic: UserPicsType = {
+          id: id,
+          url: URL.createObjectURL(blob),
+          blobFile: blob,
         }
+        addPhoto(newPic)
+        const newUserPicsStorage = userPics.map((elem: UserPicsType) =>
+          elem.id === id ? newPic : elem
+        )
+
+        shiftPics(newUserPicsStorage)
       }
     }
   }
@@ -81,6 +86,11 @@ const UploadSlot: React.FC<SlotType> = ({
     }
   }
 
+  const slotHandler = () => {
+    setIsSubmitClicked && setIsSubmitClicked(false)
+    bgPic ? displayModalPic() : initiateInputClick()
+  }
+
   const handleDeletePic = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation()
     setChosenId(id)
@@ -93,9 +103,7 @@ const UploadSlot: React.FC<SlotType> = ({
       style={{
         backgroundImage: `url(${bgPic})`,
       }}
-      onClick={() => {
-        bgPic ? displayModalPic() : initiateInputClick()
-      }}
+      onClick={slotHandler}
     >
       {!bgPic && (
         <Box className={classes.innerBox}>

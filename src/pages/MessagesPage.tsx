@@ -32,6 +32,9 @@ const MessagesPage = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: '389px 575px',
+          '& > *:nth-of-type(2)': {
+            paddingLeft: '105px',
+          },
         }}
       >
         <Messages onClick={handleClick} />

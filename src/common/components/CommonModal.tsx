@@ -10,7 +10,8 @@ type CommonModalProps = {
   modalTitle: string
   modalDescription: string
   onClose: () => void
-  height?: 370 | 320 | 605 | 240
+  height?: 240 | 320 | 370 | 470 | 605
+  width?: 600
 }
 
 export const CommonModal = ({
@@ -20,6 +21,7 @@ export const CommonModal = ({
   modalDescription,
   onClose,
   height,
+  width,
 }: CommonModalProps) => {
   const { classes } = useStyles()
 
@@ -30,7 +32,10 @@ export const CommonModal = ({
       aria-labelledby={modalTitle}
       aria-describedby={modalDescription}
     >
-      <Box className={classes.wrapper} sx={{ height: height ? height : 655 }}>
+      <Box
+        className={classes.wrapper}
+        sx={{ height: height ? height : 655, width: width ? width : 370 }}
+      >
         <IconButton
           disableRipple={true}
           disableFocusRipple={true}
@@ -61,7 +66,6 @@ const useStyles = makeStyles()(() => ({
   },
   wrapper: {
     position: 'relative',
-    width: 370,
     maxWidth: '100vw',
     maxHeight: '100vh',
     backgroundColor: '#fff',

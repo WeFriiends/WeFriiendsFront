@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSuggestedLocations } from 'hooks/useSuggestedLocations'
 import {
   Autocomplete,
@@ -12,9 +12,13 @@ const BOUNCE_DURATION = 500
 const SUGGESTIONS_LIMIT = 5
 
 const LocationInputAutocomplete = ({
-  onLocationChange,
+  onLocationSelected,
+  onLocationChanged,
+  defaultValue = 'Search city',
 }: {
-  onLocationChange: (location: string) => void
+  onLocationSelected: (location: string) => void
+  onLocationChanged?: (value: string) => void
+  defaultValue?: string
 }) => {
   const [inputLocation, setInputLocation] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -26,22 +30,29 @@ const LocationInputAutocomplete = ({
     SUGGESTIONS_LIMIT
   )
 
+  // Track changes in `suggestedLocations` to update the loading state
+  useEffect(() => {
+    if (isLoading && suggestedLocations.length > 0) {
+      setIsLoading(false)
+    }
+  }, [suggestedLocations, isLoading])
+
   // Monitor input changes and manage loading state manually
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setInputLocation(value)
 
+    if (onLocationChanged) {
+      onLocationChanged(value)
+    }
+
     // Trigger loading state while fetching suggestions
     if (value.length > 0) {
       setIsLoading(true)
-      setTimeout(() => {
-        setIsLoading(false) // Simulating loading completion
-      }, BOUNCE_DURATION)
     } else {
       setIsLoading(false)
     }
   }
-
   // Handle selected value from Autocomplete
   const handleSelectLocation = (
     event: React.SyntheticEvent<Element, Event>,
@@ -49,7 +60,7 @@ const LocationInputAutocomplete = ({
   ) => {
     // Send the selected location to the parent component
     if (value) {
-      onLocationChange(value) // Passing the selected location to parent
+      onLocationSelected(value) // Passing the selected location to parent
     }
   }
 
@@ -73,6 +84,7 @@ const LocationInputAutocomplete = ({
               display: 'none',
             },
           }}
+          multiline={true}
           onChange={handleInputChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -88,11 +100,12 @@ const LocationInputAutocomplete = ({
                 </Icon>
                 <span
                   style={{
+                    maxWidth: 200,
                     display:
                       isFocused || inputLocation.length ? 'none' : 'inline',
                   }}
                 >
-                  &nbsp;Search city
+                  &nbsp;{defaultValue}
                 </span>
               </InputAdornment>
             ),

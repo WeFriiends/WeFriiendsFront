@@ -5,7 +5,7 @@
  */
 export const validateName = (value: string): boolean => {
   if (!value) return false
-  const regex = /^[a-zA-Z ]{2,15}$/
+  const regex = /^[\p{L} ]{2,15}$/u
   return (
     regex.test(value) &&
     !value.startsWith(' ') &&

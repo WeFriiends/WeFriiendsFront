@@ -5,12 +5,7 @@ import LoadingScreen from 'common/svg/Loader'
 import YourLikesList from 'pages/YourLikesList'
 import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
-// import MessagesAndFriends from 'pages/MessagesAndFriends'
-// import Invitation from '../components/invitation/Invitation'
-// import ErrorPage from 'pages/ErrorPage'
-// import Messages from 'pages/Messages'
 import FirstProfile from 'pages/FirstProfile'
-// import NameProfile from 'components/firstProfile/NameProfile'
 import Friends from 'pages/FriendsPage'
 import Invitation from '../components/invitation/Invitation'
 import ErrorPage from 'pages/ErrorPage'
@@ -23,8 +18,11 @@ import ReportDialogExamplePage from '../components/report/ReportDialogExamplePag
 import DeleteUserDialogExamplePage from '../components/deleteUser/DeleteUserDialogExamplePage'
 import MyAccount from '../components/myAccount/MyAccount'
 import Dashboard from 'pages/Dashboard'
-//import RealtimeDatabaseChatExamplePage from '../components/chatExample/RealtimeDatabaseChatExamplePage'
-import FirestoreChatExamplePage from '../components/chatExample/FirestoreChatExamplePage'
+import EmailVerifiedMessage from 'pages/EmailVerifiedMessage'
+import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
+import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
+import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
+import Logout from '../pages/Logout'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -44,9 +42,11 @@ const routes: RouteObject[] = [
     path: 'callback',
     element: <AuthCallbackPage />,
   },
+  { path: 'email-confirmed', element: <EmailVerifiedMessage /> },
+  { path: 'account-created', element: <AccountConfirmationMessage /> },
+  { path: 'email-already-confirmed', element: <EmailAlreadyConfirmed /> },
   {
     path: 'fill-profile',
-    // element: <FirstProfile />,
     element: <AuthGuard component={FirstProfile} />,
   },
   {
@@ -80,12 +80,14 @@ const routes: RouteObject[] = [
       {
         path: 'near-me',
         element: <NearMe />,
-        // element: <AuthGuard component={NearMe} />,
       },
       {
         path: 'my-account',
         element: <MyAccount />,
-        // element: <AuthGuard component={NearMe} />,
+      },
+      {
+        path: 'logout',
+        element: <Logout />,
       },
       {
         path: 'new-match',
@@ -107,13 +109,9 @@ const routes: RouteObject[] = [
     path: 'dashboard',
     element: <Dashboard />,
   },
-  // {
-  //   path: 'realtime-database-chat',
-  //   element: <RealtimeDatabaseChatExamplePage />,
-  // },
   {
-    path: 'firestore-chat',
-    element: <FirestoreChatExamplePage />,
+    path: 'security-dialog',
+    element: <SecurityDialogExamplePage />,
   },
   {
     path: 'report',

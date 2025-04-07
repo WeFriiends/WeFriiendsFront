@@ -12,14 +12,14 @@ import { generateNavigationConfig } from '../../helpers/navigationConfigHelper'
 import { NavigationItems } from '../navigationItems/NavigationItems'
 import theme from '../../styles/createTheme'
 import { Outlet, useNavigate } from 'react-router-dom'
-import useProfileData from 'hooks/useProfileData'
+import { useProfileStore } from '../../zustand/store'
 
 const NavBar = () => {
   const { classes } = useStyles()
   const { activePage, setNewActivePage } = useActivePage()
   const navigationConfig = generateNavigationConfig()
   const navigate = useNavigate()
-  const { profile } = useProfileData()
+  const { data: profile, loading } = useProfileStore()
 
   // Set current active menu item if we open the corresponding link
   useEffect(() => {
@@ -56,14 +56,19 @@ const NavBar = () => {
         >
           <Avatar
             src={
-              profile?.photos[0] ? profile?.photos[0] : '/img/avatar_elena.jpg'
+              typeof profile?.photos?.[0] === 'string'
+                ? profile?.photos?.[0]
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
             }
             sx={{ width: 56, height: 56 }}
           ></Avatar>
-          <Typography className={classes.name}>
-            {' '}
-            {profile?.name ? profile?.name : 'Elena S'}
-          </Typography>
+          {!loading ? (
+            <Typography className={classes.name}>
+              {profile?.name || 'Loading...'}
+            </Typography>
+          ) : (
+            <Typography className={classes.name}>Loading...</Typography>
+          )}
         </Button>
       </Box>
       <Box component="main" className={classes.main}>
@@ -107,7 +112,7 @@ const useStyles = makeStyles()({
     maxWidth: 1024,
     padding: '0 30px',
     [theme.breakpoints.down('lg')]: {
-      padding: '0 10px',
+      padding: '0 20px',
     },
   },
   name: {
@@ -117,6 +122,7 @@ const useStyles = makeStyles()({
     color: '#F1562A',
     paddingLeft: 25,
     position: 'relative',
+    wordBreak: 'break-word',
   },
   navList: {
     display: 'flex',

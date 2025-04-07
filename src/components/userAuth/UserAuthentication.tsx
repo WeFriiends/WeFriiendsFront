@@ -6,7 +6,7 @@ import LoadingScreen from 'common/svg/Loader'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
-import AuthPagesWrapper from '../authPagesWrapper/AuthPagesWrapper'
+import AuthPagesWrapper from '../firstProfile/AuthPagesWrapper'
 
 const UserAuthentication = () => {
   const { classes } = useStyles()
@@ -17,7 +17,8 @@ const UserAuthentication = () => {
   // Redirect if logged in
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/friends')
+      // when app is opened and it`s already authenticated')
+      navigate('/callback')
     }
   }, [isAuthenticated, navigate])
 
@@ -28,7 +29,10 @@ const UserAuthentication = () => {
   const handleLogin = async () => {
     await loginWithRedirect({
       appState: {
-        returnTo: 'friends',
+        returnTo: 'callback',
+      },
+      authorizationParams: {
+        screen_hint: 'login',
       },
     })
   }
@@ -36,7 +40,7 @@ const UserAuthentication = () => {
   const handleSignUp = async () => {
     await loginWithRedirect({
       appState: {
-        returnTo: 'fill-profile',
+        returnTo: 'callback',
       },
       authorizationParams: {
         screen_hint: 'signup',
