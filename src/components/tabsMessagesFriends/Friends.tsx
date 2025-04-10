@@ -23,7 +23,17 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   }
 
   if (userFriends?.length === 0) {
-    return <NoNewMatches text="You don’t have new matches." />
+    return (
+      <NoNewMatches
+        message={
+          <>
+            You don’t have new matches.
+            <br />
+            Start searching!
+          </>
+        }
+      />
+    )
   }
 
   return (

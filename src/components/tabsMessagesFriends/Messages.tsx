@@ -25,7 +25,15 @@ const Messages = ({ onClick }: any) => {
 
   if (userMessages?.length == 0) {
     return (
-      <NoNewMatches text="You don’t have any messages. You need to find friends first!" />
+      <NoNewMatches
+        message={
+          <>
+            You don’t have any messages. You need to find friends first!
+            <br />
+            Start searching!
+          </>
+        }
+      />
     )
   }
   return (

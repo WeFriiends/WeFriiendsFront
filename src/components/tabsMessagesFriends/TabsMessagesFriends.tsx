@@ -19,9 +19,7 @@ const TabsMessagesFriends: React.FC = () => {
 
   return (
     <Box sx={{ maxWidth: '1024px', margin: '0 auto' }}>
-      <Box
-        sx={{ maxWidth: '419px', paddingBottom: '38px', paddingTop: '10px' }}
-      >
+      <Box sx={{ paddingBottom: '20px' }}>
         <Link
           to="/messages"
           style={{
@@ -50,8 +48,8 @@ export default TabsMessagesFriends
 const useStyles = makeStyles()({
   labelStyle: {
     textTransform: 'capitalize',
-    fontSize: 22,
-    lineHeight: 1.5,
+    fontSize: 24,
+    lineHeight: 1.25,
     fontWeight: 500,
     textDecoration: 'none',
   },

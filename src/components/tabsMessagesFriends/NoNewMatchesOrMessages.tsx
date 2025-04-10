@@ -2,14 +2,11 @@ import { Box, Typography } from '@mui/material'
 import theme from 'styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 
-const NoNewMatchesOrMessages = ({ text }: { text: string }) => {
+const NoNewMatchesOrMessages = ({ message }: { message: React.ReactNode }) => {
   const { classes } = useStyles()
   return (
     <Box>
-      <Typography className={classes.textOnEmptyTabs}>{text}</Typography>
-      <Typography className={classes.textOnEmptyTabs}>
-        Start searching!
-      </Typography>
+      <Typography className={classes.textOnEmptyTabs}>{message}</Typography>
       <Box
         sx={{
           display: 'flex',
@@ -28,6 +25,11 @@ const useStyles = makeStyles()({
   textOnEmptyTabs: {
     color: theme.palette.primary.main,
     fontSize: 24,
+    lineHeight: 1.5,
     fontWeight: 500,
+    marginTop: 70,
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 18,
+    },
   },
 })
