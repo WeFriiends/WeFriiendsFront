@@ -120,7 +120,11 @@ const Swipes = () => {
           friendsAvatar={modalNewFriendAvatar}
         />
       </Box>
-      <NoMoreMatchesDialog ref={NoMoreMatchesDialogRef} />
+      <NoMoreMatchesDialog
+        ref={NoMoreMatchesDialogRef}
+        title="You’re running out of people. Please, change search settings "
+        description="Try to change age range or increase the distance"
+      />
     </>
   )
 }

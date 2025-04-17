@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Box } from '@mui/material'
+import { useState, useRef } from 'react'
+import { Box, Link } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -7,6 +7,7 @@ import { UserProfileData } from 'types/UserProfileData'
 import Friends from 'components/tabsMessagesFriends/Friends'
 import { useNavigate } from 'react-router-dom'
 import Swipes from 'components/swipes/Swipes'
+import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 
 const FriendsPage = () => {
   const { classes } = useStyles()
@@ -14,6 +15,14 @@ const FriendsPage = () => {
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
   const navigate = useNavigate()
+
+  const FiltersDialogRef = useRef<{
+    handleOpenNoMoreMatchesDialog: () => void
+  }>(null)
+
+  const handleOpenFiltersDialog = () => {
+    FiltersDialogRef.current?.handleOpenNoMoreMatchesDialog()
+  }
 
   const selectFriend = (user: UserProfileData) => {
     setFriendsData(user)
@@ -32,8 +41,14 @@ const FriendsPage = () => {
           <UserProfileButton startChat={startChat} />
         </Box>
       ) : (
-        <Swipes />
+        <Box>
+          <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
+            filters
+          </Link>
+          <Swipes />
+        </Box>
       )}
+      <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
     </Box>
   )
 }
@@ -60,5 +75,16 @@ const useStyles = makeStyles()({
     '&> *:nth-of-type(2)': {
       paddingLeft: 118,
     },
+  },
+  filters: {
+    fontSize: 24,
+    lineHeight: 1.5,
+    color: '#262626',
+    textAlign: 'right',
+    display: 'block',
+    paddingRight: 20,
+    textDecorationColor: '#262626',
+    marginTop: -71,
+    paddingBottom: 35,
   },
 })
