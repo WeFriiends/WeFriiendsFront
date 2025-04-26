@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Box,
   Typography,
   Button,
   TextareaAutosize,
   Avatar,
+  Link,
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Messages from 'components/tabsMessagesFriends/Messages'
@@ -15,11 +16,20 @@ import StartChatting from 'components/chat/StartChatting'
 import DisplayingChat from 'components/chat/DisplayingChat'
 import messages from '../components/chat/chat.json'
 import Swipes from 'components/swipes/Swipes'
+import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 
 const MessagesPage = () => {
   const { classes } = useStyles()
   const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
   const userId = '1'
+
+  const FiltersDialogRef = useRef<{
+    handleOpenNoMoreMatchesDialog: () => void
+  }>(null)
+
+  const handleOpenFiltersDialog = () => {
+    FiltersDialogRef.current?.handleOpenNoMoreMatchesDialog()
+  }
 
   const frienId = messages.participants.find((el) => el !== userId)
 
@@ -90,9 +100,15 @@ const MessagesPage = () => {
             </Box>
           </Box>
         ) : (
-          <Swipes />
+          <Box>
+            <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
+              filters
+            </Link>
+            <Swipes />
+          </Box>
         )}
       </Box>
+      <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
     </Box>
   )
 }
@@ -139,5 +155,16 @@ const useStyles = makeStyles()({
     fontSize: 16,
     lineHeight: 1.5,
     fontWeight: 600,
+  },
+  filters: {
+    fontSize: 24,
+    lineHeight: 1.5,
+    color: '#262626',
+    textAlign: 'right',
+    display: 'block',
+    paddingRight: 20,
+    textDecorationColor: '#262626',
+    marginTop: -71,
+    paddingBottom: 35,
   },
 })
