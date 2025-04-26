@@ -23,6 +23,7 @@ import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
 import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
 import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
 import Logout from '../pages/Logout'
+import FirestoreChatExamplePage from '../components/chatExample/FirestoreChatExamplePage'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -108,6 +109,10 @@ const routes: RouteObject[] = [
   {
     path: 'dashboard',
     element: <Dashboard />,
+  },
+  {
+    path: 'firestore-chat',
+    element: <FirestoreChatExamplePage />,
   },
   {
     path: 'security-dialog',
