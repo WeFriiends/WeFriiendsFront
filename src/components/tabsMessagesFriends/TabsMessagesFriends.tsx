@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { useNewFriendsList } from 'hooks/useFriendsList'
+// import { useNewFriendsList } from 'hooks/useFriendsList'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 
@@ -9,7 +9,8 @@ const TabsMessagesFriends: React.FC = () => {
   const { classes } = useStyles()
   const location = useLocation().pathname
 
-  const { data: friendsList } = useNewFriendsList()
+  // const { data: friendsList } = useNewFriendsList()
+  const friendsList = []
 
   const getColor = (path: string): string => {
     return path === location
