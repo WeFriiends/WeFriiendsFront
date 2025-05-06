@@ -2,16 +2,13 @@ import { Typography, Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 
 type LikedDispayProps = {
-  accountId: string
-  likedUsersArray: string[]
+  // accountId: string
+  likedMe: boolean
 }
 
-const LikedDispay: React.FC<LikedDispayProps> = ({
-  accountId,
-  likedUsersArray,
-}) => {
+const LikedDispay: React.FC<LikedDispayProps> = ({ likedMe }) => {
   const { classes } = useStyles()
-  const likedMe = likedUsersArray.includes(accountId)
+  // const likedMe = likedUsersArray.includes(accountId)
   return (
     <>
       {likedMe && (

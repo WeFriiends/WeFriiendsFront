@@ -18,7 +18,7 @@ export interface UserProfileData {
   age: string
   photo: UserPhoto[]
   city: string
-  likedUsers: string[]
+  likedMe: boolean
   reasons: string[]
   lifeStyle?: LifeStyle
 }
@@ -29,7 +29,7 @@ export const emptyProfile: UserProfileData = {
   age: '',
   photo: [],
   city: '',
-  likedUsers: [],
+  likedMe: false,
   reasons: [],
   lifeStyle: {},
 }

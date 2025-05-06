@@ -47,7 +47,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
     <>
       <Box className={classes.mainGrid}>
         <Box className={classes.iconsAbove}>
-          <LikeDispay accountId={accountId} likedUsersArray={user.likedUsers} />
+          <LikeDispay likedMe={user.likedMe} />
           {/* <img src="/img/verified.svg"></img> */}
           {/* We don't use it in MVP1 */}
         </Box>
@@ -85,13 +85,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <List className={classes.reasons}>
+            {/* <List className={classes.reasons}>
               {user.reasons.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
                   {reason}
                 </ListItem>
               ))}
-            </List>
+            </List> */}
             {user.lifeStyle && user.lifeStyle.aboutMe && (
               <Box>
                 <Typography variant="h3" className={classes.title}>
