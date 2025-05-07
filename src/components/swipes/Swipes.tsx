@@ -66,7 +66,7 @@ const Swipes = () => {
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
       addNewFriend(currentPotentialFriend)
-      setModalNewFriendAvatar(currentPotentialFriend.photo[0].src)
+      setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
       addLike(accountId, currentPotentialFriend.id)

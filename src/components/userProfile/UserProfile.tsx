@@ -20,7 +20,7 @@ interface UserProfileProps {
 }
 const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const { classes } = useStyles()
-  const accountId = '1'
+  // const accountId = '1'
   const reportDialogRef = useRef<{ handleOpenReportDialog: () => void }>(null)
 
   const handleOpenReportDialog = () => {
@@ -53,7 +53,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
         </Box>
 
         <div className={classes.carousel}>
-          <PhotoCarousel items={user.photo} />
+          <PhotoCarousel items={user.photos} />
           <Box className={classes.gradientOverlay} />
         </div>
 
@@ -79,7 +79,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               <Box className={classes.distanceWithIcon}>
                 <img src="/img/near_me.svg" height={20} width={20} />
                 <Typography className={classes.distance}>
-                  from {user.city}, 10 km from you
+                  from {user.city}, {user.distance} km from you
                 </Typography>
               </Box>
             </Box>

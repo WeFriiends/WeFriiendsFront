@@ -40,7 +40,7 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
           onClick={() => handleClick(element)}
         >
           <img
-            src={element.photo[0].src}
+            src={element.photos[0].src}
             alt="photo"
             className={classes.smallPhoto}
           />
