@@ -92,20 +92,20 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 </ListItem>
               ))}
             </List> */}
-            {user.lifeStyle && user.lifeStyle.aboutMe && (
+            {user.preferences && user.preferences.aboutMe && (
               <Box>
                 <Typography variant="h3" className={classes.title}>
                   About me
                 </Typography>
                 <Typography className={classes.textAbout}>
-                  {user.lifeStyle.aboutMe}
+                  {user.preferences.aboutMe}
                 </Typography>
               </Box>
             )}
             <List>
-              {user.lifeStyle &&
-                user.lifeStyle.questionary &&
-                Object.entries(user.lifeStyle.questionary).map(
+              {user.preferences &&
+                user.preferences.questionary &&
+                Object.entries(user.preferences.questionary).map(
                   ([interest, value]) => (
                     <ListItem key={interest} className={classes.titleAndText}>
                       <Typography variant="h3" className={classes.title}>
@@ -116,13 +116,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   )
                 )}
             </List>
-            {user.lifeStyle && Array.isArray(user.lifeStyle.interests) && (
+            {user.preferences && Array.isArray(user.preferences.interests) && (
               <Box>
                 <Typography variant="h3" className={classes.title}>
                   Interests
                 </Typography>
                 <List className={classes.tagsList}>
-                  {user.lifeStyle.interests.map((interest) => (
+                  {user.preferences.interests.map((interest) => (
                     <ListItem key={interest} className={classes.tag}>
                       {interest}
                     </ListItem>

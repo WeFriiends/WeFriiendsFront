@@ -21,7 +21,7 @@ export interface UserProfileData {
   distance: string
   likedMe: boolean
   reasons: string[]
-  lifeStyle?: LifeStyle
+  preferences?: LifeStyle
 }
 
 export const emptyProfile: UserProfileData = {
@@ -33,7 +33,7 @@ export const emptyProfile: UserProfileData = {
   distance: '',
   likedMe: false,
   reasons: [],
-  lifeStyle: {},
+  preferences: {},
 }
 
 export interface UserChatProfile {
