@@ -106,30 +106,37 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               {user.preferences &&
                 user.preferences.questionary &&
                 Object.entries(user.preferences.questionary).map(
-                  ([interest, value]) => (
-                    <ListItem key={interest} className={classes.titleAndText}>
-                      <Typography variant="h3" className={classes.title}>
-                        {interest.charAt(0).toUpperCase() + interest.slice(1)}
-                      </Typography>
-                      {printInterest(value)}
-                    </ListItem>
-                  )
+                  ([interest, value]) => {
+                    if (Array.isArray(value) && value.length === 0) {
+                      return null
+                    }
+                    return (
+                      <ListItem key={interest} className={classes.titleAndText}>
+                        <Typography variant="h3" className={classes.title}>
+                          {interest.charAt(0).toUpperCase() + interest.slice(1)}
+                        </Typography>
+                        {printInterest(value)}
+                      </ListItem>
+                    )
+                  }
                 )}
             </List>
-            {user.preferences && Array.isArray(user.preferences.interests) && (
-              <Box>
-                <Typography variant="h3" className={classes.title}>
-                  Interests
-                </Typography>
-                <List className={classes.tagsList}>
-                  {user.preferences.interests.map((interest) => (
-                    <ListItem key={interest} className={classes.tag}>
-                      {interest}
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            )}
+            {user.preferences &&
+              Array.isArray(user.preferences.interests) &&
+              user.preferences.interests.length !== 0 && (
+                <Box>
+                  <Typography variant="h3" className={classes.title}>
+                    Interests
+                  </Typography>
+                  <List className={classes.tagsList}>
+                    {user.preferences.interests.map((interest) => (
+                      <ListItem key={interest} className={classes.tag}>
+                        {interest}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
             <Box className={classes.reportBlock}>
               <Typography
                 className={classes.sendReport}
