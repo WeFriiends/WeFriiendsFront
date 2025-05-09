@@ -85,13 +85,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            {/* <List className={classes.reasons}>
+            <List className={classes.reasons}>
               {user.reasons.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
                   {reason}
                 </ListItem>
               ))}
-            </List> */}
+            </List>
             {user.preferences && user.preferences.aboutMe && (
               <Box>
                 <Typography variant="h3" className={classes.title}>
@@ -267,6 +267,8 @@ const useStyles = makeStyles()(() => {
     },
     interestsList: {
       display: 'flex',
+      flexWrap: 'wrap',
+      rowGap: 15,
       padding: 0,
     },
     interest: {
