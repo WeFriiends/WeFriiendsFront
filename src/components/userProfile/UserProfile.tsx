@@ -20,7 +20,6 @@ interface UserProfileProps {
 }
 const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const { classes } = useStyles()
-  // const accountId = '1'
   const reportDialogRef = useRef<{ handleOpenReportDialog: () => void }>(null)
 
   const handleOpenReportDialog = () => {

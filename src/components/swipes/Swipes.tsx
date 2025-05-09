@@ -59,10 +59,6 @@ const Swipes = () => {
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
-  // const isLiked = (accountId: string, likedUsersArray: string[]): boolean => {
-  //   return likedUsersArray.includes(accountId)
-  // }
-
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
       addNewFriend(currentPotentialFriend)
