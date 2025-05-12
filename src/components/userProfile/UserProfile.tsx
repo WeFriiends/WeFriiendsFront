@@ -101,7 +101,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 </Typography>
               </Box>
             )}
-            <List>
+            <Box>
               {user.preferences &&
                 user.preferences.questionary &&
                 Object.entries(user.preferences.questionary).map(
@@ -110,16 +110,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                       return null
                     }
                     return (
-                      <ListItem key={interest} className={classes.titleAndText}>
+                      <Box key={interest} className={classes.titleAndText}>
                         <Typography variant="h3" className={classes.title}>
                           {interest.charAt(0).toUpperCase() + interest.slice(1)}
                         </Typography>
                         {printInterest(value)}
-                      </ListItem>
+                      </Box>
                     )
                   }
                 )}
-            </List>
+            </Box>
             {user.preferences &&
               Array.isArray(user.preferences.interests) &&
               user.preferences.interests.length !== 0 && (
@@ -267,7 +267,7 @@ const useStyles = makeStyles()(() => {
     interestsList: {
       display: 'flex',
       flexWrap: 'wrap',
-      rowGap: 15,
+      rowGap: 10,
       padding: 0,
     },
     interest: {
@@ -277,6 +277,7 @@ const useStyles = makeStyles()(() => {
       borderRadius: 20,
       padding: '7px 15px',
       marginRight: 10,
+      width: 'auto',
     },
     reportBlock: {
       borderTop: '2px solid #E0E0E0',
