@@ -50,9 +50,7 @@ const TabsMessagesFriends: React.FC = () => {
   return (
     <Box sx={{ maxWidth: '1024px', margin: '0 auto' }}>
       {showTabs && (
-        <Box
-          sx={{ maxWidth: '419px', paddingBottom: '38px', paddingTop: '10px' }}
-        >
+        <Box className={classes.tabsBlock}>
           {isMobile ? (
             <Box
               onClick={() => setMobileTab('messages')}
@@ -133,5 +131,11 @@ const useStyles = makeStyles()({
   },
   removeIndicator: {
     display: 'none',
+  },
+  tabsBlock: {
+    maxWidth: '419px',
+    paddingBottom: '38px',
+    paddingTop: '10px',
+    display: 'flex',
   },
 })
