@@ -7,7 +7,7 @@ import theme from '../../styles/createTheme'
 import Messages from './Messages'
 import { useEffect, useState } from 'react'
 import Friends from './Friends'
-import Swipes from 'components/swipes/Swipes'
+import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 
 const TabsMessagesFriends: React.FC = () => {
   const { classes } = useStyles()
@@ -110,7 +110,7 @@ const TabsMessagesFriends: React.FC = () => {
               <Friends onClick={handleOnClick} />
             )
           ) : pathname === '/friends' ? (
-            <Swipes />
+            <SwipesWithFilters />
           ) : null
         ) : (
           <Outlet />
