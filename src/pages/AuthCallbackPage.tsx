@@ -21,7 +21,7 @@ const AuthCallbackPage = () => {
         navigate('/friends')
       }
     }
-  }, [hasProfile, loading, navigate])
+  }, [hasProfile, loading, navigate, gender])
 
   useEffect(() => {
     const urlSearchParams = () => {

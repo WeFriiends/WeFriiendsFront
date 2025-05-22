@@ -10,7 +10,7 @@ const GenderRedirectGuard = ({ children }: { children: React.ReactNode }) => {
     if (gender === 'male') {
       navigate('/no-friends-in-your-area')
     }
-  }, [gender])
+  }, [gender, navigate])
 
   return <>{children}</>
 }
