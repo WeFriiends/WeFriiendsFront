@@ -112,7 +112,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                     return (
                       <Box key={interest} className={classes.titleAndText}>
                         <Typography variant="h3" className={classes.title}>
-                          {interest.charAt(0).toUpperCase() + interest.slice(1)}
+                          {interest}
                         </Typography>
                         {printInterest(value)}
                       </Box>
@@ -208,6 +208,9 @@ const useStyles = makeStyles()(() => {
       lineHeight: '20px',
       paddingBottom: 10,
       paddingTop: 35,
+      '&::first-letter': {
+        textTransform: 'uppercase',
+      },
     },
     text: {
       fontSize: 14,
