@@ -25,17 +25,6 @@ export const addNewFriend = async (
   }
 }
 
-export const deletePotentialFriend = async (
-  id: string
-): Promise<number | undefined> => {
-  try {
-    const response = await axiosInstance.delete(`potentialFriends/${id}`)
-    return response.status
-  } catch (error) {
-    console.error('Error deleting data:', error)
-  }
-}
-
 export const addLike = async (
   idPotentialFriend: string
 ): Promise<number | undefined> => {

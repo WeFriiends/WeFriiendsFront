@@ -1,9 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
-import {
-  addLike,
-  addNewFriend,
-  deletePotentialFriend,
-} from 'actions/friendsServices'
+import { addLike, addNewFriend } from 'actions/friendsServices'
 import Match from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -24,7 +20,6 @@ const Swipes = () => {
     useState<UserProfileData>(emptyProfile)
   const [modalNewFriendAvatar, setModalNewFriendAvatar] = useState<string>('')
   const navigate = useNavigate()
-  const accountId = '1'
 
   const { data: potentialFriends } = usePotentialFriendsList()
 
@@ -48,10 +43,8 @@ const Swipes = () => {
     if (currentIndex < lastIndex) {
       setFriendsData(potentialFriends[currentIndex + 1])
       setCurrentPotentialFriend(potentialFriends[currentIndex + 1])
-      deletePotentialFriend(currentUserProfile._id)
     } else {
       setNoPotentialFriends(true)
-      deletePotentialFriend(currentUserProfile._id)
     }
   }
 
@@ -60,7 +53,6 @@ const Swipes = () => {
   }
 
   const onBeFriend = () => {
-    console.log('currentPotentialFriend:', currentPotentialFriend)
     if (currentPotentialFriend.likedMe) {
       addNewFriend(currentPotentialFriend._id)
       setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
