@@ -37,3 +37,16 @@ export const addLike = async (
     console.error('Error by adding like for potential friend')
   }
 }
+
+export const addDislike = async (
+  idPotentialFriend: string
+): Promise<number | undefined> => {
+  try {
+    const response = await axiosInstance.post('dislikes', {
+      disliked_id: idPotentialFriend,
+    })
+    return response.status
+  } catch (error) {
+    console.error('Error by adding dislike for potential friend')
+  }
+}

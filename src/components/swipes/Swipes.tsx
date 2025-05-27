@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
-import { addLike, addNewFriend } from 'actions/friendsServices'
+import { addDislike, addLike, addNewFriend } from 'actions/friendsServices'
 import Match from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -49,6 +49,7 @@ const Swipes = () => {
   }
 
   const onSkip = () => {
+    addDislike(currentPotentialFriend._id)
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
