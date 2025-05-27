@@ -13,10 +13,12 @@ export const getFriends = async (
 }
 
 export const addNewFriend = async (
-  friendData: UserProfileData
+  idFriend: string
 ): Promise<number | undefined> => {
   try {
-    const response = await axiosInstance.post('newFriends', friendData)
+    const response = await axiosInstance.post('matches', {
+      user2_id: idFriend,
+    })
     return response.status
   } catch (error) {
     console.error('Error by adding new friend:', error)
