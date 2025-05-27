@@ -42,16 +42,16 @@ const Swipes = () => {
       return
     }
     const currentIndex = potentialFriends.findIndex(
-      (element: UserProfileData) => element.id === currentUserProfile.id
+      (element: UserProfileData) => element._id === currentUserProfile._id
     )
     const lastIndex = potentialFriends.length - 1
     if (currentIndex < lastIndex) {
       setFriendsData(potentialFriends[currentIndex + 1])
       setCurrentPotentialFriend(potentialFriends[currentIndex + 1])
-      deletePotentialFriend(currentUserProfile.id)
+      deletePotentialFriend(currentUserProfile._id)
     } else {
       setNoPotentialFriends(true)
-      deletePotentialFriend(currentUserProfile.id)
+      deletePotentialFriend(currentUserProfile._id)
     }
   }
 
@@ -60,12 +60,13 @@ const Swipes = () => {
   }
 
   const onBeFriend = () => {
+    console.log('currentPotentialFriend:', currentPotentialFriend)
     if (currentPotentialFriend.likedMe) {
-      addNewFriend(currentPotentialFriend)
+      // addNewFriend(currentPotentialFriend._id)
       setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
-      addLike(accountId, currentPotentialFriend.id)
+      addLike(currentPotentialFriend._id)
     }
     goToNextPotentialFriend(currentPotentialFriend)
   }

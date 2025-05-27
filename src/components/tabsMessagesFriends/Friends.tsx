@@ -31,11 +31,11 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
     <Box className={classes.friendsBlock}>
       {userFriends?.map((element: UserProfileData) => (
         <Box
-          id={element.id}
-          key={element.id}
+          id={element._id}
+          key={element._id}
           className={classnames([
             { [classes.friendsPhotos]: true },
-            { [classes.fotoBorder]: element.id === friendsData.id },
+            { [classes.fotoBorder]: element._id === friendsData._id },
           ])}
           onClick={() => handleClick(element)}
         >
