@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from '../../types/UserProfileData'
 import NoNewMatches from './NoNewMatchesOrMessages'
-import { useNewFriendsList } from 'hooks/useFriendsList'
+// import { useNewFriendsList } from 'hooks/useFriendsList' *temporarily commented out - until API for the new friends list is added*
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
 
@@ -13,7 +13,8 @@ interface FriendsProps {
 
 const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   const { classes } = useStyles()
-  const { data: userFriends } = useNewFriendsList()
+  // const { data: userFriends } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
+  const userFriends: UserProfileData[] = [] // temporary solution, until API for the new friends list is added
   const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
 
   const handleClick = (user: UserProfileData) => {
@@ -39,7 +40,7 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
           onClick={() => handleClick(element)}
         >
           <img
-            src={element.photo[0].src}
+            src={element.photos[0].src}
             alt="photo"
             className={classes.smallPhoto}
           />

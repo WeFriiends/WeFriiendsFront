@@ -10,7 +10,7 @@ export const useNewFriendsList = () => {
   }
 }
 export const usePotentialFriendsList = () => {
-  const { data, error } = useSWR('/potentialFriends', fetcher)
+  const { data, error } = useSWR('profile/search', fetcher)
   return {
     data,
     error,
