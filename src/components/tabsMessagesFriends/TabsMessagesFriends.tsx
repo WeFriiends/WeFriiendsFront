@@ -14,6 +14,7 @@ const TabsMessagesFriends: React.FC = () => {
   const location = useLocation()
   const { pathname } = location
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  console.log(isMobile)
 
   const { data: friendsList } = useNewFriendsList()
 
@@ -54,8 +55,6 @@ const TabsMessagesFriends: React.FC = () => {
               onClick={() => setMobileTab('messages')}
               style={{
                 color: getColor('messages'),
-                paddingRight: '60px',
-                cursor: 'pointer',
               }}
               className={classes.labelStyle}
             >
@@ -126,6 +125,11 @@ const useStyles = makeStyles()({
     lineHeight: 1.5,
     fontWeight: 500,
     textDecoration: 'none',
+    paddingRight: '60px',
+    cursor: 'pointer',
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: '25px',
+    },
   },
   removeIndicator: {
     display: 'none',
