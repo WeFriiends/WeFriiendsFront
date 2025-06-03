@@ -178,6 +178,9 @@ const useStyles = makeStyles()(() => {
       fontSize: 40,
       fontWeight: 600,
       lineHeight: '40px',
+      [theme.breakpoints.down('sm')]: {
+        fontSize: 32,
+      },
     },
     roundIcon: {
       fill: '#77BD65',
@@ -194,6 +197,9 @@ const useStyles = makeStyles()(() => {
       fontSize: 18,
       lineHeight: '20px',
       paddingLeft: 4,
+      [theme.breakpoints.down('sm')]: {
+        fontSize: 14,
+      },
     },
     title: {
       color: '#F1562A',
@@ -236,7 +242,7 @@ const useStyles = makeStyles()(() => {
     },
     reasons: {
       display: 'grid',
-      gridTemplateColumns: '180px 180px ',
+      gridTemplateColumns: '1fr 1fr ',
       gap: 15,
       '&MuiList-root': {
         paddingBottom: 0,

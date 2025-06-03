@@ -108,7 +108,7 @@ const Swipes = () => {
             </Button>
           </Box>
         ) : (
-          <Box sx={{ pr: 4 }}>
+          <Box sx={{ pr: { xs: 0, sm: 4 } }}>
             <UserProfile user={friendsData} />
             <UserProfileButton skip={onSkip} beFriend={onBeFriend} />
           </Box>

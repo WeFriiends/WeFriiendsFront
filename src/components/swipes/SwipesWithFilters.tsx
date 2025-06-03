@@ -3,6 +3,7 @@ import Swipes from './Swipes'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import { makeStyles } from 'tss-react/mui'
 import { useRef } from 'react'
+import theme from '../../styles/createTheme'
 
 const SwipesWithFilters = () => {
   const { classes } = useStyles()
@@ -16,7 +17,7 @@ const SwipesWithFilters = () => {
   }
 
   return (
-    <Box>
+    <Box className={classes.boxSwipesWithFilters}>
       <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
         filters
       </Link>
@@ -39,5 +40,10 @@ const useStyles = makeStyles()({
     textDecorationColor: '#262626',
     // marginTop: -71,
     paddingBottom: 35,
+  },
+  boxSwipesWithFilters: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 20,
+    },
   },
 })

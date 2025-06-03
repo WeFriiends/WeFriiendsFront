@@ -38,13 +38,11 @@ const TabsMessagesFriends: React.FC = () => {
     return active ? theme.palette.primary.dark : theme.palette.text.primary
   }
 
-  const handleClick = () => {
-    console.log('Add page for writing messages on mobile')
+  const handleOpenChatPage = () => {
     // TODO:  Open page for chat between two users
   }
 
-  const handleOnClick = () => {
-    console.log('Add page for showing friends page')
+  const handleShowFriendProfile = () => {
     // TODO: Open page with friends profile
   }
   return (
@@ -105,9 +103,9 @@ const TabsMessagesFriends: React.FC = () => {
         (isMobile ? (
           pathname === '/messages' ? (
             mobileTab === 'messages' ? (
-              <Messages onClick={handleClick} />
+              <Messages onClick={handleOpenChatPage} />
             ) : (
-              <Friends onClick={handleOnClick} />
+              <Friends onClick={handleShowFriendProfile} />
             )
           ) : pathname === '/friends' ? (
             <SwipesWithFilters />
@@ -137,5 +135,8 @@ const useStyles = makeStyles()({
     paddingBottom: '38px',
     paddingTop: '10px',
     display: 'flex',
+    [theme.breakpoints.down('sm')]: {
+      paddingTop: '40px',
+    },
   },
 })
