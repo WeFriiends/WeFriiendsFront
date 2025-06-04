@@ -14,7 +14,6 @@ const TabsMessagesFriends: React.FC = () => {
   const location = useLocation()
   const { pathname } = location
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  console.log(isMobile)
 
   const { data: friendsList } = useNewFriendsList()
 
