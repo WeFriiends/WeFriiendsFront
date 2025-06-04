@@ -19,25 +19,24 @@ const ErrorMensSearch = () => {
       <Box className={classes.authContent}>
         <Logo />
         {isClickedOk ? (
-          <Typography variant="h2" className={classes.title}>
-            Try again later
-          </Typography>
-        ) : (
-          <Typography variant="h2" className={classes.title}>
-            Sorry!
-            <br />
-            There is no friends in your area
-          </Typography>
-        )}
-        {isClickedOk ? (
-          <Box
-            sx={{ pt: '13px', maxWidth: '100%' }}
-            component="img"
-            src="/img/error/error-try-later.svg"
-            alt="Try again later"
-          />
+          <>
+            <Typography variant="h2" className={classes.title}>
+              Try again later
+            </Typography>
+            <Box
+              sx={{ pt: '13px', maxWidth: '100%' }}
+              component="img"
+              src="/img/error/error-try-later.svg"
+              alt="Try again later"
+            />
+          </>
         ) : (
           <>
+            <Typography variant="h2" className={classes.title}>
+              Sorry!
+              <br />
+              There is no friends in your area
+            </Typography>
             <Box
               sx={{ maxWidth: '102px' }}
               component="img"
