@@ -9,15 +9,19 @@ const AuthCallbackPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const shouldRedirect = useRef(true)
-
+  const gender = useProfileStore((state) => state.data?.gender)
   const { hasProfile, loading } = useProfileStore()
   useEffect(() => {
     if (hasProfile === false) {
       navigate('/fill-profile')
     } else if (hasProfile === true) {
-      navigate('/friends')
+      if (gender === 'male') {
+        navigate('/no-friends-in-your-area')
+      } else {
+        navigate('/friends')
+      }
     }
-  }, [hasProfile, loading, navigate])
+  }, [hasProfile, loading, navigate, gender])
 
   useEffect(() => {
     const urlSearchParams = () => {
