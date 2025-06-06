@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react'
-//import FirestoreChat from './firestoreChat/FirestoreChat'
 import FirestoreChatStyled from './firestoreChat/FirestoreChatStyled'
 import { Box, Button } from '@mui/material'
 
@@ -13,17 +12,6 @@ const FirestoreChatExamplePage = () => {
   const memoizedUserName2 = useMemo(() => currentUserName2, [currentUserName2])
   return (
     <>
-      {/* <Box
-        sx={{
-          margin: 5,
-          display: 'grid',
-          gridTemplateColumns: '575px 575px',
-          gap: 50,
-        }}
-      >
-        <FirestoreChat userName="Marina" roomId="room1" />
-        <FirestoreChat userName="Svitlana" roomId="room1" /> 
-      </Box> */}
       <hr />
       <Box sx={{ m: 2 }}>
         <div>

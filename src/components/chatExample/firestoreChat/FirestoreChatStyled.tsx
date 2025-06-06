@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import {
   collection,
   addDoc,
@@ -20,6 +20,7 @@ import {
 } from '@mui/material'
 import ChatMenu from '../../chat/ChatMenu'
 import { db } from '../firebase'
+import { useChatStore } from '../../../zustand/chatStore'
 
 interface Message {
   id: string
@@ -34,35 +35,45 @@ interface ChatRoomProps {
   userName: string
 }
 
-const CACHE_DURATION = 5 * 60 * 1000
-
 const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
   const { classes } = useStyles()
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const messagesCollectionRef = collection(db, 'rooms', roomId, 'messages')
-  const cacheKey = `${roomId}-messages-cache`
+  const messagesCollectionRef = useMemo(
+    () => collection(db, 'rooms', roomId, 'messages'),
+    [roomId]
+  )
 
   const prevRoomIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (prevRoomIdRef.current !== roomId) {
-      console.log('📌 roomId has changed:', prevRoomIdRef.current, '→', roomId)
       prevRoomIdRef.current = roomId
+    }
+  }, [roomId])
+
+  useEffect(() => {
+    const cached = useChatStore.getState().getCachedMessages(roomId)
+    if (cached) {
+      setMessages(cached.messages)
     }
   }, [roomId])
 
   useEffect(() => {
     let didCancel = false
 
+    const messagesCollectionRef = collection(db, 'rooms', roomId, 'messages')
+
+    const queryRef = query(
+      messagesCollectionRef,
+      orderBy('timestamp', 'asc'),
+      limitToLast(20)
+    )
+
     const unsubscribe = onSnapshot(
-      query(
-        messagesCollectionRef,
-        orderBy('timestamp', 'asc'),
-        limitToLast(20)
-      ),
+      queryRef,
       (snapshot) => {
         if (didCancel) return
 
@@ -70,28 +81,22 @@ const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
           id: doc.id,
           sender: doc.data().sender,
           content: doc.data().content,
-          timestamp: new Date(doc.data().timestamp),
+          timestamp: doc.data().timestamp?.toDate?.() || new Date(),
           readStatus: doc.data().readStatus,
         }))
 
         setMessages((prev) => {
-          const prevStr = JSON.stringify(prev)
-          const freshStr = JSON.stringify(freshMessages)
-          if (prevStr !== freshStr) {
-            console.log('📡 Updating messages...')
-            localStorage.setItem(
-              cacheKey,
-              JSON.stringify({ messages: freshMessages, timestamp: Date.now() })
-            )
+          if (
+            prev.length !== freshMessages.length ||
+            prev.some((msg, i) => msg.id !== freshMessages[i].id)
+          ) {
+            useChatStore.getState().setCache(roomId, freshMessages)
             return freshMessages
-          } else {
-            console.log('⚠️ No changes in messages')
-            return prev
           }
+          return prev
         })
       },
-      (error) => {
-        console.error('Error subscribing to message updates:', error)
+      () => {
         setError('Failed to load messages. Please try again later.')
       }
     )
@@ -101,22 +106,6 @@ const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
       unsubscribe()
     }
   }, [roomId])
-
-  useEffect(() => {
-    console.log('🔄 Checking cache for messages')
-
-    const stored = localStorage.getItem(cacheKey)
-    if (stored) {
-      const { messages: cachedMessages, timestamp } = JSON.parse(stored)
-      if (Date.now() - timestamp < CACHE_DURATION) {
-        console.log('✅ Using cached messages:', cachedMessages)
-        setMessages(cachedMessages)
-        return
-      }
-    }
-    console.log('❌ No valid cache, loading messages from Firestore')
-  }, [roomId])
-
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return
 
@@ -129,30 +118,23 @@ const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
     }
 
     try {
-      console.log('📡: Sending new message:', newMessageObj)
       await addDoc(messagesCollectionRef, newMessageObj)
       setNewMessage('')
       setError(null)
-
-      console.log('✅: Message sent:', newMessageObj)
     } catch (error: any) {
-      console.error('Error sending message:', error)
       setError('Failed to send message. Please try again later.')
     }
   }
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
-      console.log('🗑️ Deleting message with ID:', messageId)
       await deleteDoc(doc(db, 'rooms', roomId, 'messages', messageId))
 
       setMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.id !== messageId)
       )
       setError(null)
-      console.log('✅ Message deleted:', messageId)
     } catch (error: any) {
-      console.error('Error deleting message:', error)
       setError('Failed to delete message. Please try again later.')
     }
   }
