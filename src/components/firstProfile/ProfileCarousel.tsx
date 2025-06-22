@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import GenericCarousel from '../../common/components/Carousel'
 import useHandleCarousel from 'hooks/useHandleCarousel'
 import NameInput from './name/NameInput'
@@ -21,18 +21,25 @@ import {
   setItemToLocalStorage,
   getItemFromLocalStorage,
   getItemsFromLocalStorage,
+  clearLocalStorage,
 } from 'utils/localStorage'
 import { Dayjs } from 'dayjs'
 import { validateLocation } from './utils/validateLocation'
-import { Address } from './profile'
+import { Location } from 'types/FirstProfile'
 import AuthPagesWrapper from './AuthPagesWrapper'
 import Loader from '../../common/svg/Loader'
-import { useAuthStore } from '../../zustand/store'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 
 // todo: check the connection with WeFriiendsProfile and show the error before allowing to fill out the form.
 // todo: check if the user is already filled the first profile and show the error.
 
 const ProfileCarousel = () => {
+  const profile = useProfileStore((state) => state.data)
+
+  useEffect(() => {
+    console.log('✅ Профиль из Zustand:', profile)
+  }, [profile])
+
   //const photos = useProfileStore((state) => state.data.photos)
   const { classes } = useStyles()
   const token = useAuthStore((state) => state.token)
@@ -75,7 +82,7 @@ const ProfileCarousel = () => {
     setGenderChange(value)
   }
 
-  const handleLocationChange = useCallback((value: Address) => {
+  const handleLocationChange = useCallback((value: Location) => {
     setLocationChange(value)
   }, [])
 
@@ -260,6 +267,21 @@ const ProfileCarousel = () => {
           },
           token
         )
+        clearLocalStorage([
+          'name',
+          'dob',
+          'gender',
+          'lat',
+          'lng',
+          'country',
+          'city',
+          'street',
+          'houseNumber',
+          'selectedStatuses',
+          'userPreferences',
+          'userPicsStorage',
+        ])
+
         setIsProfileCreating(false)
         window.location.href = '/friends' // page reload needed
         // todo: it can be replaced to navigate if we add store update after profile creating, or

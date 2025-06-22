@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Typography, FormHelperText } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UploadSlot from './UploadSlot'
@@ -24,6 +24,7 @@ const UploadPhotos = ({
   onPicChange,
 }: UploadPhotosProps) => {
   const { removePhoto } = useProfileStore()
+  const { data: profileData } = useProfileStore()
   const { classes } = useStyles()
   const [isDeleteModalOpened, setIsDeleteModalOpened] = useState<boolean>(false)
   const [isPhotoModalOpened, setIsPhotoModalOpened] = useState<boolean>(false)
@@ -40,6 +41,24 @@ const UploadPhotos = ({
     url: '',
     blobFile: null,
   }))
+  useEffect(() => {
+    if (profileData?.photos?.length) {
+      const restoredPics: UserPicsType[] = profileData.photos.map(
+        (photo: UserPicsType, index: number) => ({
+          id: photo.id || `userPic-${index}`,
+          url: photo.url ?? '',
+          blobFile: null,
+        })
+      )
+
+      const merged = [
+        ...restoredPics,
+        ...initialPics.slice(restoredPics.length),
+      ]
+      setUserPics(merged)
+      shiftPics(merged)
+    }
+  }, [])
 
   const [userPics, setUserPics] = useState<UserPicsType[]>(initialPics)
 

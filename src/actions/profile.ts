@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { UserPicsType } from '../types/FirstProfile'
 import { Location, UserPreferences } from '../types/FirstProfile'
+import { clearLocalStorage } from 'utils/localStorage'
 
 // Define the base URL for your API
 const API_BASE_URL = 'http://localhost:8080/api/profile'
@@ -60,7 +61,7 @@ export const createProfile = async (
         'Content-Type': 'multipart/form-data',
       },
     })
-
+    clearLocalStorage(['userPreferences'])
     return response.data
   } catch (error: any) {
     console.error(

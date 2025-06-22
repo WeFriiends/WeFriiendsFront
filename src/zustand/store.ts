@@ -8,6 +8,7 @@ import {
   deleteProfile,
 } from './api'
 import { UserPicsType } from '../types/FirstProfile'
+import { clearLocalStorage } from 'utils/localStorage'
 
 interface AuthState {
   token: string | null
@@ -26,6 +27,7 @@ interface Profile {
     houseNumber?: string
   }
   photos: UserPicsType[]
+  // !!!photos: CloudinaryPhoto[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number
@@ -119,12 +121,20 @@ export const useProfileStore = create<ProfileStore>()(
 
       return {
         ...initialState,
-        createProfile: async (profileData, token) =>
-          await fetchData(
+        createProfile: async (profileData, token) => {
+          const response = await fetchData(
             () => createProfile(profileData, token),
             'createProfile'
-          ),
-
+          )
+          if (response && response.status >= 200 && response.status < 300) {
+            set({
+              loading: false,
+              success: true,
+              data: response.data,
+            })
+            clearLocalStorage(['userPreferences'])
+          }
+        },
         // It is used everywhere to fetch data from the database and display it on the front-end
         getProfile: async (token) =>
           await fetchData(() => getProfile(token), 'getProfile'),

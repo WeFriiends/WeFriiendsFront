@@ -10,16 +10,31 @@ export interface Location {
 export interface UserPreferences {
   aboutMe?: string
   selectedLanguages?: string[]
-  Smoking?: string[]
-  EducationalLevel?: string[]
-  Children?: string[]
-  Drinking?: string[]
-  Pets?: string[]
-  Interests?: string[]
+  smoking?: string[]
+  educationalLevel?: string[]
+  children?: string[]
+  drinking?: string[]
+  pets?: string[]
+  interests?: string[]
+  questionary?: {
+    [key: string]: string | string[]
+  }
 }
 
 export interface UserPicsType {
   id: string
-  url: string
+  url: string | null
   blobFile: Blob | null
+}
+export interface CloudinaryPhoto {
+  url: string
+  publicId: string
+}
+export type Address = {
+  country: string
+  city: string
+  street: string
+  houseNumber: string
+  lat: number
+  lng: number
 }

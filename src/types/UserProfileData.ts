@@ -1,15 +1,7 @@
+import { UserPreferences } from './FirstProfile'
+
 export interface UserPhoto {
   src: string
-}
-
-interface LifeStyle {
-  [key: string]: string | string[]
-  // smoking?: string
-  // education?: string
-  // children?: string
-  // interests?: string[]
-  // pets?: string[]
-  // language?: string[]
 }
 
 export interface UserProfileData {
@@ -21,7 +13,7 @@ export interface UserProfileData {
   distance: string
   likedMe: boolean
   reasons: string[]
-  preferences?: LifeStyle
+  preferences?: UserPreferences
 }
 
 export const emptyProfile: UserProfileData = {

@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, Ref, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
+import { UserPicsType } from 'types/FirstProfile'
 import { Box, Typography } from '@mui/material'
 import PrimaryButton from '../../common/components/PrimaryButton'
 import UploadPhotos from '../firstProfile/uploadPhotos/UploadPhotos'
@@ -10,11 +11,6 @@ import theme from '../../styles/createTheme'
 
 interface ChangeProfileDialogProps {
   ref: Ref<{ handleOpenChangeProfileDialog: () => void }>
-}
-
-interface UserPicsType {
-  id: string
-  url: string | null
 }
 
 const ChangeProfileDialog = forwardRef(
