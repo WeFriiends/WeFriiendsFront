@@ -56,7 +56,6 @@ const Messages = ({ onClick }: any) => {
               </Box>
             )}
           </Box>
-          <Box className={classes.line}></Box>
         </Box>
       ))}
     </Box>
@@ -68,17 +67,22 @@ export default Messages
 const useStyles = makeStyles()(() => {
   return {
     messagePage: {
-      maxHeight: 'calc(100vh - 290px)',
-      overflow: 'auto',
-      [theme.breakpoints.down('sm')]: {
-        maxHeight: 'calc(100vh - 137px)',
+      //maxHeight: 'calc(100vh - 137px)',
+      [theme.breakpoints.up('sm')]: {
+        //maxHeight: 'calc(100vh - 290px)',
       },
     },
     messageBlock: {
       display: 'grid',
       gridTemplateColumns: '66px 1fr 30px',
       alignItems: 'center',
-      padding: '30px 21px 20px 10px',
+      padding: '25px 45px 25px 30px',
+      marginLeft: -20,
+      marginRight: -20,
+      borderBottom: '1px solid #EEE',
+      [theme.breakpoints.up('lg')]: {
+        padding: '30px 30px 30px 30px',
+      },
     },
     selected: {
       backgroundColor: '#FFF1EC',
@@ -113,9 +117,6 @@ const useStyles = makeStyles()(() => {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-    },
-    line: {
-      borderTop: '1px solid #EEE',
     },
   }
 })

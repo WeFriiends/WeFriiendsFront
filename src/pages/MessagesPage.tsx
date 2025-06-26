@@ -5,6 +5,7 @@ import {
   Button,
   TextareaAutosize,
   Avatar,
+  Grid,
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Messages from 'components/tabsMessagesFriends/Messages'
@@ -15,6 +16,7 @@ import StartChatting from 'components/chat/StartChatting'
 import DisplayingChat from 'components/chat/DisplayingChat'
 import messages from '../components/chat/chat.json'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
+import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 
 const MessagesPage = () => {
   const { classes } = useStyles()
@@ -26,76 +28,82 @@ const MessagesPage = () => {
   const handleClick = (user: UserChatProfile) => {
     setSelectedChat(user)
   }
+
+  const handleCloseChat = () => {
+    setSelectedChat(null)
+  }
+
   return (
-    <Box>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: '389px 575px',
-          '& > *:nth-of-type(2)': {
-            paddingLeft: '105px',
-          },
-        }}
-      >
+    <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
+      <Box className={classes.twoColumnLayoutColLeft}>
+        <TabsMessagesFriends />
         <Messages onClick={handleClick} />
-        {selectedChat ? (
-          <Box>
-            <Box className={classes.header}>
-              <Box className={classes.userInHeader}>
-                <Avatar
-                  src={selectedChat.avatar}
-                  sx={{ width: 50, height: 50 }}
-                />
-                <Typography
-                  sx={{
-                    color: theme.palette.primary.main,
-                    fontWeight: 600,
-                    fontSize: 20,
-                  }}
-                >
-                  {selectedChat.name}, {selectedChat.age}
-                </Typography>
-              </Box>
-
-              <ChatMenu />
-            </Box>
-
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: 'calc(100vh - 257px)',
-                justifyContent: 'space-between',
-                gap: '20px',
-              }}
-            >
-              {Object.keys(messages).length != 0 &&
-              selectedChat?.id === frienId ? (
-                <DisplayingChat data={messages} userId={userId} />
-              ) : (
-                <StartChatting />
-              )}
-              <Box className={classes.sendMessageSection}>
-                <TextareaAutosize
-                  minRows={1}
-                  maxRows={10}
-                  placeholder="Type a message"
-                  className={classes.textArea}
-                />
-                <img src="/img/messages/lol.svg" alt="lol" />
-                <Button className={classes.sendBtn} variant="outlined">
-                  Send
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        ) : (
-          <Box sx={{ marginTop: '-71px' }}>
-            <SwipesWithFilters />
-          </Box>
-        )}
       </Box>
-    </Box>
+      <Box className={classes.twoColumnLayoutColRight}>
+        <Box className={classes.rightColumn}>
+          {selectedChat ? (
+            <Box className={classes.wrapperChat}>
+              <Box className={classes.chatControlsMobile}>
+                <Button onClick={handleCloseChat}>{'<- Back'}</Button>
+              </Box>
+              <Box className={classes.header}>
+                <Box className={classes.userInHeader}>
+                  <Avatar
+                    src={selectedChat.avatar}
+                    sx={{ width: 50, height: 50 }}
+                  />
+                  <Typography
+                    sx={{
+                      color: theme.palette.primary.main,
+                      fontWeight: 600,
+                      fontSize: 20,
+                    }}
+                  >
+                    {selectedChat.name}, {selectedChat.age}
+                  </Typography>
+                </Box>
+
+                <ChatMenu />
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '20px',
+                  height: 'calc(100% - 200px)',
+                  flexGrow: 1,
+                }}
+              >
+                {Object.keys(messages).length != 0 &&
+                selectedChat?.id === frienId ? (
+                  <DisplayingChat data={messages} userId={userId} />
+                ) : (
+                  <StartChatting />
+                )}
+                <Box className={classes.sendMessageSection}>
+                  <TextareaAutosize
+                    minRows={1}
+                    maxRows={10}
+                    placeholder="Type a message"
+                    className={classes.textArea}
+                  />
+                  <img src="/img/messages/lol.svg" alt="lol" />
+                  <Button className={classes.sendBtn} variant="outlined">
+                    Send
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <Box className={classes.wrapperSwipes}>
+              <SwipesWithFilters />
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Grid>
   )
 }
 export default MessagesPage
@@ -105,7 +113,6 @@ const useStyles = makeStyles()({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: -78,
     paddingLeft: 22,
   },
   userInHeader: {
@@ -113,12 +120,20 @@ const useStyles = makeStyles()({
     alignItems: 'center',
     gap: 15,
   },
+  chatControlsMobile: {
+    [theme.breakpoints.up(850)]: {
+      display: 'none',
+    },
+  },
   sendMessageSection: {
     display: 'flex',
     gap: 20,
     bottom: 0,
-    padding: '0 0 40px 15px',
     alignItems: 'end',
+    paddingBottom: 20,
+    [theme.breakpoints.up(850)]: {
+      padding: '0 0 40px 15px',
+    },
   },
   textArea: {
     width: 328,
@@ -150,7 +165,66 @@ const useStyles = makeStyles()({
     display: 'block',
     paddingRight: 20,
     textDecorationColor: '#262626',
-    marginTop: -71,
     paddingBottom: 35,
+  },
+  wrapperChat: {
+    display: 'flex',
+    flexDirection: 'column',
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 56,
+    background: theme.palette.common.white,
+    position: 'fixed',
+    [theme.breakpoints.up(850)]: {
+      height: '100%',
+      position: 'static',
+    },
+  },
+  wrapperSwipes: {
+    display: 'none',
+    [theme.breakpoints.up(850)]: {
+      display: 'block',
+    },
+  },
+  rightColumn: {},
+
+  twoColumnLayoutWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    paddingBottom: 100,
+    [theme.breakpoints.up(850)]: {
+      alignItems: 'start',
+      justifyContent: 'space-between',
+      flexDirection: 'row',
+    },
+    [theme.breakpoints.up('lg')]: {
+      paddingBottom: 0,
+    },
+  },
+  twoColumnLayoutColLeft: {
+    width: '100%',
+    marginBottom: 50,
+    maxWidth: '100%',
+    order: 2,
+    [theme.breakpoints.up(850)]: {
+      order: 1,
+      width: 350,
+    },
+  },
+  twoColumnLayoutColRight: {
+    width: 350,
+    maxWidth: '100%',
+    order: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: 450,
+    },
+    [theme.breakpoints.up(850)]: {
+      width: 450,
+      order: 2,
+    },
   },
 })
