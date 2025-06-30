@@ -20,7 +20,6 @@ interface UserProfileProps {
 }
 const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const { classes } = useStyles()
-  const accountId = '1'
   const reportDialogRef = useRef<{ handleOpenReportDialog: () => void }>(null)
 
   const handleOpenReportDialog = () => {
@@ -47,13 +46,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
     <>
       <Box className={classes.mainGrid}>
         <Box className={classes.iconsAbove}>
-          <LikeDispay accountId={accountId} likedUsersArray={user.likedUsers} />
+          <LikeDispay likedMe={user.likedMe} />
           {/* <img src="/img/verified.svg"></img> */}
           {/* We don't use it in MVP1 */}
         </Box>
 
         <div className={classes.carousel}>
-          <PhotoCarousel items={user.photo} />
+          <PhotoCarousel items={user.photos} />
           <Box className={classes.gradientOverlay} />
         </div>
 
@@ -79,7 +78,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               <Box className={classes.distanceWithIcon}>
                 <img src="/img/near_me.svg" height={20} width={20} />
                 <Typography className={classes.distance}>
-                  from {user.city}, 10 km from you
+                  from {user.city}, {user.distance} km from you
                 </Typography>
               </Box>
             </Box>
@@ -92,44 +91,51 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 </ListItem>
               ))}
             </List>
-            {user.lifeStyle && user.lifeStyle.aboutMe && (
+            {user.preferences && user.preferences.aboutMe && (
               <Box>
                 <Typography variant="h3" className={classes.title}>
                   About me
                 </Typography>
                 <Typography className={classes.textAbout}>
-                  {user.lifeStyle.aboutMe}
+                  {user.preferences.aboutMe}
                 </Typography>
               </Box>
             )}
-            <List>
-              {user.lifeStyle &&
-                user.lifeStyle.questionary &&
-                Object.entries(user.lifeStyle.questionary).map(
-                  ([interest, value]) => (
-                    <ListItem key={interest} className={classes.titleAndText}>
-                      <Typography variant="h3" className={classes.title}>
-                        {interest.charAt(0).toUpperCase() + interest.slice(1)}
-                      </Typography>
-                      {printInterest(value)}
-                    </ListItem>
-                  )
+            <Box>
+              {user.preferences &&
+                user.preferences.questionary &&
+                Object.entries(user.preferences.questionary).map(
+                  ([interest, value]) => {
+                    if (Array.isArray(value) && value.length === 0) {
+                      return null
+                    }
+                    return (
+                      <Box key={interest} className={classes.titleAndText}>
+                        <Typography variant="h3" className={classes.title}>
+                          {interest}
+                        </Typography>
+                        {printInterest(value)}
+                      </Box>
+                    )
+                  }
                 )}
-            </List>
-            {user.lifeStyle && Array.isArray(user.lifeStyle.interests) && (
-              <Box>
-                <Typography variant="h3" className={classes.title}>
-                  Interests
-                </Typography>
-                <List className={classes.tagsList}>
-                  {user.lifeStyle.interests.map((interest) => (
-                    <ListItem key={interest} className={classes.tag}>
-                      {interest}
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            )}
+            </Box>
+            {user.preferences &&
+              Array.isArray(user.preferences.interests) &&
+              user.preferences.interests.length !== 0 && (
+                <Box>
+                  <Typography variant="h3" className={classes.title}>
+                    Interests
+                  </Typography>
+                  <List className={classes.tagsList}>
+                    {user.preferences.interests.map((interest) => (
+                      <ListItem key={interest} className={classes.tag}>
+                        {interest}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
             <Box className={classes.reportBlock}>
               <Typography
                 className={classes.sendReport}
@@ -208,6 +214,9 @@ const useStyles = makeStyles()(() => {
       lineHeight: '20px',
       paddingBottom: 10,
       paddingTop: 35,
+      '&::first-letter': {
+        textTransform: 'uppercase',
+      },
     },
     text: {
       fontSize: 14,
@@ -266,6 +275,8 @@ const useStyles = makeStyles()(() => {
     },
     interestsList: {
       display: 'flex',
+      flexWrap: 'wrap',
+      rowGap: 10,
       padding: 0,
     },
     interest: {
@@ -275,6 +286,7 @@ const useStyles = makeStyles()(() => {
       borderRadius: 20,
       padding: '7px 15px',
       marginRight: 10,
+      width: 'auto',
     },
     reportBlock: {
       borderTop: '2px solid #E0E0E0',

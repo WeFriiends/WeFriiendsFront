@@ -59,14 +59,10 @@ const Swipes = () => {
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
-  const isLiked = (accountId: string, likedUsersArray: string[]): boolean => {
-    return likedUsersArray.includes(accountId)
-  }
-
   const onBeFriend = () => {
-    if (isLiked(accountId, currentPotentialFriend.likedUsers)) {
+    if (currentPotentialFriend.likedMe) {
       addNewFriend(currentPotentialFriend)
-      setModalNewFriendAvatar(currentPotentialFriend.photo[0].src)
+      setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
       addLike(accountId, currentPotentialFriend.id)
