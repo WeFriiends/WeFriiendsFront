@@ -52,7 +52,7 @@ const useStyles = makeStyles()({
     padding: '13px 22px 12px',
     overflow: 'auto',
     overscrollBehavior: 'contain',
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       maxHeight: 'calc(100vh - 500px)',
       minHeight: 400,
     },

@@ -121,7 +121,7 @@ const useStyles = makeStyles()({
     gap: 15,
   },
   chatControlsMobile: {
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       display: 'none',
     },
   },
@@ -131,7 +131,7 @@ const useStyles = makeStyles()({
     bottom: 0,
     alignItems: 'end',
     paddingBottom: 20,
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       padding: '0 0 40px 15px',
     },
   },
@@ -176,14 +176,14 @@ const useStyles = makeStyles()({
     bottom: 56,
     background: theme.palette.common.white,
     position: 'fixed',
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       height: '100%',
       position: 'static',
     },
   },
   wrapperSwipes: {
     display: 'none',
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       display: 'block',
     },
   },
@@ -196,7 +196,7 @@ const useStyles = makeStyles()({
     flexWrap: 'wrap',
     flexDirection: 'column',
     paddingBottom: 100,
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       alignItems: 'start',
       justifyContent: 'space-between',
       flexDirection: 'row',
@@ -209,22 +209,18 @@ const useStyles = makeStyles()({
     width: '100%',
     marginBottom: 50,
     maxWidth: '100%',
-    order: 2,
-    [theme.breakpoints.up(850)]: {
-      order: 1,
+    [theme.breakpoints.up('md')]: {
       width: 350,
     },
   },
   twoColumnLayoutColRight: {
     width: 350,
     maxWidth: '100%',
-    order: 1,
     [theme.breakpoints.up('sm')]: {
       width: 450,
     },
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       width: 450,
-      order: 2,
     },
   },
 })
