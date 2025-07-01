@@ -47,7 +47,7 @@ const ChangeProfileDialog = forwardRef(
         onClose={handleClose}
         width={600}
       >
-        <UploadPhotos onPicChange={handlePicChange} />
+        {/* <UploadPhotos onPicChange={handlePicChange} /> */}
         <Box className={classes.titleContainer}>
           <Typography className={classes.titleStatus}>
             I&apos;m Here For

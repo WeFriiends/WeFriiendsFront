@@ -27,13 +27,22 @@ interface Profile {
     houseNumber?: string
   }
   photos: UserPicsType[]
-  // !!!photos: CloudinaryPhoto[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number
   friendsAgeMax?: number
   friendsDistance?: number
 }
+
+interface PhotoFields {
+  tempPhotos: UserPicsType[]
+  cloudUrls: string[]
+  setTempPhotos: (photos: UserPicsType[]) => void
+  clearTempPhotos: () => void
+  addTempPhoto: (photo: UserPicsType) => void
+  removeTempPhoto: (id: string) => void
+}
+type ProfileStore = ProfileState & ProfileActions & PhotoFields
 
 interface ErrorResponse {
   message: string
@@ -63,16 +72,21 @@ interface ProfileActions {
   removePhoto: (photoId: string) => void
 }
 
-type ProfileStore = ProfileState & ProfileActions
+//!!!type ProfileStore = ProfileState & ProfileActions
 
 // Initial state
-const initialState: ProfileState = {
+const initialState: ProfileState & {
+  tempPhotos: UserPicsType[]
+  cloudUrls: string[]
+} = {
   loading: true,
   success: false,
   error: false,
   data: null,
   hasProfile: null,
   errorData: null,
+  tempPhotos: [],
+  cloudUrls: [],
 }
 
 // Zustand store
@@ -121,6 +135,24 @@ export const useProfileStore = create<ProfileStore>()(
 
       return {
         ...initialState,
+
+        setTempPhotos: (photos) => set({ tempPhotos: photos }),
+        setCloudUrls: (urls: string[]) => set({ cloudUrls: urls }),
+        clearTempPhotos: () => set({ tempPhotos: [] }),
+
+        addTempPhoto: (photo) =>
+          set((s) => ({
+            tempPhotos: [
+              ...s.tempPhotos.filter((p) => p.id !== photo.id),
+              photo,
+            ],
+          })),
+
+        removeTempPhoto: (id) =>
+          set((s) => ({
+            tempPhotos: s.tempPhotos.filter((p) => p.id !== id),
+          })),
+
         createProfile: async (profileData, token) => {
           const response = await fetchData(
             () => createProfile(profileData, token),
