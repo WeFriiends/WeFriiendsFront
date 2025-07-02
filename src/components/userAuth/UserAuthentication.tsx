@@ -48,6 +48,22 @@ const UserAuthentication = () => {
     })
   }
 
+  const handleSignUpGoogle = async () => {
+    await loginWithRedirect({
+      authorizationParams: {
+        connection: 'google-oauth2',
+      },
+    })
+  }
+
+  const handleSignUpFacebook = async () => {
+    await loginWithRedirect({
+      authorizationParams: {
+        connection: 'facebook',
+      },
+    })
+  }
+
   return (
     <AuthPagesWrapper>
       <Typography
@@ -68,7 +84,7 @@ const UserAuthentication = () => {
         startIcon={
           <img className={classes.startIcon} alt="fb" src={'/img/fb.svg'} />
         }
-        onClick={handleSignUp}
+        onClick={handleSignUpFacebook}
       >
         Facebook
       </Button>
@@ -85,7 +101,7 @@ const UserAuthentication = () => {
             src={'/img/google.svg'}
           />
         }
-        onClick={handleSignUp}
+        onClick={handleSignUpGoogle}
       >
         Google
       </Button>
