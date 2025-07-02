@@ -3,7 +3,7 @@ import { UserPicsType } from '../types/FirstProfile'
 import { Location, UserPreferences } from '../types/FirstProfile'
 
 // Define the base URL for your API
-const API_BASE_URL = 'http://localhost:8080/api/profile'
+const API_BASE_URL = 'https://87.252.254.239:8080/api/profile'
 //const API_BASE_URL = 'https://wefriiends.com/wefriiendsprofile/api/profile'
 
 interface ProfileData {
