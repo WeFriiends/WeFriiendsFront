@@ -58,7 +58,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
 
         <Accordion className={classes.accordion}>
           <AccordionSummary
-            expandIcon={<img src="/img/arrow-down.svg" />}
+            expandIcon={<img alt="arrow down" src="/img/arrow-down.svg" />}
             sx={{
               '& .MuiAccordionSummary-content.Mui-expanded': {
                 margin: '12px 0',
@@ -76,7 +76,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 {/* We don't use it in MVP1 */}
               </Box>
               <Box className={classes.distanceWithIcon}>
-                <img src="/img/near_me.svg" height={20} width={20} />
+                <img alt="arrow down" src="/img/near_me.svg" height={20} width={20} />
                 <Typography className={classes.distance}>
                   from {user.city}, {user.distance} km from you
                 </Typography>
