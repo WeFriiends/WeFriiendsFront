@@ -27,10 +27,6 @@ const Dashboard = () => {
       { path: '/error-400', label: 'Error 400' },
       { path: '/error-500', label: 'Error 500' },
       { path: '*', label: 'Error Page (Catch-All)' },
-      { path: '/no-friends-in-your-area', label: 'Error Mens Search' },
-      { path: '/notice-no-likes', label: 'Notice No Likes' },
-      { path: '/notice-no-users', label: 'Notice No Users' },
-      { path: '/new-match', label: 'New Match' },
       {
         path: '/realtime-database-chat',
         label: 'Firebase/Realtime database chat example',
@@ -73,7 +69,7 @@ const Dashboard = () => {
   )
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <div style={{ padding: '20px' }}>
       <Typography variant="h1">Dashboard</Typography>
       {renderRoutes('Routes for authenticated users', routes.authed)}
       {renderRoutes('Routes for not authenticated users', routes.notAuthed)}
@@ -82,7 +78,7 @@ const Dashboard = () => {
         routes.temporaryExamples
       )}
       {renderRoutes('Technical/temporary routes', routes.temporary)}
-    </Box>
+    </div>
   )
 }
 

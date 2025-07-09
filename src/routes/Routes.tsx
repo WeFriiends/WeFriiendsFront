@@ -8,7 +8,6 @@ import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
 import Friends from 'pages/FriendsPage'
 import Invitation from '../components/invitation/Invitation'
-import ErrorMensSearch from 'pages/ErrorMensSearch'
 import ErrorPage from 'pages/ErrorPage'
 import Match from '../components/findMatch/Match'
 import Messages from 'pages/MessagesPage'
@@ -24,8 +23,6 @@ import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
 import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
 import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
 import Logout from '../pages/Logout'
-import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
-import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
 import FirestoreChatExamplePage from '../components/chatExample/FirestoreChatExamplePage'
 
 const Loadable =
@@ -129,9 +126,6 @@ const routes: RouteObject[] = [
     path: 'delete',
     element: <DeleteUserDialogExamplePage />,
   },
-  { path: 'notice-no-likes', element: <NoticeNoLikes /> },
-  { path: 'notice-no-users', element: <NoticeNoUsers /> },
-  { path: 'no-friends-in-your-area', element: <ErrorMensSearch /> },
   { path: 'invite', element: <Invitation /> },
   { path: 'error-400', element: <ErrorPage code={400} /> }, // Route is working for demonstration
   { path: 'error-500', element: <ErrorPage code={500} /> }, // Route is working for demonstration
