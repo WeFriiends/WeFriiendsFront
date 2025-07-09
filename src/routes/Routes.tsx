@@ -26,6 +26,7 @@ import SecurityDialogExamplePage from '../components/securityDialog/SecurityDial
 import Logout from '../pages/Logout'
 import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
 import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
+import FirestoreChatExamplePage from '../components/chatExample/FirestoreChatExamplePage'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -111,6 +112,10 @@ const routes: RouteObject[] = [
   {
     path: 'dashboard',
     element: <Dashboard />,
+  },
+  {
+    path: 'firestore-chat',
+    element: <FirestoreChatExamplePage />,
   },
   {
     path: 'security-dialog',

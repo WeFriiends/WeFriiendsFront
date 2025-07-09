@@ -16,22 +16,24 @@ export interface UserProfileData {
   id: string
   name: string
   age: string
-  photo: UserPhoto[]
+  photos: UserPhoto[]
   city: string
-  likedUsers: string[]
+  distance: string
+  likedMe: boolean
   reasons: string[]
-  lifeStyle?: LifeStyle
+  preferences?: LifeStyle
 }
 
 export const emptyProfile: UserProfileData = {
   id: '-1',
   name: '',
   age: '',
-  photo: [],
+  photos: [],
   city: '',
-  likedUsers: [],
+  distance: '',
+  likedMe: false,
   reasons: [],
-  lifeStyle: {},
+  preferences: {},
 }
 
 export interface UserChatProfile {

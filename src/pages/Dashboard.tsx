@@ -31,6 +31,11 @@ const Dashboard = () => {
       { path: '/notice-no-likes', label: 'Notice No Likes' },
       { path: '/notice-no-users', label: 'Notice No Users' },
       { path: '/new-match', label: 'New Match' },
+      {
+        path: '/realtime-database-chat',
+        label: 'Firebase/Realtime database chat example',
+      },
+      { path: '/firestore-chat', label: 'Firebase/Firestore chat example' },
     ],
     temporary: [
       {
