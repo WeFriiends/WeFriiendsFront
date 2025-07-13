@@ -17,7 +17,7 @@ const UserAuthentication = () => {
   // Redirect if logged in
   useEffect(() => {
     if (isAuthenticated) {
-      // when app is opened and it`s already authenticated')
+      // when app is opened and it`s already authenticated
       navigate('/callback')
     }
   }, [isAuthenticated, navigate])
@@ -48,72 +48,33 @@ const UserAuthentication = () => {
     })
   }
 
-  const handleSignUpGoogle = async () => {
-    await loginWithRedirect({
-      authorizationParams: {
-        connection: 'google-oauth2',
-      },
-    })
-  }
-
-  const handleSignUpFacebook = async () => {
-    await loginWithRedirect({
-      authorizationParams: {
-        connection: 'facebook',
-      },
-    })
-  }
-
   return (
     <AuthPagesWrapper>
       <Typography
         variant="h1"
         className={`${commonClasses.title} ${classes.title}`}
       >
-        New here?
-      </Typography>
-      <Typography className={`${commonClasses.subTitle} ${classes.subTitle}`}>
-        Create an account
+        Let’s start!
       </Typography>
       <Button
         fullWidth
         disableFocusRipple
         disableRipple
         disableElevation
-        className={classes.btnLoginSocial}
-        startIcon={
-          <img className={classes.startIcon} alt="fb" src={'/img/fb.svg'} />
-        }
-        onClick={handleSignUpFacebook}
+        onClick={handleLogin}
+        className={classes.btnConnect}
       >
-        Facebook
+        Log in
       </Button>
       <Button
         fullWidth
         disableFocusRipple
         disableRipple
         disableElevation
-        className={classes.btnLoginSocial}
-        startIcon={
-          <img
-            className={classes.startIcon}
-            alt="google"
-            src={'/img/google.svg'}
-          />
-        }
-        onClick={handleSignUpGoogle}
-      >
-        Google
-      </Button>
-      <Button
-        fullWidth
-        disableFocusRipple
-        disableRipple
-        disableElevation
-        className={classes.btnLoginSocial}
+        className={classes.btnConnect}
         onClick={handleSignUp}
       >
-        e-mail
+        Create account
       </Button>
       <Typography variant="body2" className={classes.agreement}>
         By creating an account, I agree with{' '}
@@ -135,19 +96,6 @@ const UserAuthentication = () => {
           {'Privacy Policy'}
         </Link>
       </Typography>
-      <Typography className={classes.textAlready}>
-        Already have an account?
-        <br />
-        <Button
-          variant="text"
-          disableFocusRipple
-          disableRipple
-          onClick={handleLogin}
-          className={classes.linkSignIn}
-        >
-          Sign In
-        </Button>
-      </Typography>
     </AuthPagesWrapper>
   )
 }
@@ -155,41 +103,10 @@ const UserAuthentication = () => {
 export default UserAuthentication
 
 const useStyles = makeStyles()({
-  mainGrid: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    left: 0,
-    bottom: 0,
-  },
-  mainBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    margin: '0 20px',
-    padding: '50px 0',
-    [theme.breakpoints.up(390)]: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: 350,
-      margin: '0 auto',
-      maxHeight: '100%',
-      minHeight: 650,
-    },
-    '@media (max-height: 750px)': {
-      position: 'static',
-      transform: 'none',
-    },
-  },
   title: {
-    paddingTop: 60,
+    padding: '65px 0 50px',
   },
-  subTitle: {
-    marginBottom: 50,
-  },
-  btnLoginSocial: {
+  btnConnect: {
     textTransform: 'none',
     backgroundColor: theme.customPalette.authBtnBg,
     color: theme.palette.text.primary,
@@ -199,39 +116,19 @@ const useStyles = makeStyles()({
     fontWeight: 400,
     borderRadius: 10,
     marginBottom: 15,
+    whiteSpace: 'nowrap',
     '&:hover, &:active': {
       backgroundColor: theme.customPalette.authBtnBgHover,
     },
-  },
-  startIcon: {
-    marginRight: 8,
   },
   agreement: {
     fontSize: 13,
     lineHeight: 1.2,
   },
-  textAlready: {
-    fontSize: 22,
-    color: theme.palette.text.primary, //'#3B4054',
-    textAlign: 'center',
-    marginTop: 40,
-  },
   link: {
     color: theme.palette.secondary.main,
     textDecoration: 'none',
     '&:hover, &:active': {
-      textDecoration: 'underline',
-    },
-  },
-  linkSignIn: {
-    color: theme.palette.secondary.main,
-    fontSize: 22,
-    fontWeight: 400,
-    lineHeight: 1.8,
-    display: 'inline',
-    textTransform: 'none',
-    '&:hover, &:active': {
-      backgroundColor: 'transparent',
       textDecoration: 'underline',
     },
   },
