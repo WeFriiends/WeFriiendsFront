@@ -55,12 +55,9 @@ export default Friends
 
 const useStyles = makeStyles()({
   friendsBlock: {
-    display: 'grid',
-    gridTemplateColumns: '153px 153px',
-    gridAutoRows: 184,
-    gridGap: 25,
-    maxHeight: '71vh',
-    overflow: 'auto',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 25,
     paddingLeft: 2,
   },
   friendsPhotos: {

@@ -7,6 +7,7 @@ import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
 import Friends from 'pages/FriendsPage'
+import Swipes from 'pages/SwipesPage'
 import Invitation from '../components/invitation/Invitation'
 import ErrorPage from 'pages/ErrorPage'
 import Match from '../components/findMatch/Match'
@@ -60,6 +61,11 @@ const routes: RouteObject[] = [
       {
         path: 'friends',
         element: <Friends />,
+        // element: <AuthGuard component={Friends} />,
+      },
+      {
+        path: 'swipes',
+        element: <Swipes />,
         // element: <AuthGuard component={Friends} />,
       },
       {
