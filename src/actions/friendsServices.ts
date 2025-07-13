@@ -1,14 +1,25 @@
 import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
+import mockAxiosInstance from '../mocks/mockAxiosInstance'
+import { shouldUseMockData } from '../utils/mockUtils'
 
 export const getFriends = async (
   url: string
 ): Promise<UserProfileData[] | undefined> => {
   try {
+    // Check if we should use mock data
+    if (shouldUseMockData()) {
+      console.log('Using mock data for friends')
+      const response = await mockAxiosInstance.get<UserProfileData[]>(url)
+      return response.data
+    }
+
+    // Otherwise use the original API call
     const response = await axiosInstance.get(url)
     return response.data
   } catch (error) {
     console.error('Error fetching data:', error)
+    return []
   }
 }
 

@@ -59,8 +59,8 @@ const routes: RouteObject[] = [
       },
       {
         path: 'friends',
-        // element: <Friends />,
-        element: <AuthGuard component={Friends} />,
+        element: <Friends />,
+        // element: <AuthGuard component={Friends} />,
       },
       {
         path: 'messages',
