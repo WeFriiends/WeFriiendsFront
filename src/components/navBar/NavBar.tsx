@@ -152,6 +152,7 @@ const useStyles = makeStyles()({
     maxWidth: 285,
     textTransform: 'none',
     textAlign: 'left',
+    maxHeight: 56,
     [theme.breakpoints.up('lg')]: {
       display: 'flex',
       alignItems: 'center',

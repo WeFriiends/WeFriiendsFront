@@ -64,6 +64,8 @@ const useStyles = makeStyles()({
     justifySelf: 'center',
     display: 'grid',
     gridTemplateRows: '1fr 67px',
+    border: '2px solid transparent',
+    cursor: 'pointer',
   },
   smallPhoto: {
     width: 153,
