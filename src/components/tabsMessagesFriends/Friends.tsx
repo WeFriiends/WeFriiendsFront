@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from '../../types/UserProfileData'
 import NoNewMatches from './NoNewMatchesOrMessages'
-// import { useNewFriendsList } from 'hooks/useFriendsList' *temporarily commented out - until API for the new friends list is added*
+import { useNewFriendsList } from 'hooks/useFriendsList'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
 
@@ -13,8 +13,7 @@ interface FriendsProps {
 
 const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   const { classes } = useStyles()
-  // const { data: userFriends } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
-  const userFriends: UserProfileData[] = [] // temporary solution, until API for the new friends list is added
+  const { data: userFriends = [] } = useNewFriendsList()
   const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
 
   const handleClick = (user: UserProfileData) => {
@@ -56,18 +55,17 @@ export default Friends
 
 const useStyles = makeStyles()({
   friendsBlock: {
-    display: 'grid',
-    gridTemplateColumns: '153px 153px',
-    gridAutoRows: 184,
-    gridGap: 25,
-    maxHeight: '71vh',
-    overflow: 'auto',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 25,
     paddingLeft: 2,
   },
   friendsPhotos: {
     justifySelf: 'center',
     display: 'grid',
     gridTemplateRows: '1fr 67px',
+    border: '2px solid transparent',
+    cursor: 'pointer',
   },
   smallPhoto: {
     width: 153,

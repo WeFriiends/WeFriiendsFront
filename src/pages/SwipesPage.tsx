@@ -10,7 +10,7 @@ import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import theme from '../styles/createTheme'
 
-const FriendsPage = () => {
+const SwipesPage = () => {
   const { classes } = useStyles()
 
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
@@ -33,14 +33,12 @@ const FriendsPage = () => {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         {friendsData ? (
-          <Box className={classes.wrapperFriend} sx={{ paddingRight: '20px' }}>
-            <Box className={classes.wrapperUserProfile}>
-              <UserProfile user={friendsData} />
-              <UserProfileButton startChat={startChat} />
-            </Box>
+          <Box sx={{ paddingRight: '20px' }}>
+            <UserProfile user={friendsData} />
+            <UserProfileButton startChat={startChat} />
           </Box>
         ) : (
-          <Box className={classes.wrapperSwipes}>
+          <Box>
             <SwipesWithFilters />
           </Box>
         )}
@@ -49,7 +47,7 @@ const FriendsPage = () => {
   )
 }
 
-export default FriendsPage
+export default SwipesPage
 
 const useStyles = makeStyles()({
   mainBlock: {
@@ -83,32 +81,6 @@ const useStyles = makeStyles()({
     paddingBottom: 35,
   },
 
-  wrapperFriend: {
-    display: 'flex',
-    flexDirection: 'column',
-    top: 0,
-    right: 0,
-    left: 0,
-    bottom: 56,
-    background: theme.palette.common.white,
-    position: 'fixed',
-    [theme.breakpoints.up('md')]: {
-      height: '100%',
-      position: 'static',
-    },
-  },
-  wrapperUserProfile: {
-    maxWidth: 430,
-    margin: '0 auto',
-  },
-
-  wrapperSwipes: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'block',
-    },
-  },
-
   twoColumnLayoutWrapper: {
     display: 'flex',
     justifyContent: 'center',
@@ -129,8 +101,10 @@ const useStyles = makeStyles()({
     width: '100%',
     marginBottom: 50,
     maxWidth: '100%',
+    display: 'none',
     [theme.breakpoints.up('md')]: {
       width: 350,
+      display: 'block',
     },
   },
   twoColumnLayoutColRight: {

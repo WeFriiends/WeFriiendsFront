@@ -7,6 +7,7 @@ import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
 import Friends from 'pages/FriendsPage'
+import Swipes from 'pages/SwipesPage'
 import Invitation from '../components/invitation/Invitation'
 import ErrorMensSearch from 'pages/ErrorMensSearch'
 import ErrorPage from 'pages/ErrorPage'
@@ -14,7 +15,6 @@ import Match from '../components/findMatch/Match'
 import Messages from 'pages/MessagesPage'
 import UserAccount from 'pages/UserAccount'
 import NavBar from 'components/navBar/NavBar'
-import TabsMessagesFriends from 'components/tabsMessagesFriends/TabsMessagesFriends'
 import ReportDialogExamplePage from '../components/report/ReportDialogExamplePage'
 import DeleteUserDialogExamplePage from '../components/deleteUser/DeleteUserDialogExamplePage'
 import MyAccount from '../components/myAccount/MyAccount'
@@ -62,19 +62,19 @@ const routes: RouteObject[] = [
         // element: <AuthGuard component={YourLikesList} />,
       },
       {
-        element: <TabsMessagesFriends />,
-        children: [
-          {
-            path: 'friends',
-            // element: <Friends />,
-            element: <AuthGuard component={Friends} />,
-          },
-          {
-            path: 'messages',
-            element: <Messages />,
-            // element: <AuthGuard component={Messages} />,
-          },
-        ],
+        path: 'friends',
+        element: <Friends />,
+        // element: <AuthGuard component={Friends} />,
+      },
+      {
+        path: 'swipes',
+        element: <Swipes />,
+        // element: <AuthGuard component={Friends} />,
+      },
+      {
+        path: 'messages',
+        element: <Messages />,
+        // element: <AuthGuard component={Messages} />,
       },
       {
         path: 'who-liked-you',

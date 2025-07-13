@@ -22,13 +22,15 @@ export const generateNavigationConfig = (): NavigationConfig[] => {
     {
       value: 'friends',
       Icon: iconII,
-      linkTo: '/friends',
+      // todo: remove temporary link to mock when work with real api data
+      linkTo: '/swipes?fill',
       size: { xs: { width: 15, height: 32 }, lg: { width: 25, height: 50 } },
     },
     {
       value: 'chat',
       Icon: IconChat,
-      linkTo: '/messages',
+      // todo: remove temporary link to mock when work with real api data
+      linkTo: '/messages?fill',
       size: { xs: { width: 25, height: 25 }, lg: { width: 30, height: 30 } },
     },
     {

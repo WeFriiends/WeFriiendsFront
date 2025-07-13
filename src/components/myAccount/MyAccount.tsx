@@ -47,7 +47,7 @@ const useStyles = makeStyles()({
     flexWrap: 'wrap',
     flexDirection: 'column',
     paddingBottom: 100,
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       alignItems: 'start',
       justifyContent: 'space-between',
       flexDirection: 'row',
@@ -61,7 +61,7 @@ const useStyles = makeStyles()({
     marginBottom: 50,
     maxWidth: '100%',
     order: 2,
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       order: 1,
       width: 350,
     },
@@ -73,7 +73,7 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('sm')]: {
       width: 450,
     },
-    [theme.breakpoints.up(850)]: {
+    [theme.breakpoints.up('md')]: {
       width: 450,
       order: 2,
     },
