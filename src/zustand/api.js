@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // API Base URL
-const API_BASE_URL = 'https://87.252.254.239:8080/api/profile'
+const API_BASE_URL = 'http://localhost:8080/api/profile'
 
 // Function to perform API requests
 const request = async (method, url, data = {}, token = null) => {
