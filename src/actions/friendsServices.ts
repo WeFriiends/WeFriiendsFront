@@ -1,9 +1,21 @@
 import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
+import { FriendsMatch } from 'types/Matches'
 
 export const getFriends = async (
   url: string
 ): Promise<UserProfileData[] | undefined> => {
+  try {
+    const response = await axiosInstance.get(url)
+    return response.data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+
+export const getMatches = async (
+  url: string
+): Promise<FriendsMatch[] | undefined> => {
   try {
     const response = await axiosInstance.get(url)
     return response.data
