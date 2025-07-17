@@ -1,3 +1,5 @@
+import { mutate } from 'swr'
+mutate('matches')
 import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
 import { FriendsMatch } from 'types/Matches'
@@ -31,6 +33,7 @@ export const addNewFriend = async (
     const response = await axiosInstance.post('matches', {
       user2_id: idFriend,
     })
+    mutate('matches')
     return response.status
   } catch (error) {
     console.error('Error by adding new friend:', error)
