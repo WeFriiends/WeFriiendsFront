@@ -1,7 +1,10 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { emptyProfile, UserProfileData } from '../../types/UserProfileData'
+import {
+  emptyProfile as _emptyProfile, // renamed to avoid unused variable warning
+  UserProfileData,
+} from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import NoNewMatches from './NoNewMatchesOrMessages'
 import { useMatches } from 'hooks/useMatches'
@@ -12,7 +15,8 @@ interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
 }
 
-const Friends: React.FC<FriendsProps> = ({ onClick }) => {
+const Friends: React.FC<FriendsProps> = ({ onClick: _onClick }) => {
+  void _onClick // temporaraily used to prevent ESLint unused variable warning
   const { classes } = useStyles()
   const { data: userFriends } = useMatches()
   /* const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
