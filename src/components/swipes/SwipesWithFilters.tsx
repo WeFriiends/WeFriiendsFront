@@ -17,13 +17,15 @@ const SwipesWithFilters = () => {
   }
 
   return (
-    <Box className={classes.boxSwipesWithFilters}>
+    <>
       <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
         filters
       </Link>
-      <Swipes />
-      <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
-    </Box>
+      <Box sx={{ position: 'sticky', top: 0 }}>
+        <Swipes />
+        <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
+      </Box>
+    </>
   )
 }
 
@@ -31,6 +33,7 @@ export default SwipesWithFilters
 
 const useStyles = makeStyles()({
   filters: {
+    paddingTop: 60,
     fontSize: 24,
     lineHeight: 1.5,
     color: '#262626',
@@ -38,12 +41,9 @@ const useStyles = makeStyles()({
     display: 'block',
     paddingRight: 20,
     textDecorationColor: '#262626',
-    // marginTop: -71,
     paddingBottom: 35,
-  },
-  boxSwipesWithFilters: {
-    [theme.breakpoints.down('sm')]: {
-      marginTop: 20,
+    [theme.breakpoints.up('lg')]: {
+      paddingTop: 0,
     },
   },
 })

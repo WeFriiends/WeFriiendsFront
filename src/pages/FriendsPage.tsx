@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Grid } from '@mui/material'
+import { Box, Button, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -25,6 +25,10 @@ const FriendsPage = () => {
     navigate('/messages')
   }
 
+  const handleCloseFriendPrifile = () => {
+    setFriendsData(null)
+  }
+
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box className={classes.twoColumnLayoutColLeft}>
@@ -33,7 +37,10 @@ const FriendsPage = () => {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         {friendsData ? (
-          <Box className={classes.wrapperFriend} sx={{ paddingRight: '20px' }}>
+          <Box className={classes.wrapperFriend}>
+            <Box className={classes.friendPrifileControlsMobile}>
+              <Button onClick={handleCloseFriendPrifile}>{'<- Back'}</Button>
+            </Box>
             <Box className={classes.wrapperUserProfile}>
               <UserProfile user={friendsData} />
               <UserProfileButton startChat={startChat} />
@@ -106,6 +113,7 @@ const useStyles = makeStyles()({
     display: 'none',
     [theme.breakpoints.up('md')]: {
       display: 'block',
+      minHeight: 2500,
     },
   },
 
@@ -141,6 +149,11 @@ const useStyles = makeStyles()({
     },
     [theme.breakpoints.up('md')]: {
       width: 450,
+    },
+  },
+  friendPrifileControlsMobile: {
+    [theme.breakpoints.up('md')]: {
+      display: 'none',
     },
   },
 })
