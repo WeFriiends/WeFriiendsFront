@@ -113,7 +113,8 @@ const useStyles = makeStyles()({
     display: 'none',
     [theme.breakpoints.up('md')]: {
       display: 'block',
-      minHeight: 2500,
+      position: 'sticky',
+      top: 0,
     },
   },
 
@@ -144,6 +145,7 @@ const useStyles = makeStyles()({
   twoColumnLayoutColRight: {
     width: 350,
     maxWidth: '100%',
+    minHeight: 2500,
     [theme.breakpoints.up('sm')]: {
       width: 450,
     },

@@ -1,4 +1,4 @@
-import { Box, Link } from '@mui/material'
+import { Link } from '@mui/material'
 import Swipes from './Swipes'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import { makeStyles } from 'tss-react/mui'
@@ -21,10 +21,8 @@ const SwipesWithFilters = () => {
       <Link className={classes.filters} onClick={handleOpenFiltersDialog}>
         filters
       </Link>
-      <Box sx={{ position: 'sticky', top: 0 }}>
-        <Swipes />
-        <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
-      </Box>
+      <Swipes />
+      <NoMoreMatchesDialog ref={FiltersDialogRef} title="Filters" />
     </>
   )
 }
