@@ -65,8 +65,9 @@ const useStyles = makeStyles()({
     },
   },
   tabsBlock: {
-    paddingBottom: '35px',
-    paddingTop: '60px',
+    paddingBottom: 35,
+    paddingTop: 60,
+    gap: 10,
     display: 'flex',
     justifyContent: 'space-between',
     maxWidth: 250,
