@@ -100,7 +100,7 @@ const useStyles = makeStyles()({
   },
   textArea: {
     fontFamily: 'Inter',
-    fontSize: 14,
+    fontSize: 20,
     lineHeight: '18px',
     fontWeight: 400,
     padding: 10,
@@ -112,6 +112,9 @@ const useStyles = makeStyles()({
     '&::placeholder': {
       color: theme.customPalette.colorPlaceholderText,
       opacity: 1,
+    },
+    [theme.breakpoints.up('sm')]: {
+      fontSize: 14,
     },
     [theme.breakpoints.up('md')]: {
       padding: 11,
