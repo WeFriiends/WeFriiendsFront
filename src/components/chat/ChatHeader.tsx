@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Typography, Button, Avatar, IconButton } from '@mui/material'
+import { Box, Typography, Avatar, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import ChatMenu from './ChatMenu'
