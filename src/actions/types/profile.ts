@@ -8,7 +8,7 @@ interface Location {
 }
 
 interface Profile {
-  _id: string
+  id: string
   name: string
   dateOfBirth: Date
   zodiacSign?: string

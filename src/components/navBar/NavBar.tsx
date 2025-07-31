@@ -88,7 +88,7 @@ const useStyles = makeStyles()({
     },
   },
   header: {
-    bottom: 0,
+    bottom: -1,
     right: 0,
     left: 0,
     zIndex: 999,
@@ -126,9 +126,9 @@ const useStyles = makeStyles()({
   },
   navList: {
     display: 'flex',
+    flexGrow: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexGrow: 10,
     margin: '0 20px',
     [theme.breakpoints.up('lg')]: {
       maxWidth: 420,
@@ -152,6 +152,7 @@ const useStyles = makeStyles()({
     maxWidth: 285,
     textTransform: 'none',
     textAlign: 'left',
+    maxHeight: 56,
     [theme.breakpoints.up('lg')]: {
       display: 'flex',
       alignItems: 'center',

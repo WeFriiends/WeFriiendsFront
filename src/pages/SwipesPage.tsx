@@ -11,7 +11,7 @@ import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesF
 import theme from '../styles/createTheme'
 import UserProfileWrapperRightCol from '../components/userProfile/UserProfileWrapperRightCol'
 
-const FriendsPage = () => {
+const SwipesPage = () => {
   const { classes } = useStyles()
 
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
@@ -32,28 +32,20 @@ const FriendsPage = () => {
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
-      <Box
-        className={`${classes.twoColumnLayoutColLeft} ${
-          friendsData ? 'stopScrollHideOnMobile' : ''
-        }`}
-      >
+      <Box className={classes.twoColumnLayoutColLeft}>
         <TabsMessagesFriends />
         <Friends onClick={selectFriend} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         {friendsData ? (
-          <Box className={classes.wrapperFriend}>
-            <Box className={classes.wrapperFriendMobile}>
-              <UserProfileWrapperRightCol
-                handleCloseFriendProfile={handleCloseFriendProfile}
-              >
-                <UserProfile user={friendsData} />
-                <UserProfileButton startChat={startChat} />
-              </UserProfileWrapperRightCol>
-            </Box>
-          </Box>
+          <UserProfileWrapperRightCol
+            handleCloseFriendProfile={handleCloseFriendProfile}
+          >
+            <UserProfile user={friendsData} />
+            <UserProfileButton startChat={startChat} />
+          </UserProfileWrapperRightCol>
         ) : (
-          <Box className={classes.wrapperSwipes}>
+          <Box>
             <SwipesWithFilters />
           </Box>
         )}
@@ -62,45 +54,18 @@ const FriendsPage = () => {
   )
 }
 
-export default FriendsPage
+export default SwipesPage
 
 const useStyles = makeStyles()({
-  wrapperFriend: {
-    display: 'flex',
-    flexDirection: 'column',
-    top: 0,
-    right: 0,
-    left: 0,
-    bottom: 56,
-    background: theme.palette.common.white,
-    position: 'fixed',
-    overscrollBehavior: 'contain',
-    overflow: 'auto',
-    //maxWidth: 350,
-    [theme.breakpoints.up('sm')]: {
-      //width: 450,
-      //maxWidth: 450,
-    },
-    [theme.breakpoints.up('md')]: {
-      height: '100%',
-      position: 'static',
-    },
-  },
-  wrapperFriendMobile: {
-    width: 350,
-    maxWidth: '100%',
-    margin: '0 auto',
-    [theme.breakpoints.up('sm')]: {
-      width: 450,
-    },
-  },
-  wrapperSwipes: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'block',
-      //position: 'sticky', //todo: good to make both columns sticky
-      //top: 0,
-    },
+  filters: {
+    fontSize: 24,
+    lineHeight: 1.5,
+    color: '#262626',
+    textAlign: 'right',
+    display: 'block',
+    paddingRight: 20,
+    textDecorationColor: '#262626',
+    paddingBottom: 35,
   },
   twoColumnLayoutWrapper: {
     display: 'flex',
@@ -122,14 +87,10 @@ const useStyles = makeStyles()({
     width: '100%',
     marginBottom: 50,
     maxWidth: '100%',
+    display: 'none',
     [theme.breakpoints.up('md')]: {
       width: 400,
-    },
-    '&.stopScrollHideOnMobile': {
-      display: 'none',
-      [theme.breakpoints.up('md')]: {
-        display: 'block',
-      },
+      display: 'block',
     },
   },
   twoColumnLayoutColRight: {

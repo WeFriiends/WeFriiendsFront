@@ -28,11 +28,14 @@ export default NearMeProfiles
 
 const useStyles = makeStyles()({
   title: {
-    paddingTop: 60,
+    paddingTop: 30,
     paddingBottom: 10,
     textAlign: 'center',
     fontSize: 32,
     fontWeight: 600,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 60,
+    },
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
       paddingBottom: 20,

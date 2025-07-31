@@ -1,33 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import {
-  emptyProfile as _emptyProfile, // renamed to avoid unused variable warning
-  UserProfileData,
-} from '../../types/UserProfileData'
+import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import NoNewMatches from './NoNewMatchesOrMessages'
 import { useMatches } from 'hooks/useMatches'
+//import { useNewFriendsList } from 'hooks/useFriendsList'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
+import { mockFriends } from '../../mocks/mockApiService'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
 }
 
-const Friends: React.FC<FriendsProps> = ({ onClick: _onClick }) => {
-  void _onClick // temporaraily used to prevent ESLint unused variable warning
+const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   const { classes } = useStyles()
   const { data: userFriends } = useMatches()
-  /* const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
+  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
 
-  const handleClick = (user: UserProfileData) => {
-    const friendsData = user
-    setFriendsData(friendsData)
-    onClick(friendsData)
+  // Find the complete profile from mockFriends
+  const convertToUserProfileData = (friend: FriendsMatch): UserProfileData => {
+    // Find the profile with matching ID in mockFriends
+    const fullProfile = mockFriends.find((profile) => profile.id === friend.id)
+
+    // If found, return the full profile
+    if (fullProfile) {
+      return fullProfile
+    }
+
+    // Fallback to creating a minimal profile if not found in mocks
+    return {
+      id: friend.id,
+      name: friend.name,
+      age: friend.age.toString(),
+      photos: [{ src: friend.photo }],
+      city: '',
+      distance: '',
+      likedMe: false,
+      reasons: [],
+      preferences: {},
+    }
   }
-*/
-  // handleClick and useState temporarily commented out - until the API for Profile by id becomes available
+
+  const handleClick = (friend: FriendsMatch) => {
+    const userProfileData = convertToUserProfileData(friend)
+    setSelectedFriendId(friend.id)
+    onClick(userProfileData)
+  }
 
   if (userFriends?.length === 0) {
     return <NoNewMatches text="You don’t have new matches." />
@@ -40,10 +60,10 @@ const Friends: React.FC<FriendsProps> = ({ onClick: _onClick }) => {
           id={element.id}
           key={element.id}
           className={classnames([
-            { [classes.friendsPhotos]: true },
-            // { [classes.fotoBorder]: element.id === friendsData._id }, - temporarily commented out - until the API for Profile by id becomes available
+            { [classes.friendsPhotoItem]: true },
+            { [classes.fotoBorder]: element.id === selectedFriendId },
           ])}
-          // onClick={() => handleClick(element)} - temporarily commented out - until the API for Profile by id becomes available
+          onClick={() => handleClick(element)}
         >
           <img src={element.photo} alt="photo" className={classes.smallPhoto} />
           <Typography className={classes.textOnPhoto}>
@@ -58,22 +78,27 @@ export default Friends
 
 const useStyles = makeStyles()({
   friendsBlock: {
-    display: 'grid',
-    gridTemplateColumns: '153px 153px',
-    gridAutoRows: 184,
-    gridGap: 25,
-    maxHeight: '71vh',
-    overflow: 'auto',
-    paddingLeft: 2,
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  friendsPhotos: {
+  friendsPhotoItem: {
     justifySelf: 'center',
     display: 'grid',
-    gridTemplateRows: '1fr 67px',
+    gridTemplateRows: 'auto 67px',
+    border: '2px solid transparent',
+    cursor: 'pointer',
+    width: 'calc((100vw - 50px) / 2)',
+    [theme.breakpoints.up('sm')]: {
+      width: 'calc((100vw - 60px) / 3)',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: 190,
+      height: 230,
+    },
   },
   smallPhoto: {
-    width: 153,
-    height: 184,
+    width: '100%',
     objectFit: 'cover',
     gridRow: '1/3',
     gridColumn: '1/2',
