@@ -130,8 +130,8 @@ const useStyles = makeStyles()({
     display: 'none',
     [theme.breakpoints.up('md')]: {
       display: 'block',
-      position: 'sticky',
-      top: 0,
+      //position: 'sticky', //todo: good to make both columns sticky
+      //top: 0,
     },
   },
 
