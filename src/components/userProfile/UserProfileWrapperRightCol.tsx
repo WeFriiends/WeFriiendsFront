@@ -29,7 +29,7 @@ export default UserProfileWrapperRightCol
 
 const useStyles = makeStyles()({
   wrapperUserProfile: {
-    maxWidth: 430,
+    maxWidth: 450,
     margin: '0 auto',
   },
   topSpacePlaceholderProfile: {

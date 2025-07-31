@@ -16,12 +16,19 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items, className }) => {
       <Carousel
         autoPlay={false}
         navButtonsAlwaysVisible={true}
-        IndicatorIcon={<img src="/img/indicator.svg" alt="indicator" />}
+        IndicatorIcon={
+          <div
+            style={{
+              width: 85,
+              height: 3,
+              backgroundColor: 'rgba(255,255,255,0.5)',
+            }}
+          />
+        }
         activeIndicatorIconButtonProps={{
           style: {
             backgroundColor: 'white',
             borderRadius: 0,
-            height: '3px',
           },
         }}
         indicatorIconButtonProps={{
