@@ -77,8 +77,8 @@ const useStyles = makeStyles()(() => {
       },
     },
     messageBlockWrapper: {
-      '&:first-child>div': {
-        paddingTop: 0,
+      [theme.breakpoints.up('lg')]: {
+        marginTop: -30,
       },
     },
     messageBlock: {
@@ -90,7 +90,7 @@ const useStyles = makeStyles()(() => {
       marginRight: -20,
       borderBottom: '1px solid #EEE',
       [theme.breakpoints.up('lg')]: {
-        padding: '30px 30px 30px 30px',
+        padding: 30,
       },
     },
     selected: {
