@@ -66,12 +66,13 @@ const useStyles = makeStyles()({
   },
   tabsBlock: {
     paddingBottom: 35,
-    paddingTop: 60,
+    paddingTop: 30,
     gap: 10,
     display: 'flex',
     justifyContent: 'space-between',
     maxWidth: 250,
     [theme.breakpoints.up('sm')]: {
+      paddingTop: 60,
       maxWidth: 335,
     },
     [theme.breakpoints.up('md')]: {

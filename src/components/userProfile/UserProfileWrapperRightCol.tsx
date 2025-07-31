@@ -41,10 +41,13 @@ const useStyles = makeStyles()({
     },
   },
   friendProfileControlsMobile: {
-    paddingTop: 60,
+    paddingTop: 30,
     fontSize: 24,
     lineHeight: 1.5,
     paddingBottom: 31,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 60,
+    },
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },

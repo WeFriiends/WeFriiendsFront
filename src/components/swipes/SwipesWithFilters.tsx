@@ -31,7 +31,6 @@ export default SwipesWithFilters
 
 const useStyles = makeStyles()({
   filters: {
-    paddingTop: 60,
     fontSize: 24,
     lineHeight: 1.5,
     color: '#262626',
@@ -39,6 +38,10 @@ const useStyles = makeStyles()({
     display: 'block',
     textDecorationColor: '#262626',
     paddingBottom: 31,
+    paddingTop: 30,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 60,
+    },
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
     },
