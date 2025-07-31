@@ -519,6 +519,46 @@ const mockLastMessages: UserLastMessage[] = [
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
   },
+  {
+    id: '101',
+    avatar: '/img/tempGirls/girl1-450.jpg',
+    name: 'Elena S',
+    age: '38',
+    lastMessage: "Hello! Nice to meet you! I'm Elena",
+    messageCount: '1',
+  },
+  {
+    id: '102',
+    avatar: '/img/tempGirls/girl2-450.jpg',
+    name: 'Elena T',
+    age: '40',
+    lastMessage: "Hello! Nice to meet you! I'm Elena. Can...",
+    messageCount: '3',
+  },
+  {
+    id: '103',
+    avatar: '/img/tempGirls/girl3-900.jpg',
+    name: 'Elena M',
+    age: '36',
+    lastMessage: "Hello! Nice to meet you! I'm Elena",
+    messageCount: '0',
+  },
+  {
+    id: '104',
+    avatar: '/img/tempGirls/girl4-675.jpg',
+    name: 'Elena Antonova',
+    age: '42',
+    lastMessage: "Hello! Nice to meet you! I'm Elena",
+    messageCount: '1',
+  },
+  {
+    id: '105',
+    avatar: '/img/tempGirls/girl5-450.jpg',
+    name: 'Elena Petrova',
+    age: '35',
+    lastMessage: "Hello! Nice to meet you! I'm Elena",
+    messageCount: '1',
+  },
 ]
 
 // Mock API service with simplified implementation

@@ -179,6 +179,7 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('md')]: {
       height: '100%',
       position: 'static',
+      minHeight: 635,
     },
   },
   wrapperSwipes: {

@@ -126,9 +126,9 @@ const useStyles = makeStyles()({
   },
   navList: {
     display: 'flex',
+    flexGrow: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexGrow: 10,
     margin: '0 20px',
     [theme.breakpoints.up('lg')]: {
       maxWidth: 420,
