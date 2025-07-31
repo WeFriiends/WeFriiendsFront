@@ -58,7 +58,7 @@ const NavBar = () => {
             src={
               typeof profile?.photos?.[0] === 'string'
                 ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl-big.svg'
             }
             sx={{ width: 56, height: 56 }}
           ></Avatar>

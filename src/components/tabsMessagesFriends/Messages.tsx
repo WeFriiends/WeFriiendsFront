@@ -66,15 +66,7 @@ export default Messages
 
 const useStyles = makeStyles()(() => {
   return {
-    messagePage: {
-      //maxHeight: 'calc(100vh - 137px)',
-      [theme.breakpoints.up('sm')]: {
-        //maxHeight: 'calc(100vh - 290px)',
-      },
-      [theme.breakpoints.up('lg')]: {
-        marginTop: -30,
-      },
-    },
+    messagePage: {},
     messageBlock: {
       display: 'grid',
       gridTemplateColumns: '66px 1fr 30px',

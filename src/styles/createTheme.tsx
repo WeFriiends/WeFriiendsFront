@@ -57,6 +57,7 @@ const theme = {
     },
   },
   customPalette: {
+    colorPlaceholderText: '#AFB1B6', // Better to add it to 'palette'? but it causes errors
     colorNavIcon: '#AFB1B6', // Better to add it to 'palette'? but it causes errors
     colorInputGrey: '#c5c5c5',
     colorActiveGrey: '#262626',
