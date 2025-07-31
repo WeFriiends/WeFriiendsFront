@@ -30,7 +30,7 @@ const Messages = ({ onClick }: any) => {
     )
   }
   return (
-    <Box className={classes.messagePage}>
+    <>
       {userMessages?.map((element) => (
         <Box key={element.id} onClick={() => handleClick(element)}>
           <Box
@@ -58,7 +58,7 @@ const Messages = ({ onClick }: any) => {
           </Box>
         </Box>
       ))}
-    </Box>
+    </>
   )
 }
 
@@ -66,12 +66,11 @@ export default Messages
 
 const useStyles = makeStyles()(() => {
   return {
-    messagePage: {},
     messageBlock: {
       display: 'grid',
       gridTemplateColumns: '66px 1fr 30px',
       alignItems: 'center',
-      padding: '25px 45px 25px 30px',
+      padding: '25px 20px',
       marginLeft: -20,
       marginRight: -20,
       borderBottom: '1px solid #EEE',
