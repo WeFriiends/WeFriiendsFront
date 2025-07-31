@@ -52,11 +52,14 @@ export default TabsMessagesFriends
 const useStyles = makeStyles()({
   labelStyle: {
     textTransform: 'capitalize',
-    fontSize: 22,
+    fontSize: 18,
     lineHeight: 1.25,
     fontWeight: 500,
     textDecoration: 'none',
     cursor: 'pointer',
+    [theme.breakpoints.up('sm')]: {
+      fontSize: 22,
+    },
     [theme.breakpoints.up('md')]: {
       fontSize: 24,
     },
@@ -66,7 +69,13 @@ const useStyles = makeStyles()({
     paddingTop: '60px',
     display: 'flex',
     justifyContent: 'space-between',
-    maxWidth: 380,
+    maxWidth: 250,
+    [theme.breakpoints.up('sm')]: {
+      maxWidth: 335,
+    },
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 370,
+    },
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
     },

@@ -143,7 +143,10 @@ const ChatRoomStyled: React.FC<ChatRoomProps> = ({ roomId, userName }) => {
     <Box>
       <Box className={classes.header}>
         <Box className={classes.userInHeader}>
-          <Avatar src={'/img/photo_Elena.jpg'} sx={{ width: 50, height: 50 }} />
+          <Avatar
+            src={'/img/tempGirls/girl1-450.jpg'}
+            sx={{ width: 50, height: 50 }}
+          />
           <Typography
             sx={{
               color: theme.palette.primary.main,

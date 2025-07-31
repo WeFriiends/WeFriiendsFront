@@ -3,167 +3,167 @@
     "id": "1",
     "name": "Elena Musk",
     "location": "Istanbul",
-    "picture": "img/users/1.png",
+    "picture": "/img/tempGirls/girl4-675.jpg",
     "likedUsers": ["2", "3", "4"]
   },
   {
     "id": "2",
     "name": "Arina Smith",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl3-900.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "3",
     "name": "Barbara Baley",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl2-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "4",
     "name": "Irina Lopatko",
     "location": "Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl1-450.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "5",
     "name": "Abigale Lee",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl20-450.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "6",
     "name": "Haley Powers",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl19-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "7",
     "name": "Stacy Matteroli",
     "location": "Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl18-450.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "8",
     "name": "Jenifer Hoplins",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl17-450.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "9",
     "name": "Marion Davis",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl16-450.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "10",
     "name": "Maria Muirhead",
     "location": "Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl15-675.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "11",
     "name": "Kerry Teran",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl14-675.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "12",
     "name": "Marianne Kunche",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl13-900.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "13",
     "name": "Natasha Istanbul",
     "location": "",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl12-900.jpg",
     "likedUsers": ["1", "2", "3"]
   },
   {
     "id": "14",
     "name": "Kathy Drummond",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl11-900.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "15",
     "name": "Susan Saji",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl10-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "16",
     "name": "Amelie Jain",
     "location": "Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl9-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "17",
     "name": "Rita Qasi",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl8-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "18",
     "name": "Kelly Reddy",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl7-675.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "19",
     "name": "Vendy Padilla Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl6-900.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "20",
     "name": "Barbie Martinez",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl5-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "21",
     "name": "Luna Hall",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl4-675.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "22",
     "name": "Vera Chan",
     "location": "Istanbul",
-    "picture": "/img/users/1.png",
+    "picture": "/img/tempGirls/girl3-900.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "23",
     "name": "Alyssa Day-Bobb",
     "location": "Istanbul",
-    "picture": "/img/users/2.png",
+    "picture": "/img/tempGirls/girl2-450.jpg",
     "likedUsers": ["2", "3"]
   },
   {
     "id": "24",
     "name": "Daria Khare",
     "location": "Istanbul",
-    "picture": "/img/users/3.png",
+    "picture": "/img/tempGirls/girl1-450.jpg",
     "likedUsers": ["2", "3"]
   }
 ]

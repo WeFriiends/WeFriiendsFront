@@ -33,7 +33,7 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
           id={element.id}
           key={element.id}
           className={classnames([
-            { [classes.friendsPhotos]: true },
+            { [classes.friendsPhotoItem]: true },
             { [classes.fotoBorder]: element.id === friendsData.id },
           ])}
           onClick={() => handleClick(element)}
@@ -57,19 +57,25 @@ const useStyles = makeStyles()({
   friendsBlock: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: 25,
-    paddingLeft: 2,
+    gap: 10,
   },
-  friendsPhotos: {
+  friendsPhotoItem: {
     justifySelf: 'center',
     display: 'grid',
-    gridTemplateRows: '1fr 67px',
+    gridTemplateRows: 'auto 67px',
     border: '2px solid transparent',
     cursor: 'pointer',
+    width: 'calc((100vw - 50px) / 2)',
+    [theme.breakpoints.up('sm')]: {
+      width: 'calc((100vw - 60px) / 3)',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: 190,
+      height: 230,
+    },
   },
   smallPhoto: {
-    width: 153,
-    height: 184,
+    width: '100%',
     objectFit: 'cover',
     gridRow: '1/3',
     gridColumn: '1/2',

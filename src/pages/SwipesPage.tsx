@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import theme from '../styles/createTheme'
+import UserProfileWrapperRightCol from '../components/userProfile/UserProfileWrapperRightCol'
 
 const SwipesPage = () => {
   const { classes } = useStyles()
@@ -25,6 +26,10 @@ const SwipesPage = () => {
     navigate('/messages')
   }
 
+  const handleCloseFriendProfile = () => {
+    setFriendsData(null)
+  }
+
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box className={classes.twoColumnLayoutColLeft}>
@@ -33,10 +38,12 @@ const SwipesPage = () => {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         {friendsData ? (
-          <Box sx={{ paddingRight: '20px' }}>
+          <UserProfileWrapperRightCol
+            handleCloseFriendProfile={handleCloseFriendProfile}
+          >
             <UserProfile user={friendsData} />
             <UserProfileButton startChat={startChat} />
-          </Box>
+          </UserProfileWrapperRightCol>
         ) : (
           <Box>
             <SwipesWithFilters />
@@ -50,26 +57,6 @@ const SwipesPage = () => {
 export default SwipesPage
 
 const useStyles = makeStyles()({
-  mainBlock: {
-    paddingTop: 150,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 45,
-  },
-  messageStyle: {
-    fontSize: 24,
-    textAlign: 'center',
-    lineHeight: 1.2,
-  },
-  friendsPage: {
-    display: 'grid',
-    gridTemplateColumns: '376px 588px',
-    height: '71vh',
-    '&> *:nth-of-type(2)': {
-      paddingLeft: 118,
-    },
-  },
   filters: {
     fontSize: 24,
     lineHeight: 1.5,
@@ -80,7 +67,6 @@ const useStyles = makeStyles()({
     textDecorationColor: '#262626',
     paddingBottom: 35,
   },
-
   twoColumnLayoutWrapper: {
     display: 'flex',
     justifyContent: 'center',
@@ -103,7 +89,7 @@ const useStyles = makeStyles()({
     maxWidth: '100%',
     display: 'none',
     [theme.breakpoints.up('md')]: {
-      width: 350,
+      width: 400,
       display: 'block',
     },
   },

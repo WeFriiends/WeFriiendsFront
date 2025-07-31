@@ -10,9 +10,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl1-450.jpg' },
+      { src: '/img/tempGirls/girl2-450.jpg' },
+      { src: '/img/tempGirls/girl3-900.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -34,9 +34,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Polina T',
     age: '32',
     photos: [
-      { src: '/img/photo_Elena_3.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena.jpg' },
+      { src: '/img/tempGirls/girl4-675.jpg' },
+      { src: '/img/tempGirls/girl5-450.jpg' },
+      { src: '/img/tempGirls/girl6-900.jpg' },
     ],
     city: 'Paris',
     distance: '10 miles',
@@ -60,9 +60,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Valentina M',
     age: '38',
     photos: [
-      { src: '/img/friends/friends_photo2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
-      { src: '/img/photo_Elena.jpg' },
+      { src: '/img/tempGirls/girl7-675.jpg' },
+      { src: '/img/tempGirls/girl8-675.jpg' },
+      { src: '/img/tempGirls/girl9-450.jpg' },
     ],
     city: 'Berlin',
     distance: '10 miles',
@@ -78,9 +78,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Katya N',
     age: '40',
     photos: [
-      { src: '/img/friends/friends_photo3.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
-      { src: '/img/photo_Elena.jpg' },
+      { src: '/img/tempGirls/girl10-450.jpg' },
+      { src: '/img/tempGirls/girl11-900.jpg' },
+      { src: '/img/tempGirls/girl12-900.jpg' },
     ],
     city: 'Roma',
     distance: '10 miles',
@@ -96,9 +96,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl13-900.jpg' },
+      { src: '/img/tempGirls/girl14-675.jpg' },
+      { src: '/img/tempGirls/girl15-675.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -120,9 +120,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl16-450.jpg' },
+      { src: '/img/tempGirls/girl17-450.jpg' },
+      { src: '/img/tempGirls/girl18-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -144,9 +144,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl19-450.jpg' },
+      { src: '/img/tempGirls/girl20-450.jpg' },
+      { src: '/img/tempGirls/girl1-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -168,9 +168,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl2-450.jpg' },
+      { src: '/img/tempGirls/girl3-900.jpg' },
+      { src: '/img/tempGirls/girl4-675.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -192,9 +192,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl5-450.jpg' },
+      { src: '/img/tempGirls/girl6-900.jpg' },
+      { src: '/img/tempGirls/girl7-675.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -216,9 +216,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl8-675.jpg' },
+      { src: '/img/tempGirls/girl9-450.jpg' },
+      { src: '/img/tempGirls/girl10-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -240,9 +240,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl11-900.jpg' },
+      { src: '/img/tempGirls/girl12-900.jpg' },
+      { src: '/img/tempGirls/girl13-900.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -264,9 +264,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl14-675.jpg' },
+      { src: '/img/tempGirls/girl15-675.jpg' },
+      { src: '/img/tempGirls/girl16-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -288,9 +288,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl17-450.jpg' },
+      { src: '/img/tempGirls/girl18-450.jpg' },
+      { src: '/img/tempGirls/girl19-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -312,9 +312,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl20-450.jpg' },
+      { src: '/img/tempGirls/girl1-450.jpg' },
+      { src: '/img/tempGirls/girl2-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -336,9 +336,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl3-900.jpg' },
+      { src: '/img/tempGirls/girl4-675.jpg' },
+      { src: '/img/tempGirls/girl5-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -360,9 +360,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl6-900.jpg' },
+      { src: '/img/tempGirls/girl7-675.jpg' },
+      { src: '/img/tempGirls/girl8-675.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -384,9 +384,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl9-450.jpg' },
+      { src: '/img/tempGirls/girl10-450.jpg' },
+      { src: '/img/tempGirls/girl11-900.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -408,9 +408,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl12-900.jpg' },
+      { src: '/img/tempGirls/girl13-900.jpg' },
+      { src: '/img/tempGirls/girl14-675.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -432,9 +432,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl15-675.jpg' },
+      { src: '/img/tempGirls/girl16-450.jpg' },
+      { src: '/img/tempGirls/girl17-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -456,9 +456,9 @@ const mockFriends: UserProfileData[] = [
     name: 'Elena S',
     age: '36',
     photos: [
-      { src: '/img/photo_Elena.jpg' },
-      { src: '/img/photo_Elena_2.jpg' },
-      { src: '/img/photo_Elena_3.jpg' },
+      { src: '/img/tempGirls/girl18-450.jpg' },
+      { src: '/img/tempGirls/girl19-450.jpg' },
+      { src: '/img/tempGirls/girl20-450.jpg' },
     ],
     city: 'Madrid',
     distance: '10 miles',
@@ -481,7 +481,7 @@ const mockFriends: UserProfileData[] = [
 const mockLastMessages: UserLastMessage[] = [
   {
     id: '101',
-    avatar: '/img/photo_Elena.jpg',
+    avatar: '/img/tempGirls/girl1-450.jpg',
     name: 'Elena S',
     age: '38',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
@@ -489,7 +489,7 @@ const mockLastMessages: UserLastMessage[] = [
   },
   {
     id: '102',
-    avatar: '/img/photo_Elena_2.jpg',
+    avatar: '/img/tempGirls/girl2-450.jpg',
     name: 'Elena T',
     age: '40',
     lastMessage: "Hello! Nice to meet you! I'm Elena. Can...",
@@ -497,7 +497,7 @@ const mockLastMessages: UserLastMessage[] = [
   },
   {
     id: '103',
-    avatar: '/img/photo_Elena_3.jpg',
+    avatar: '/img/tempGirls/girl3-900.jpg',
     name: 'Elena M',
     age: '36',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
@@ -505,7 +505,7 @@ const mockLastMessages: UserLastMessage[] = [
   },
   {
     id: '104',
-    avatar: '/img/photo_Elena.jpg',
+    avatar: '/img/tempGirls/girl4-675.jpg',
     name: 'Elena Antonova',
     age: '42',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
@@ -513,7 +513,7 @@ const mockLastMessages: UserLastMessage[] = [
   },
   {
     id: '105',
-    avatar: '/img/photo_Elena.jpg',
+    avatar: '/img/tempGirls/girl5-450.jpg',
     name: 'Elena Petrova',
     age: '35',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
@@ -526,7 +526,7 @@ export const mockApiService = {
   // Get friends data (returns UserProfileData[])
   getFriends: async (): Promise<{ data: UserProfileData[] }> => {
     if (shouldUseMockData()) {
-      console.log('Using mock data for friends')
+      //console.log('Using mock data for friends')
       return { data: mockFriends }
     }
     return { data: [] }
@@ -535,7 +535,7 @@ export const mockApiService = {
   // Get last messages data (returns UserLastMessage[])
   getLastMessages: async (): Promise<{ data: UserLastMessage[] }> => {
     if (shouldUseMockData()) {
-      console.log('Using mock data for messages')
+      //console.log('Using mock data for messages')
       return { data: mockLastMessages }
     }
     return { data: [] }

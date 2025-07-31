@@ -37,9 +37,8 @@ const useStyles = makeStyles()({
     color: '#262626',
     textAlign: 'right',
     display: 'block',
-    paddingRight: 20,
     textDecorationColor: '#262626',
-    paddingBottom: 35,
+    paddingBottom: 31,
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
     },

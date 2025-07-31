@@ -210,7 +210,7 @@ const useStyles = makeStyles()({
     marginBottom: 50,
     maxWidth: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 350,
+      width: 400,
     },
   },
   twoColumnLayoutColRight: {

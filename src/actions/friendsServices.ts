@@ -9,7 +9,7 @@ export const getFriends = async (
   try {
     // Check if we should use mock data
     if (shouldUseMockData()) {
-      console.log('Using mock data for friends')
+      //console.log('Using mock data for friends')
       const response = await mockAxiosInstance.get<UserProfileData[]>(url)
       return response.data
     }
@@ -18,7 +18,7 @@ export const getFriends = async (
     const response = await axiosInstance.get(url)
     return response.data
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error fetching data shouldUseMockData:', error)
     return []
   }
 }

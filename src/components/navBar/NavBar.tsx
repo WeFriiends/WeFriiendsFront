@@ -88,7 +88,7 @@ const useStyles = makeStyles()({
     },
   },
   header: {
-    bottom: 0,
+    bottom: -1,
     right: 0,
     left: 0,
     zIndex: 999,

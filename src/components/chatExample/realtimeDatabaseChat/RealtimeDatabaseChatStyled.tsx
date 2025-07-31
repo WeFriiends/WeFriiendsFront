@@ -89,7 +89,7 @@ function ChatComponent({ roomId, userName }: ChatComponentProps) {
         <Box className={classes.header}>
           <Box className={classes.userInHeader}>
             <Avatar
-              src={'/img/photo_Elena.jpg'}
+              src={'/img/tempGirls/girl1-450.jpg'}
               sx={{ width: 50, height: 50 }}
             />
             <Typography

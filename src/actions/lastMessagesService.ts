@@ -9,7 +9,7 @@ export const getLastMessages = async (
   try {
     // Check if we should use mock data
     if (shouldUseMockData()) {
-      console.log('Using mock data for messages')
+      //console.log('Using mock data for messages')
       const response = await mockAxiosInstance.get<UserLastMessage[]>(
         'lastMessages'
       )

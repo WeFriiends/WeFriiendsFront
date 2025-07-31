@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Grid } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import theme from '../styles/createTheme'
+import UserProfileWrapperRightCol from '../components/userProfile/UserProfileWrapperRightCol'
 
 const FriendsPage = () => {
   const { classes } = useStyles()
@@ -25,25 +26,30 @@ const FriendsPage = () => {
     navigate('/messages')
   }
 
-  const handleCloseFriendPrifile = () => {
+  const handleCloseFriendProfile = () => {
     setFriendsData(null)
   }
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
-      <Box className={classes.twoColumnLayoutColLeft}>
+      <Box
+        className={`${classes.twoColumnLayoutColLeft} ${
+          friendsData ? 'stopScrollHideOnMobile' : ''
+        }`}
+      >
         <TabsMessagesFriends />
         <Friends onClick={selectFriend} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         {friendsData ? (
           <Box className={classes.wrapperFriend}>
-            <Box className={classes.friendPrifileControlsMobile}>
-              <Button onClick={handleCloseFriendPrifile}>{'<- Back'}</Button>
-            </Box>
-            <Box className={classes.wrapperUserProfile}>
-              <UserProfile user={friendsData} />
-              <UserProfileButton startChat={startChat} />
+            <Box className={classes.wrapperFriendMobile}>
+              <UserProfileWrapperRightCol
+                handleCloseFriendProfile={handleCloseFriendProfile}
+              >
+                <UserProfile user={friendsData} />
+                <UserProfileButton startChat={startChat} />
+              </UserProfileWrapperRightCol>
             </Box>
           </Box>
         ) : (
@@ -99,14 +105,25 @@ const useStyles = makeStyles()({
     bottom: 56,
     background: theme.palette.common.white,
     position: 'fixed',
+    overscrollBehavior: 'contain',
+    overflow: 'auto',
+    //maxWidth: 350,
+    [theme.breakpoints.up('sm')]: {
+      //width: 450,
+      //maxWidth: 450,
+    },
     [theme.breakpoints.up('md')]: {
       height: '100%',
       position: 'static',
     },
   },
-  wrapperUserProfile: {
-    maxWidth: 430,
+  wrapperFriendMobile: {
+    width: 350,
+    maxWidth: '100%',
     margin: '0 auto',
+    [theme.breakpoints.up('sm')]: {
+      width: 450,
+    },
   },
 
   wrapperSwipes: {
@@ -139,13 +156,18 @@ const useStyles = makeStyles()({
     marginBottom: 50,
     maxWidth: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 350,
+      width: 400,
+    },
+    '&.stopScrollHideOnMobile': {
+      display: 'none',
+      [theme.breakpoints.up('md')]: {
+        display: 'block',
+      },
     },
   },
   twoColumnLayoutColRight: {
     width: 350,
     maxWidth: '100%',
-    minHeight: 2500,
     [theme.breakpoints.up('sm')]: {
       width: 450,
     },
@@ -153,7 +175,11 @@ const useStyles = makeStyles()({
       width: 450,
     },
   },
-  friendPrifileControlsMobile: {
+  friendProfileControlsMobile: {
+    paddingTop: 60,
+    fontSize: 24,
+    lineHeight: 1.5,
+    paddingBottom: 31,
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
