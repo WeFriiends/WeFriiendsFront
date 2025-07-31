@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { emptyProfile, UserProfileData } from '../../types/UserProfileData'
+import {
+  emptyProfile as _emptyProfile, // renamed to avoid unused variable warning
+  UserProfileData,
+} from '../../types/UserProfileData'
+import { FriendsMatch } from 'types/Matches'
 import NoNewMatches from './NoNewMatchesOrMessages'
-// import { useNewFriendsList } from 'hooks/useFriendsList' *temporarily commented out - until API for the new friends list is added*
+import { useMatches } from 'hooks/useMatches'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
 
@@ -11,17 +15,19 @@ interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
 }
 
-const Friends: React.FC<FriendsProps> = ({ onClick }) => {
+const Friends: React.FC<FriendsProps> = ({ onClick: _onClick }) => {
+  void _onClick // temporaraily used to prevent ESLint unused variable warning
   const { classes } = useStyles()
-  // const { data: userFriends } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
-  const userFriends: UserProfileData[] = [] // temporary solution, until API for the new friends list is added
-  const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
+  const { data: userFriends } = useMatches()
+  /* const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
 
   const handleClick = (user: UserProfileData) => {
     const friendsData = user
     setFriendsData(friendsData)
     onClick(friendsData)
   }
+*/
+  // handleClick and useState temporarily commented out - until the API for Profile by id becomes available
 
   if (userFriends?.length === 0) {
     return <NoNewMatches text="You don’t have new matches." />
@@ -29,21 +35,17 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
 
   return (
     <Box className={classes.friendsBlock}>
-      {userFriends?.map((element: UserProfileData) => (
+      {userFriends?.map((element: FriendsMatch) => (
         <Box
           id={element.id}
           key={element.id}
           className={classnames([
             { [classes.friendsPhotos]: true },
-            { [classes.fotoBorder]: element.id === friendsData.id },
+            // { [classes.fotoBorder]: element.id === friendsData._id }, - temporarily commented out - until the API for Profile by id becomes available
           ])}
-          onClick={() => handleClick(element)}
+          // onClick={() => handleClick(element)} - temporarily commented out - until the API for Profile by id becomes available
         >
-          <img
-            src={element.photos[0].src}
-            alt="photo"
-            className={classes.smallPhoto}
-          />
+          <img src={element.photo} alt="photo" className={classes.smallPhoto} />
           <Typography className={classes.textOnPhoto}>
             {element.name}, {element.age}
           </Typography>

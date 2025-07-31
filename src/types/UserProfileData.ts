@@ -13,7 +13,7 @@ interface LifeStyle {
 }
 
 export interface UserProfileData {
-  id: string
+  _id: string
   name: string
   age: string
   photos: UserPhoto[]
@@ -25,7 +25,7 @@ export interface UserProfileData {
 }
 
 export const emptyProfile: UserProfileData = {
-  id: '-1',
+  _id: '-1',
   name: '',
   age: '',
   photos: [],
