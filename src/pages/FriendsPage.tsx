@@ -138,7 +138,7 @@ const useStyles = makeStyles()({
   twoColumnLayoutWrapper: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'stretch',
     flexWrap: 'wrap',
     flexDirection: 'column',
     paddingBottom: 100,
