@@ -74,8 +74,11 @@ const useStyles = makeStyles()(() => {
       marginLeft: -20,
       marginRight: -20,
       borderBottom: '1px solid #EEE',
+      [theme.breakpoints.up('md')]: {
+        marginRight: 0,
+      },
       [theme.breakpoints.up('lg')]: {
-        padding: 30,
+        padding: '30px 20px',
       },
     },
     selected: {

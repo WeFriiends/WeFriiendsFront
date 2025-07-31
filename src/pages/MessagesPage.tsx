@@ -35,7 +35,11 @@ const MessagesPage = () => {
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
-      <Box className={classes.twoColumnLayoutColLeft}>
+      <Box
+        className={`${classes.twoColumnLayoutColLeft} ${
+          selectedChat ? 'stopScrollHideOnMobile' : ''
+        }`}
+      >
         <TabsMessagesFriends />
         <Messages onClick={handleClick} />
       </Box>
@@ -201,6 +205,12 @@ const useStyles = makeStyles()({
     maxWidth: '100%',
     [theme.breakpoints.up('md')]: {
       width: 400,
+    },
+    '&.stopScrollHideOnMobile': {
+      display: 'none',
+      [theme.breakpoints.up('md')]: {
+        display: 'block',
+      },
     },
   },
   twoColumnLayoutColRight: {
