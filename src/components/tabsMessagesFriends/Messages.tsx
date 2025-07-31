@@ -32,11 +32,7 @@ const Messages = ({ onClick }: any) => {
   return (
     <Box className={classes.messagePage}>
       {userMessages?.map((element) => (
-        <Box
-          className={classes.messageBlockWrapper}
-          key={element.id}
-          onClick={() => handleClick(element)}
-        >
+        <Box key={element.id} onClick={() => handleClick(element)}>
           <Box
             className={` ${classes.messageBlock} ${
               userChatProfile.id === element.id ? classes.selected : ''
@@ -75,8 +71,6 @@ const useStyles = makeStyles()(() => {
       [theme.breakpoints.up('sm')]: {
         //maxHeight: 'calc(100vh - 290px)',
       },
-    },
-    messageBlockWrapper: {
       [theme.breakpoints.up('lg')]: {
         marginTop: -30,
       },
