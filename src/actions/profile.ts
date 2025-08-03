@@ -1,27 +1,20 @@
-// api/profile.ts
+// actions/profile.ts
 import axios from 'axios'
 import { Location, UserPreferences } from 'types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 
-/** локальный бек во время разработки */
-const API_BASE_URL = 'http://localhost:8080/api/profile'
-
-/** Данные, которые реально нужны бэку при создании профиля */
 export interface CreateProfileDto {
   name: string
-  dateOfBirth: string // ISO‑строка: '1998-05-14'
-  gender: string // 'male' | 'female' | ...
-  location: Location // { lat, lng, country, ... }
-  reasons: string[] // статусы «ищу друзей», «ищу работу» ...
-  photos: string[] // ***URL‑ы из Cloudinary***
+  dateOfBirth: string
+  gender: string
+  location: Location
+  reasons?: string[]
+  photos: string[] // массив URL
   userPreferences?: UserPreferences
 }
 
-/**
- * Создание профиля (бэку приходят только plain‑данные и ссылки на фото).
- * @param data   заполненная форма профиля
- * @param token  Bearer‑токен из Auth0
- */
+const API_BASE_URL = 'http://localhost:8080/api/profile'
+
 export async function createProfile(
   data: CreateProfileDto,
   token: string
@@ -34,7 +27,6 @@ export async function createProfile(
       },
     })
 
-    // локальные черновики нам больше не нужны
     clearLocalStorage(['userPreferences'])
   } catch (err: any) {
     console.error('❌ Error creating profile:', err.response?.data || err)

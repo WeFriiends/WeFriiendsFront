@@ -30,6 +30,7 @@ import { validateLocation } from './utils/validateLocation'
 import { Location, UserPicsType } from 'types/FirstProfile'
 import type { Dayjs } from 'dayjs'
 import AuthPagesWrapper from './AuthPagesWrapper'
+import { uploadFiles } from './utils/photoApi'
 
 const ProfileCarousel = () => {
   const token = useAuthStore((s) => s.token)
@@ -107,8 +108,18 @@ const ProfileCarousel = () => {
         break
     }
   }
+  function blobToFile(blob: Blob, fileName: string): File {
+    return new File([blob], fileName, {
+      type: blob.type,
+      lastModified: Date.now(),
+    })
+  }
 
   const onSubmit = async () => {
+    console.log(
+      'Photos URLs:',
+      tempPhotos.map((p) => p.url)
+    )
     if (tempPhotos.length === 0) {
       setSubmitClicked(true)
       return
@@ -121,6 +132,25 @@ const ProfileCarousel = () => {
     setCreating(true)
 
     try {
+      const filesToUpload: File[] = tempPhotos
+        .filter((p) => p.blobFile)
+        .map((p, i) => blobToFile(p.blobFile!, `photo${i}.jpg`))
+
+      console.log('👉 filesToUpload.length:', filesToUpload.length)
+      console.log(
+        '👉 filesToUpload names:',
+        filesToUpload.map((f) => f.name)
+      )
+      console.log('🔐 token (first 20):', token?.slice(0, 20))
+
+      let photoUrls = tempPhotos
+        .map((p) => p.url)
+        .filter((url): url is string => !!url)
+
+      if (filesToUpload.length > 0) {
+        const uploadedUrls = await uploadFiles(filesToUpload, token)
+        photoUrls = [...photoUrls, ...uploadedUrls]
+      }
       const {
         name,
         dob,
@@ -154,9 +184,7 @@ const ProfileCarousel = () => {
           gender,
           location: { lat, lng, country, city, street, houseNumber },
           reasons: selectedStatuses,
-          photos: tempPhotos
-            .map((photo) => photo.url)
-            .filter((url): url is string => !!url),
+          photos: photoUrls,
           userPreferences,
         },
         token

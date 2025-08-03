@@ -42,9 +42,11 @@ const MyProfile: React.FC = () => {
           <Avatar
             className={classes.avatar}
             src={
-              typeof profile?.photos?.[0] === 'string'
-                ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
+              profile?.photos &&
+              profile.photos.length > 0 &&
+              typeof profile.photos[0] === 'string'
+                ? profile.photos[0]
+                : '/img/placeholders/girl_big.svg'
             }
           />
           <Typography variant="h1" className={classes.name}>

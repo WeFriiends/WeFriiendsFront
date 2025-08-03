@@ -26,7 +26,7 @@ interface Profile {
     street?: string
     houseNumber?: string
   }
-  photos: UserPicsType[]
+  photos: string[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number
@@ -206,7 +206,7 @@ export const useProfileStore = create<ProfileStore>()(
         deleteProfile: async (token) =>
           await fetchData(() => deleteProfile(token), 'deleteProfile'),
 
-        addPhoto: (photo: UserPicsType) => {
+        addPhoto: (photo: string) => {
           set((state) => {
             if (!state.data) {
               return state
@@ -216,15 +216,14 @@ export const useProfileStore = create<ProfileStore>()(
               data: {
                 ...state.data,
                 photos: [
-                  ...(state.data.photos?.filter((p) => p.id !== photo.id) ||
-                    []),
+                  ...state.data.photos.filter((p) => p !== photo),
                   photo,
                 ],
               },
             }
           })
         },
-        removePhoto: (photoId: string) => {
+        removePhoto: (photoUrl: string) => {
           set((state) => {
             if (!state.data) {
               return state
@@ -234,7 +233,7 @@ export const useProfileStore = create<ProfileStore>()(
               data: {
                 ...state.data,
                 photos: [
-                  ...(state.data.photos?.filter((p) => p.id !== photoId) || []),
+                  ...(state.data.photos.filter((p) => p !== photoUrl) || []),
                 ],
               },
             }
