@@ -23,8 +23,7 @@ const TabsMessagesFriends: React.FC = () => {
     <>
       <Box className={classes.tabsBlock}>
         <Link
-          // todo: remove temporary link to mock when work with real api data
-          to="/messages?fill"
+          to="/messages"
           style={{
             color: getColor('messages'),
           }}
@@ -33,8 +32,7 @@ const TabsMessagesFriends: React.FC = () => {
           Messages
         </Link>
         <Link
-          // todo: remove temporary link to mock when work with real api data
-          to="/friends?fill"
+          to="/friends"
           style={{
             color: getColor('friends'),
           }}
