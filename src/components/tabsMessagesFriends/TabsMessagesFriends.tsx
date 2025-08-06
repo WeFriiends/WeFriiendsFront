@@ -2,32 +2,30 @@ import * as React from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 // import { useNewFriendsList } from 'hooks/useFriendsList'  *temporarily commented out - until API for the new friends list is added*
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 
 const TabsMessagesFriends: React.FC = () => {
   const { classes } = useStyles()
-  const location = useLocation().pathname
+  const location = useLocation()
+  const { pathname } = location
 
   // const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
   const friendsList = [] // temporary solution, until API for the new friends list is added
 
-  const getColor = (path: string): string => {
-    return path === location
-      ? theme.palette.primary.dark
-      : theme.palette.text.primary
+  const getColor = (tab: 'messages' | 'friends'): string => {
+    const active = (tab === 'messages' ? '/messages' : '/friends') === pathname
+
+    return active ? theme.palette.primary.dark : theme.palette.text.primary
   }
 
   return (
-    <Box sx={{ maxWidth: '1024px', margin: '0 auto' }}>
-      <Box
-        sx={{ maxWidth: '419px', paddingBottom: '38px', paddingTop: '10px' }}
-      >
+    <>
+      <Box className={classes.tabsBlock}>
         <Link
           to="/messages"
           style={{
-            color: getColor('/messages'),
-            paddingRight: '60px',
+            color: getColor('messages'),
           }}
           className={classes.labelStyle}
         >
@@ -36,13 +34,14 @@ const TabsMessagesFriends: React.FC = () => {
         <Link
           to="/friends"
           style={{
-            color: getColor('/friends'),
+            color: getColor('friends'),
           }}
           className={classes.labelStyle}
-        >{`New friends (${friendsList?.length})`}</Link>
+        >
+          {`New friends (${friendsList?.length})`}
+        </Link>
       </Box>
-      <Outlet />
-    </Box>
+    </>
   )
 }
 
@@ -51,12 +50,34 @@ export default TabsMessagesFriends
 const useStyles = makeStyles()({
   labelStyle: {
     textTransform: 'capitalize',
-    fontSize: 22,
-    lineHeight: 1.5,
+    fontSize: 18,
+    lineHeight: 1.25,
     fontWeight: 500,
     textDecoration: 'none',
+    cursor: 'pointer',
+    [theme.breakpoints.up('sm')]: {
+      fontSize: 22,
+    },
+    [theme.breakpoints.up('md')]: {
+      fontSize: 24,
+    },
   },
-  removeIndicator: {
-    display: 'none',
+  tabsBlock: {
+    paddingBottom: 35,
+    paddingTop: 30,
+    gap: 10,
+    display: 'flex',
+    justifyContent: 'space-between',
+    maxWidth: 250,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 60,
+      maxWidth: 335,
+    },
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 370,
+    },
+    [theme.breakpoints.up('lg')]: {
+      paddingTop: 0,
+    },
   },
 })

@@ -3,8 +3,15 @@ import { Typography, FormHelperText } from '@mui/material'
 import RangeSliderDistance from './RangeSliderDistance'
 import { useEffect, useRef, useState } from 'react'
 import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { makeStyles } from 'tss-react/mui'
 
-const DistanceControl: React.FC = () => {
+type DistanceControlProps = {
+  shortLabel?: boolean
+}
+
+const DistanceControl: React.FC<DistanceControlProps> = ({ shortLabel }) => {
+  const { classes } = useStyles()
+
   const {
     data: profile,
     loading,
@@ -72,10 +79,19 @@ const DistanceControl: React.FC = () => {
         value={friendsDistance}
         onChange={handleDistanceChange}
       >
-        <Typography variant="body2">
-          Distance from location (100 km max)
-          {(loading || noticeFriendsDistance) && <> Loading...</>}
-        </Typography>
+        {shortLabel ? (
+          <Typography
+            variant="h2"
+            className={`${classes.subtitle} ${classes.noBottomMargin}`}
+          >
+            Distance
+          </Typography>
+        ) : (
+          <Typography variant="body2">
+            Distance from location (100 km max)
+            {(loading || noticeFriendsDistance) && <> Loading...</>}
+          </Typography>
+        )}
       </RangeSliderDistance>
 
       {errorFriendsDistance && (
@@ -88,3 +104,17 @@ const DistanceControl: React.FC = () => {
 }
 
 export default DistanceControl
+
+const useStyles = makeStyles()({
+  subtitle: {
+    fontSize: 16,
+    lineHeight: '22px',
+    marginTop: 15,
+    marginBottom: 20,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  noBottomMargin: {
+    marginBottom: 0,
+  },
+})

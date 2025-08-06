@@ -16,12 +16,19 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items, className }) => {
       <Carousel
         autoPlay={false}
         navButtonsAlwaysVisible={true}
-        IndicatorIcon={<img src="/img/indicator.svg" />}
+        IndicatorIcon={
+          <div
+            style={{
+              width: 85,
+              height: 3,
+              backgroundColor: 'rgba(255,255,255,0.5)',
+            }}
+          />
+        }
         activeIndicatorIconButtonProps={{
           style: {
             backgroundColor: 'white',
             borderRadius: 0,
-            height: '3px',
           },
         }}
         indicatorIconButtonProps={{
@@ -32,8 +39,12 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items, className }) => {
         indicatorContainerProps={{
           style: {
             position: 'absolute',
-            marginTop: -535,
+            top: 0,
+            left: 0,
+            right: 0,
             zIndex: 200,
+            display: 'flex',
+            justifyContent: 'center',
           },
         }}
         navButtonsProps={{
@@ -46,7 +57,9 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ items, className }) => {
         }}
         NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
         PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
-        sx={{ height: 535 }}
+        sx={{
+          height: { xs: 420, sm: 535 },
+        }}
       >
         {items.map((item: UserPhoto, i: number) => (
           <UserPic key={i} src={item.src} />

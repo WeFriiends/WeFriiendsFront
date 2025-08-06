@@ -15,7 +15,7 @@ const ArrowBackButton = (props: PreviousStepButtonProps) => {
       startIcon={
         <img
           alt="previous page"
-          src={'/img/navigationIcons/arrow_back.svg'}
+          src={'/img/navigationIcons/arrow-back.svg'}
           style={{ margin: 0 }}
         />
       }

@@ -27,11 +27,13 @@ const YourLikesUserListRenderer: React.FC<UserListRendererProps> = ({
       {likesCurrentUser?.map((user) => (
         <ImageListItem key={user.id} className={classes.imageListItem}>
           <Box className={classes.profileBoxPosition}>
-            <img
-              src={user.picture}
-              className={classes.userImages}
-              alt="Profile photo"
-            />
+            <Box className={classes.userImagesWrapper}>
+              <img
+                className={classes.userImages}
+                src={user.picture}
+                alt="Profile photo"
+              />
+            </Box>
             <Box className={classes.lightingIconPosition}>
               <IconLightning />
             </Box>

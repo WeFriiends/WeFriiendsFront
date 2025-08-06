@@ -16,9 +16,9 @@ const MyProfile: React.FC = () => {
   const { data: profile, loading } = useProfileStore()
 
   const defaultPhotos = [
-    { src: '/img/placeholders/girl_big.svg' },
-    { src: '/img/placeholders/girl_big.svg' },
-    { src: '/img/placeholders/girl_big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
   ]
 
   const [userPhotos, setUserPhotos] = useState(defaultPhotos)
@@ -44,7 +44,7 @@ const MyProfile: React.FC = () => {
             src={
               typeof profile?.photos?.[0] === 'string'
                 ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl_big.svg'
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl-big.svg'
             }
           />
           <Typography variant="h1" className={classes.name}>

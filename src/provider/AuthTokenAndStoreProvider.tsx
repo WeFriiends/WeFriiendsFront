@@ -31,8 +31,11 @@ const AuthTokenAndStoreProvider = ({
           setToken(accessToken)
         }
       } catch (error) {
-        // эту ошибку ловить не обязательно
-        console.error('Consent or Login required:', error)
+        // если не пришли данные профиля с бэка, по причине что бэк не залогинен
+        console.error(
+          'Consent or Login required (message from backend):',
+          error
+        )
       }
 
       try {

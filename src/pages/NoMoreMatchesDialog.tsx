@@ -4,7 +4,7 @@ import { CommonModal } from 'common/components/CommonModal'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../styles/createTheme'
 import AgeRangeControl from '../components/myAccount/AgeRangeControl'
-import RangeSliderDistance from '../components/myAccount/RangeSliderDistance'
+import DistanceControl from '../components/myAccount/DistanceControl'
 
 interface NoMoreMatchesDialogProps {
   ref: Ref<{ handleOpenNoMoreMatchesDialog: () => void }>
@@ -29,10 +29,6 @@ const NoMoreMatchesDialog = forwardRef(
       handleOpenNoMoreMatchesDialog,
     }))
 
-    function handleDistanceChange() {
-      // todo: updating the friendsDistanse
-    }
-
     return (
       <CommonModal
         isOpened={isModalVisible}
@@ -41,7 +37,7 @@ const NoMoreMatchesDialog = forwardRef(
         onClose={handleClose}
         height={605}
       >
-        <Box className={classes.noMatchesContainer}>
+        <Box>
           <Typography variant="h2" className={classes.title}>
             {props.title}
           </Typography>
@@ -50,14 +46,7 @@ const NoMoreMatchesDialog = forwardRef(
           </Typography>
           <Box className={classes.slidersWrapper}>
             <Box className={classes.slider}>
-              <RangeSliderDistance value={20} onChange={handleDistanceChange}>
-                <Typography
-                  variant="h2"
-                  className={`${classes.subtitle} ${classes.noBottomMargin}`}
-                >
-                  Distance
-                </Typography>
-              </RangeSliderDistance>
+              <DistanceControl shortLabel />
             </Box>
             <Box className={classes.slider}>
               <AgeRangeControl />
@@ -92,9 +81,6 @@ const NoMoreMatchesDialog = forwardRef(
 export default NoMoreMatchesDialog
 
 const useStyles = makeStyles()({
-  noMatchesContainer: {
-    display: 'grid',
-  },
   title: {
     textAlign: 'center',
     paddingBottom: 30,
@@ -103,7 +89,8 @@ const useStyles = makeStyles()({
   description: {
     textAlign: 'center',
     lineHeight: 1.2,
-    padding: '0 40px',
+    maxWidth: 250,
+    margin: '0 auto',
   },
   btnContainer: {
     marginTop: 25,
@@ -120,6 +107,7 @@ const useStyles = makeStyles()({
     transition: 'color .3s, background-color .3s',
     fontWeight: 600,
     width: 260,
+    maxWidth: '100%',
     height: 60,
     lineHeight: '56px',
     boxSizing: 'border-box',
@@ -149,10 +137,10 @@ const useStyles = makeStyles()({
     marginBottom: 0,
   },
   slidersWrapper: {
-    width: 305,
-    margin: '5px auto 0',
+    maxWidth: 305,
+    margin: '5px auto 55px',
   },
   slider: {
-    marginBottom: 30,
+    marginBottom: 35,
   },
 })

@@ -2,7 +2,11 @@ import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { Button, Menu, MenuItem } from '@mui/material'
 
-const ChatMenu = () => {
+interface ChatMenuProps {
+  icon?: string
+}
+
+const ChatMenu = ({ icon = '/img/messages/menu.svg' }: ChatMenuProps) => {
   const { classes } = useStyles()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -23,7 +27,7 @@ const ChatMenu = () => {
         onClick={handleClick}
         sx={{ minWidth: 'fit-content', padding: '0' }}
       >
-        <img src="/img/messages/menu.svg" alt="menu" />
+        <img src={icon} alt="menu" />
       </Button>
       <Menu
         id="basic-menu"

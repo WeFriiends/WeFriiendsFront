@@ -2,14 +2,21 @@ import { makeStyles } from 'tss-react/mui'
 import theme from '../styles/createTheme'
 
 export const nearByWhoLikedMeStyles = makeStyles()(() => ({
-  userImages: {
+  userImagesWrapper: {
     borderRadius: '50%',
     width: 81,
     height: 81,
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     [theme.breakpoints.up('lg')]: {
       width: 135,
       height: 135,
     },
+  },
+  userImages: {
+    width: '100%',
   },
   imageList: {
     gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))!important',

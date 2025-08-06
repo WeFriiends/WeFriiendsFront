@@ -8,7 +8,7 @@ const IconNearMe: React.FC<IconProps> = ({ color }) => {
 
   return (
     <svg
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
       viewBox="0 0 31 37"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
