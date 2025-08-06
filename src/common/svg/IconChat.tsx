@@ -18,7 +18,7 @@ const IconChat: React.FC<IconChatProps> = ({
     <svg
       width={width}
       height={height}
-      preserveAspectRatio="meet"
+      preserveAspectRatio="xMidYMid meet"
       viewBox="0 0 32 31"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
