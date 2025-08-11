@@ -24,13 +24,10 @@ export interface UserPreferences {
 export interface UserPicsType {
   id: string
   url: string | null
-  blobFile: Blob | null
+  blobFile?: Blob | null
   fileName?: string
 }
-//!!! export interface CloudinaryPhoto {
-//   url: string
-//   publicId: string
-// }
+
 export type Address = {
   country: string
   city: string

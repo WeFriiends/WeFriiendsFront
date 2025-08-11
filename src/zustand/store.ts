@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import {
-  createProfile,
+  createProfile as apiCreateProfile,
   getProfile,
   checkProfile,
   updateProfile,
   deleteProfile,
 } from './api'
-import { UserPicsType } from '../types/FirstProfile'
+import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 
 interface AuthState {
@@ -18,20 +18,14 @@ interface AuthState {
 interface Profile {
   name: string
   dateOfBirth: string
-  location: {
-    lat: number
-    lng: number
-    country?: string
-    city?: string
-    street?: string
-    houseNumber?: string
-  }
+  location: Location
   photos: string[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number
   friendsAgeMax?: number
   friendsDistance?: number
+  userPreferences?: UserPreferences
 }
 
 interface PhotoFields {
@@ -42,6 +36,7 @@ interface PhotoFields {
   addTempPhoto: (photo: UserPicsType) => void
   removeTempPhoto: (id: string) => void
 }
+
 type ProfileStore = ProfileState & ProfileActions & PhotoFields
 
 interface ErrorResponse {
@@ -60,7 +55,10 @@ interface ProfileState {
 }
 
 interface ProfileActions {
-  createProfile: (profileData: Profile, token: string | null) => Promise<void>
+  createProfile: (
+    profileData: Omit<Profile, 'photos'>,
+    token: string | null
+  ) => Promise<void>
   getProfile: (token: string | null) => Promise<void>
   checkProfile: (token: string | null) => boolean
   updateProfile: (
@@ -68,13 +66,10 @@ interface ProfileActions {
     token: string | null
   ) => Promise<{ status: number }>
   deleteProfile: (token: string | null) => Promise<void>
-  addPhoto: (photo: UserPicsType) => void
+  addPhoto: (photo: string) => void
   removePhoto: (photoId: string) => void
 }
 
-//!!!type ProfileStore = ProfileState & ProfileActions
-
-// Initial state
 const initialState: ProfileState & {
   tempPhotos: UserPicsType[]
   cloudUrls: string[]
@@ -89,8 +84,6 @@ const initialState: ProfileState & {
   cloudUrls: [],
 }
 
-// Zustand store
-
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   setToken: (token) => set({ token }),
@@ -98,11 +91,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
 export const useProfileStore = create<ProfileStore>()(
   devtools(
-    (set) => {
+    (set, get) => {
       const resetState = () => set({ ...initialState })
 
       const handleError = (error: any, actionName: string) => {
-        console.error(`Error in ${actionName}:`, error)
+        console.error(`❌ Error in ${actionName}:`, error)
         set({
           loading: false,
           error: true,
@@ -154,24 +147,35 @@ export const useProfileStore = create<ProfileStore>()(
           })),
 
         createProfile: async (profileData, token) => {
-          const response = await fetchData(
-            () => createProfile(profileData, token),
-            'createProfile'
-          )
-          if (response && response.status >= 200 && response.status < 300) {
+          set({ loading: true, error: false, success: false })
+
+          try {
+            const { tempPhotos } = get()
+
+            await apiCreateProfile(
+              {
+                ...profileData,
+                photos: tempPhotos,
+              },
+              token || ''
+            )
+
+            set({ tempPhotos: [], cloudUrls: [] })
+            clearLocalStorage(['userPreferences'])
+
             set({
               loading: false,
               success: true,
-              data: response.data,
+              data: { ...profileData, photos: [] },
             })
-            clearLocalStorage(['userPreferences'])
+          } catch (error) {
+            handleError(error, 'createProfile')
           }
         },
-        // It is used everywhere to fetch data from the database and display it on the front-end
+
         getProfile: async (token) =>
           await fetchData(() => getProfile(token), 'getProfile'),
 
-        // It is used to check if the user has profile data, if the first profile carousel has been filled out and stored to the database
         checkProfile: async (token) => {
           set({
             loading: true,
@@ -194,7 +198,6 @@ export const useProfileStore = create<ProfileStore>()(
           }
         },
 
-        // It is used on the /my-account page to change the address (to be used for more options)
         updateProfile: async (profileData, token) => {
           return await fetchData(
             () => updateProfile(profileData, token),
@@ -202,7 +205,6 @@ export const useProfileStore = create<ProfileStore>()(
           )
         },
 
-        // It is used to remove the profile from the MongoDB (not from Auth0)
         deleteProfile: async (token) =>
           await fetchData(() => deleteProfile(token), 'deleteProfile'),
 
@@ -211,7 +213,6 @@ export const useProfileStore = create<ProfileStore>()(
             if (!state.data) {
               return state
             }
-
             return {
               data: {
                 ...state.data,
@@ -223,12 +224,12 @@ export const useProfileStore = create<ProfileStore>()(
             }
           })
         },
+
         removePhoto: (photoUrl: string) => {
           set((state) => {
             if (!state.data) {
               return state
             }
-
             return {
               data: {
                 ...state.data,

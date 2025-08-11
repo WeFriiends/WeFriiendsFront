@@ -9,11 +9,8 @@ import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
 
 interface Props {
-  /** Родитель нажал Submit без фото */
   isSubmitClicked?: boolean
-  /** Сброс флага в родителе */
   resetSubmitClicked?: () => void
-  /** Показ / скрытие «файл > 5 МБ» */
   setIsPicHuge?: (flag: boolean) => void
 }
 
@@ -22,10 +19,8 @@ const UploadPhotos: React.FC<Props> = ({
   resetSubmitClicked,
   setIsPicHuge,
 }) => {
-  /* ---------- zustand ---------- */
   const { tempPhotos, setTempPhotos, removeTempPhoto, data } = useProfileStore()
 
-  /* ---------- при первом рендере: восстанавливаем фото из БД ---------- */
   useEffect(() => {
     if (data?.photos?.length && tempPhotos.length === 0) {
       const restored: UserPicsType[] = data.photos.map((url, i) => ({
@@ -37,13 +32,12 @@ const UploadPhotos: React.FC<Props> = ({
     }
   }, [data?.photos, tempPhotos.length, setTempPhotos])
 
-  /* ---------- локальные модалки ---------- */
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  /* ---------- 6 слотов ---------- */
   const slots = useMemo<UserPicsType[]>(() => {
-    const empties = Array.from({ length: 6 - tempPhotos.length }).map(
+    const count = tempPhotos.length
+    const empties = Array.from({ length: Math.max(0, 6 - count) }).map(
       (_, i) => ({
         id: `empty-${i}`,
         url: null,
@@ -55,14 +49,12 @@ const UploadPhotos: React.FC<Props> = ({
 
   const { classes } = useStyles()
 
-  /* ---------- UI ---------- */
   return (
     <>
-      {/* сообщение об отсутствии фото */}
       {isSubmitClicked && tempPhotos.length === 0 && (
         <>
           <Typography className={classes.errorTitle}>
-            Upload at least 1 photo
+            Upload at least 1 photo
           </Typography>
           <Typography className={classes.hint}>
             Your first uploaded photo will be used as your avatar
@@ -71,10 +63,9 @@ const UploadPhotos: React.FC<Props> = ({
       )}
 
       <FormHelperText className={classes.hintMsg}>
-        You can’t upload photo larger than 5 MB
+        You can’t upload photo larger than 5 MB
       </FormHelperText>
 
-      {/* модалка превью */}
       {previewUrl && (
         <PhotoModal
           isOpened
@@ -83,7 +74,6 @@ const UploadPhotos: React.FC<Props> = ({
         />
       )}
 
-      {/* модалка удаления */}
       {deleteId && (
         <DeletePhoto
           isOpened
@@ -96,7 +86,6 @@ const UploadPhotos: React.FC<Props> = ({
         />
       )}
 
-      {/* сами слоты */}
       <Box className={classes.picContainer}>
         {slots.map((p) => (
           <UploadSlot
@@ -116,7 +105,6 @@ const UploadPhotos: React.FC<Props> = ({
 
 export default UploadPhotos
 
-/* -------------------------- styles -------------------------- */
 const useStyles = makeStyles()(() => ({
   picContainer: {
     maxWidth: 349,
@@ -153,185 +141,3 @@ const useStyles = makeStyles()(() => ({
     color: createTheme.palette.primary.dark,
   },
 }))
-
-//!!! import { useEffect, useState } from 'react'
-// import { Box, Typography, FormHelperText } from '@mui/material'
-// import { makeStyles } from 'tss-react/mui'
-// import UploadSlot from './UploadSlot'
-// import { PhotoModal } from './PhotoModal'
-// import DeletePhoto from './DeletePhoto'
-// import createTheme from 'styles/createTheme'
-// import { UserPicsType } from 'types/FirstProfile'
-// import { useProfileStore } from 'zustand/store'
-
-// interface UploadPhotosProps {
-//   isPhotoSubmitted?: boolean
-//   setIsPhotoSubmitted?: (value: boolean) => void
-//   isSubmitClicked?: boolean
-//   setIsSubmitClicked?: (value: boolean) => void
-//   onPicChange: (array: UserPicsType[]) => void
-// }
-
-// const UploadPhotos = ({
-//   isPhotoSubmitted,
-//   setIsPhotoSubmitted,
-//   isSubmitClicked,
-//   setIsSubmitClicked,
-//   onPicChange,
-// }: UploadPhotosProps) => {
-//   const { removePhoto } = useProfileStore()
-//   const { data: profileData } = useProfileStore()
-//   const { classes } = useStyles()
-//   const [isDeleteModalOpened, setIsDeleteModalOpened] = useState<boolean>(false)
-//   const [isPhotoModalOpened, setIsPhotoModalOpened] = useState<boolean>(false)
-//   const [chosenId, setChosenId] = useState<string>('')
-//   const [chosenUrl, setChosenUrl] = useState<string>('')
-//   const [isPicHuge, setIsPicHuge] = useState<boolean>(false)
-
-//   const handlePicChange = (photos: UserPicsType[]) => {
-//     onPicChange(photos.map((pic) => ({ ...pic, url: pic.url ?? '' })))
-//   }
-
-//   const initialPics: UserPicsType[] = Array.from({ length: 6 }, (_, index) => ({
-//     id: `userPic-${index}`,
-//     url: '',
-//     blobFile: null,
-//   }))
-//   useEffect(() => {
-//     if (profileData?.photos?.length) {
-//       const restoredPics: UserPicsType[] = profileData.photos.map(
-//         (photo: UserPicsType, index: number) => ({
-//           id: photo.id || `userPic-${index}`,
-//           url: photo.url ?? '',
-//           blobFile: null,
-//         })
-//       )
-
-//       const merged = [
-//         ...restoredPics,
-//         ...initialPics.slice(restoredPics.length),
-//       ]
-//       setUserPics(merged)
-//       shiftPics(merged)
-//     }
-//   }, [])
-
-//   const [userPics, setUserPics] = useState<UserPicsType[]>(initialPics)
-
-//   const shiftPics = (array: UserPicsType[]) => {
-//     const picturesWithUrl = array.filter((pic) => pic.url !== null)
-//     const picturesWithoutUrl = array.filter((pic) => pic.url === null)
-//     setUserPics([...picturesWithUrl, ...picturesWithoutUrl])
-//     setIsPhotoSubmitted && setIsPhotoSubmitted(Boolean(picturesWithUrl?.length))
-//     handlePicChange([...picturesWithUrl, ...picturesWithoutUrl])
-//   }
-
-//   const deleteChosenPic = () => {
-//     const updatedPicArray: UserPicsType[] = userPics.map((pic) => {
-//       if (pic.id === chosenId) {
-//         return { ...pic, url: '' }
-//       } else return pic
-//     })
-//     setUserPics(updatedPicArray)
-//     setIsDeleteModalOpened(false)
-//     shiftPics(updatedPicArray)
-//     removePhoto(chosenId)
-//   }
-
-//   return (
-//     <>
-//       {!isPhotoSubmitted && (
-//         <>
-//           <Typography
-//             className={isSubmitClicked ? classes.errorTitle : classes.title}
-//           >
-//             Upload at least 1 photo
-//           </Typography>
-//           <Typography className={classes.hint}>
-//             Your first uploaded photo will be used as your avatar
-//           </Typography>
-//         </>
-//       )}
-//       <FormHelperText
-//         className={isPicHuge ? classes.errorMsg : classes.hintMsg}
-//       >
-//         {`Please note: you can't upload photo more than 5 MB`}
-//       </FormHelperText>
-//       <PhotoModal
-//         setIsPhotoModalOpened={setIsPhotoModalOpened}
-//         isOpened={isPhotoModalOpened}
-//         url={chosenUrl}
-//       />
-//       <DeletePhoto
-//         isOpened={isDeleteModalOpened}
-//         setIsDeleteModalOpened={setIsDeleteModalOpened}
-//         deleteChosenPic={deleteChosenPic}
-//         setChosenId={setChosenId}
-//       />
-//       <Box className={classes.picContainer}>
-//         {userPics.map((pic) => (
-//           <UploadSlot
-//             key={pic.id}
-//             id={pic.id}
-//             bgPic={pic.url}
-//             userPics={userPics}
-//             setIsDeleteModalOpened={setIsDeleteModalOpened}
-//             setChosenId={setChosenId}
-//             setIsPhotoModalOpened={setIsPhotoModalOpened}
-//             setChosenUrl={setChosenUrl}
-//             shiftPics={shiftPics}
-//             setIsPicHuge={setIsPicHuge}
-//             setIsSubmitClicked={setIsSubmitClicked}
-//           />
-//         ))}
-//       </Box>
-//     </>
-//   )
-// }
-
-// export default UploadPhotos
-
-// const useStyles = makeStyles()(() => ({
-//   picContainer: {
-//     maxWidth: 349,
-//     height: 'auto',
-//     display: 'flex',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     flexWrap: 'wrap',
-//     gap: 20,
-//     margin: '20px auto',
-//   },
-//   title: {
-//     fontWeight: 600,
-//     fontSize: 18,
-//     lineHeight: '132%',
-//     textAlign: 'center',
-//     color: createTheme.palette.text.primary,
-//   },
-//   hint: {
-//     textAlign: 'center',
-//     color: createTheme.palette.text.primary,
-//     fontWeight: 400,
-//     fontSize: 13,
-//   },
-//   hintMsg: {
-//     fontWeight: 400,
-//     fontSize: 13,
-//     lineHeight: '150%',
-//   },
-//   errorMsg: {
-//     fontWeight: 400,
-//     fontSize: 13,
-//     lineHeight: '150%',
-//     textAlign: 'center',
-//     color: createTheme.palette.primary.dark,
-//   },
-//   errorTitle: {
-//     fontWeight: 600,
-//     fontSize: 18,
-//     lineHeight: '132%',
-//     textAlign: 'center',
-//     color: createTheme.palette.primary.dark,
-//   },
-// }))
