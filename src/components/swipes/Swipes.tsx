@@ -37,7 +37,7 @@ const Swipes = () => {
       return
     }
     const currentIndex = potentialFriends.findIndex(
-      (element: UserProfileData) => element._id === currentUserProfile._id
+      (element: UserProfileData) => element.id === currentUserProfile.id
     )
     const lastIndex = potentialFriends.length - 1
     if (currentIndex < lastIndex) {
@@ -49,17 +49,17 @@ const Swipes = () => {
   }
 
   const onSkip = () => {
-    addDislike(currentPotentialFriend._id)
+    addDislike(currentPotentialFriend.id)
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
-      addNewFriend(currentPotentialFriend._id)
+      addNewFriend(currentPotentialFriend.id)
       setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
-      addLike(currentPotentialFriend._id)
+      addLike(currentPotentialFriend.id)
     }
     goToNextPotentialFriend(currentPotentialFriend)
   }
@@ -98,10 +98,10 @@ const Swipes = () => {
             </Button>
           </Box>
         ) : (
-          <Box sx={{ pr: 4 }}>
+          <>
             <UserProfile user={friendsData} />
             <UserProfileButton skip={onSkip} beFriend={onBeFriend} />
-          </Box>
+          </>
         )}
         <Match
           isMatchModalOpen={isMatchModalOpen}

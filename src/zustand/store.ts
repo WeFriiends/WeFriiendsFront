@@ -19,7 +19,7 @@ interface Profile {
   name: string
   dateOfBirth: string
   location: Location
-  photos: string[]
+  photos: (string | { url: string })[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number

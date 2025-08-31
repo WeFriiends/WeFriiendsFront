@@ -8,7 +8,9 @@ const IconII: React.FC<IconProps> = ({ color }) => {
 
   return (
     <svg
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
+      // width={16}
+      // height={33}
       viewBox="0 0 24 50"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

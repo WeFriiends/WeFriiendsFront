@@ -16,9 +16,9 @@ const MyProfile: React.FC = () => {
   const { data: profile, loading } = useProfileStore()
 
   const defaultPhotos = [
-    { src: '/img/placeholders/girl_big.svg' },
-    { src: '/img/placeholders/girl_big.svg' },
-    { src: '/img/placeholders/girl_big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
+    { src: '/img/placeholders/girl-big.svg' },
   ]
 
   const [userPhotos, setUserPhotos] = useState(defaultPhotos)
@@ -42,11 +42,9 @@ const MyProfile: React.FC = () => {
           <Avatar
             className={classes.avatar}
             src={
-              profile?.photos &&
-              profile.photos.length > 0 &&
-              typeof profile.photos[0] === 'string'
-                ? profile.photos[0]
-                : '/img/placeholders/girl_big.svg'
+              typeof profile?.photos?.[0] === 'string'
+                ? profile?.photos?.[0]
+                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl-big.svg'
             }
           />
           <Typography variant="h1" className={classes.name}>

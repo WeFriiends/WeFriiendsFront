@@ -23,9 +23,9 @@ const UploadPhotos: React.FC<Props> = ({
 
   useEffect(() => {
     if (data?.photos?.length && tempPhotos.length === 0) {
-      const restored: UserPicsType[] = data.photos.map((url, i) => ({
+      const restored: UserPicsType[] = data.photos.map((photo, i) => ({
         id: `url-${i}`,
-        url,
+        url: typeof photo === 'string' ? photo : photo?.url ?? null,
         blobFile: null,
       }))
       setTempPhotos(restored)

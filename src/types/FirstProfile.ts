@@ -7,20 +7,6 @@ export interface Location {
   houseNumber: string
 }
 
-export interface UserPreferences {
-  aboutMe?: string
-  selectedLanguages?: string[]
-  smoking?: string[]
-  educationalLevel?: string[]
-  children?: string[]
-  drinking?: string[]
-  pets?: string[]
-  interests?: string[]
-  questionary?: {
-    [key: string]: string | string[]
-  }
-}
-
 export interface UserPicsType {
   id: string
   url: string | null
@@ -28,11 +14,28 @@ export interface UserPicsType {
   fileName?: string
 }
 
-export type Address = {
-  country: string
-  city: string
-  street: string
-  houseNumber: string
-  lat: number
-  lng: number
+export interface UserPreferences {
+  aboutMe?: string
+  language?: string[]
+  smoking?: string
+  education?: string
+  children?: string
+  drink?: string
+  pets?: string[]
+  interests?: string[]
+  questionary?: {
+    [key: string]: string | string[]
+  }
+}
+
+export interface Profile {
+  id: string
+  name: string
+  dateOfBirth: Date
+  zodiacSign?: string
+  location: Location
+  gender: string
+  reasons: string[]
+  photos: (string | UserPicsType)[]
+  preferences?: UserPreferences
 }

@@ -5,7 +5,7 @@ export interface UserPhoto {
 }
 
 export interface UserProfileData {
-  _id: string
+  id: string
   name: string
   age: string
   photos: UserPhoto[]
@@ -17,7 +17,7 @@ export interface UserProfileData {
 }
 
 export const emptyProfile: UserProfileData = {
-  _id: '-1',
+  id: '-1',
   name: '',
   age: '',
   photos: [],
