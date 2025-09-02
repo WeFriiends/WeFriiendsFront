@@ -13,19 +13,16 @@ const TabsMessagesFriends: React.FC = () => {
   // const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
   const friendsList = [] // temporary solution, until API for the new friends list is added
 
-  const getColor = (tab: 'messages' | 'friends'): string => {
-    const active = (tab === 'messages' ? '/messages' : '/friends') === pathname
-
-    return active ? theme.palette.primary.dark : theme.palette.text.primary
-  }
-
   return (
     <>
       <Box className={classes.tabsBlock}>
         <Link
           to="/messages"
           style={{
-            color: getColor('messages'),
+            color:
+              pathname === '/messages'
+                ? theme.palette.primary.dark
+                : theme.palette.text.primary,
           }}
           className={classes.labelStyle}
         >
@@ -34,7 +31,10 @@ const TabsMessagesFriends: React.FC = () => {
         <Link
           to="/friends"
           style={{
-            color: getColor('friends'),
+            color:
+              pathname === '/friends' || pathname === '/swipes'
+                ? theme.palette.primary.dark
+                : theme.palette.text.primary,
           }}
           className={classes.labelStyle}
         >
