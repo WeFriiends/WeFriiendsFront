@@ -1,9 +1,8 @@
 import React, { useState, forwardRef, Ref, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
-import { UserPicsType } from 'types/FirstProfile'
+// import { UserPicsType } from 'types/FirstProfile'
 import { Box, Typography } from '@mui/material'
 import PrimaryButton from '../../common/components/PrimaryButton'
-import UploadPhotos from '../firstProfile/uploadPhotos/UploadPhotos'
 import Status from 'components/firstProfile/Status'
 import Interests from '../firstProfile/interests/Interests'
 import { makeStyles } from 'tss-react/mui'
@@ -17,7 +16,7 @@ const ChangeProfileDialog = forwardRef(
   (props: ChangeProfileDialogProps, ref) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const { classes } = useStyles()
-    const [, setPhotos] = useState<UserPicsType[]>([])
+    //const [, setPhotos] = useState<UserPicsType[]>([])
 
     const handleOpenChangeProfileDialog = () => {
       setIsModalVisible(true)
@@ -31,9 +30,9 @@ const ChangeProfileDialog = forwardRef(
       handleOpenChangeProfileDialog,
     }))
 
-    const handlePicChange = (photos: UserPicsType[]) => {
-      setPhotos(photos)
-    }
+    // const handlePicChange = (photos: UserPicsType[]) => {
+    //   setPhotos(photos)
+    // }
 
     const handleSaveClick = () => {
       console.error('save')
