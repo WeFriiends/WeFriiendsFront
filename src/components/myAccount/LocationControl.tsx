@@ -4,7 +4,7 @@ import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomp
 import { useAuthStore, useProfileStore } from '../../zustand/store'
 import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
 import { useEffect, useState } from 'react'
-import { Address } from '../firstProfile/profile'
+import { Location } from 'types/FirstProfile'
 import { makeStyles } from 'tss-react/mui'
 
 const LocationControl: React.FC = () => {
@@ -20,7 +20,7 @@ const LocationControl: React.FC = () => {
     'To change your address, type a street name along with the house number, then wait for suggestions.'
   )
 
-  const [, setAddress] = useState<Address | null>(null)
+  const [, setAddress] = useState<Location | null>(null)
   const token = useAuthStore((state) => state.token)
 
   useEffect(() => {

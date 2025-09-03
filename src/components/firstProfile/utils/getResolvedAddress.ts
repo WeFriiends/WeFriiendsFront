@@ -1,8 +1,8 @@
-import { Address } from '../profile'
+import { Location } from 'types/FirstProfile'
 import { validateLocation } from './validateLocation'
 
-export const getResolvedAddress = (value: any): Address | null => {
-  const resolvedAddress: Address = {
+export const getResolvedAddress = (value: any): Location | null => {
+  const resolvedAddress: Location = {
     country: value.addressDetails.country || '',
     city:
       value.addressDetails.city ||

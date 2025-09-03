@@ -1,9 +1,7 @@
 import axios from 'axios'
 
-// API Base URL
 const API_BASE_URL = 'http://localhost:8080/api/profile'
 
-// Function to perform API requests
 const request = async (method, url, data = {}, token = null) => {
   try {
     const headers = {
@@ -26,7 +24,6 @@ const request = async (method, url, data = {}, token = null) => {
   }
 }
 
-// Export API methods
 export const createProfile = (profileData, token) =>
   request('post', '/', profileData, token)
 export const getProfile = (token) => request('get', '/', {}, token)

@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 import theme from 'styles/createTheme'
 
 type ArrowRightBtnProps = {
-  onToggle: (isOpen: boolean) => void
+  onToggle?: (isOpen: boolean) => void
   isOpen: boolean | undefined
 }
 
@@ -13,7 +13,9 @@ export const ArrowRightBtn: React.FC<ArrowRightBtnProps> = ({
 }) => {
   const { classes } = useStyles()
   const toggle = () => {
-    onToggle(!isOpen)
+    if (onToggle) {
+      onToggle(!isOpen)
+    }
   }
 
   return (
@@ -27,14 +29,12 @@ export const ArrowRightBtn: React.FC<ArrowRightBtnProps> = ({
 const useStyles = makeStyles()(() => {
   return {
     arrowRightSvg: {
-      position: 'absolute',
       width: '14px',
       height: '14px',
       color: theme.palette.text.primary,
       cursor: 'pointer',
     },
     arrowDownSvg: {
-      position: 'absolute',
       width: '14px',
       height: '14px',
       color: theme.palette.text.primary,

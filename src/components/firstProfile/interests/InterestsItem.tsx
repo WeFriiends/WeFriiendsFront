@@ -1,6 +1,6 @@
 // InterestItem.tsx
 import React from 'react'
-import { Box, Typography, IconButton } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { ChipContainerMulti } from './ChipContainerMulti'
 import { ArrowRightBtn } from './ArrowRightBtn'
 import { InterestData } from './interestsData'
@@ -22,16 +22,16 @@ const InterestsItem: React.FC<InterestItemProps> = ({
 }) => {
   const { classes } = useStyles()
 
+  const handleToggle = () => {
+    onToggle(!data.isOpen)
+  }
+
   return (
     <Box key={index} className={classes.item}>
-      <Typography className={classes.itemTitle}>{data.title}</Typography>
-      <IconButton
-        className={classes.arrowRightBtn}
-        disableFocusRipple={true}
-        disableRipple={true}
-      >
-        <ArrowRightBtn isOpen={data.isOpen} onToggle={onToggle} />
-      </IconButton>
+      <Box className={classes.header} onClick={handleToggle}>
+        <Typography className={classes.itemTitle}>{data.title}</Typography>
+        <ArrowRightBtn isOpen={data.isOpen} />
+      </Box>
       {data.isOpen && (
         <ChipContainerMulti
           onSelectedItems={onSelectedItems}
@@ -56,6 +56,14 @@ const useStyles = makeStyles()(() => ({
     color: theme.palette.text.primary,
     borderBottom: '1px solid #EEEEEE',
     marginBottom: '30px',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    cursor: 'pointer',
+    padding: '10px 0',
+    position: 'relative',
   },
   itemTitle: {
     marginBottom: '20px',

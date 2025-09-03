@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Chip } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 
 type ChipContainerProps = {
-  data: { title: string; item: string[] }
+  data: { title: string; item: string[]; titleBase?: string }
   multiple?: boolean | undefined
   onSelectedItems: (selectedItems: string[]) => void
   selectedItems: string[] | undefined
@@ -21,18 +21,40 @@ export const ChipContainerMulti: React.FC<ChipContainerProps> = ({
     selectedItems || []
   )
 
+  useEffect(() => {
+    setSelectedItems(selectedItems || [])
+  }, [selectedItems])
+
+  const isNoneSelected =
+    data.titleBase === 'Pets' && _selectedItems.includes('None')
+
   const checkItems = (item: string) => {
-    const newSelectedItems: string[] = []
-    if (_selectedItems.includes(item)) {
-      newSelectedItems.push(..._selectedItems.filter((i) => i !== item))
-    } else {
-      const arr = multiple ? _selectedItems : []
-      newSelectedItems.push(...arr, item)
+    if (isNoneSelected && item !== 'None') {
+      return
     }
+
+    let newSelectedItems: string[] = []
+
+    const isAlreadySelected = _selectedItems.includes(item)
+
+    if (isAlreadySelected) {
+      newSelectedItems = _selectedItems.filter((i) => i !== item)
+    } else {
+      const base = multiple ? _selectedItems : []
+      newSelectedItems = [...base, item]
+    }
+
+    if (data.titleBase === 'Pets') {
+      if (item === 'None' && !isAlreadySelected) {
+        newSelectedItems = ['None']
+      } else if (item !== 'None') {
+        newSelectedItems = newSelectedItems.filter((i) => i !== 'None')
+      }
+    }
+
     setSelectedItems(newSelectedItems)
     onSelectedItems(newSelectedItems)
   }
-
   return (
     <Box className={classes.chipContainer}>
       {data.item.map((item, index) => (

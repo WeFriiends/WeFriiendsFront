@@ -10,7 +10,7 @@ import Loader from 'common/svg/Loader'
 import { makeStyles } from 'tss-react/mui'
 import { validateLocation } from '../utils/validateLocation'
 import LocationInputAutocomplete from './LocationAutocomplete'
-import { Address } from '../profile'
+import { Location } from 'types/FirstProfile'
 import { getResolvedAddress } from '../utils/getResolvedAddress'
 
 // todo: Check with PM the behaviour:
@@ -34,13 +34,13 @@ export const checkGeolocationPermission = async () => {
 }
 
 interface UserLocationProps {
-  onLocationChange: (location: Address) => void
+  onLocationChange: (location: Location) => void
 }
 
 const UserLocation = ({ onLocationChange }: UserLocationProps) => {
   const { classes } = useStyles()
   const { latitude, longitude, error } = useGeolocation()
-  const [address, setAddress] = useState<Address | null>({
+  const [address, setAddress] = useState<Location | null>({
     country: getItemFromLocalStorage('country'),
     city: getItemFromLocalStorage('city'),
     street: getItemFromLocalStorage('street'),
@@ -78,7 +78,7 @@ const UserLocation = ({ onLocationChange }: UserLocationProps) => {
           const { country, city, town, village, road, house_number } =
             response.address
 
-          const resolvedAddress: Address = {
+          const resolvedAddress: Location = {
             lat: latitude,
             lng: longitude,
             country: country || '',

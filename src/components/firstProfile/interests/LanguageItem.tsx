@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Typography, IconButton } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from 'styles/createTheme'
 import LanguageSelector from './languageSelector'
@@ -18,28 +18,26 @@ export const LanguageItem = ({
   const [isLanguageOpen, setIsLanguageOpen] = useState(false)
   const [, setIsLanguagePopUpOpen] = useState(false)
 
+  const handleToggle = () => {
+    setIsLanguageOpen((prev) => {
+      const isNowOpen = !prev
+      if (selectedLanguages.length === 0 && isNowOpen) {
+        setIsLanguagePopUpOpen(true)
+      }
+      return isNowOpen
+    })
+  }
+
   const handleSelectedLanguages = (languages: string[]) => {
     onSetSelectedLanguages(languages)
   }
 
   return (
     <Box className={classes.item}>
-      <Typography className={classes.itemTitle}>Language</Typography>
-      <IconButton
-        className={classes.arrowRightBtn}
-        disableFocusRipple={true}
-        disableRipple={true}
-      >
-        <ArrowRightBtn
-          isOpen={isLanguageOpen}
-          onToggle={(isOpen) => {
-            setIsLanguageOpen(isOpen)
-            if (selectedLanguages.length === 0 && isOpen) {
-              setIsLanguagePopUpOpen(true)
-            }
-          }}
-        />
-      </IconButton>
+      <Box className={classes.header} onClick={handleToggle}>
+        <Typography className={classes.itemTitle}>Language</Typography>
+        <ArrowRightBtn isOpen={isLanguageOpen} />
+      </Box>
       {isLanguageOpen && (
         <>
           <Box className={classes.chipContainer}>
@@ -146,6 +144,13 @@ const useStyles = makeStyles()(() => {
     },
     itemTitle: {
       marginBottom: '20px',
+    },
+    header: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      cursor: 'pointer',
+      padding: '10px 0',
     },
     arrowRightBtn: {
       position: 'absolute',
