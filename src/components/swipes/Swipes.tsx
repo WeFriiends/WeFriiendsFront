@@ -1,15 +1,18 @@
 import { Box, Button, Typography } from '@mui/material'
-import { addDislike, addLike, addNewFriend } from 'actions/friendsServices'
+import { addNewFriend } from 'actions/friendsServices'
 import Match from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
-import { usePotentialFriendsList } from 'hooks/useFriendsList'
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from 'types/UserProfileData'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import theme from '../../styles/createTheme'
+import { usePotentialFriendsStore } from 'zustand/friendsStore'
+import { useProfileStore } from 'zustand/store'
+import Loader from 'common/svg/Loader'
+import { shouldUseMockData } from 'utils/mockUtils'
 
 const Swipes = () => {
   const { classes } = useStyles()
@@ -21,7 +24,22 @@ const Swipes = () => {
   const [modalNewFriendAvatar, setModalNewFriendAvatar] = useState<string>('')
   const navigate = useNavigate()
 
-  const { data: potentialFriends } = usePotentialFriendsList()
+  const {
+    potentialFriends,
+    handleLike,
+    handleDislike,
+    fetchPotentialFriends,
+    loading,
+  } = usePotentialFriendsStore()
+
+  const { data: profile } = useProfileStore()
+
+  // Fetch potential friends when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      fetchPotentialFriends()
+    }
+  }, [profile, fetchPotentialFriends])
 
   useEffect(() => {
     if (!potentialFriends?.length) {
@@ -49,7 +67,7 @@ const Swipes = () => {
   }
 
   const onSkip = () => {
-    addDislike(currentPotentialFriend.id)
+    handleDislike(currentPotentialFriend.id)
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
@@ -59,7 +77,7 @@ const Swipes = () => {
       setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
-      addLike(currentPotentialFriend.id)
+      handleLike(currentPotentialFriend.id)
     }
     goToNextPotentialFriend(currentPotentialFriend)
   }
@@ -81,7 +99,11 @@ const Swipes = () => {
   return (
     <>
       <Box>
-        {noPotentialFriends ? (
+        {!shouldUseMockData() && (loading || potentialFriends === undefined) ? (
+          <Box className={classes.mainBlock}>
+            <Loader />
+          </Box>
+        ) : noPotentialFriends ? (
           <Box className={classes.mainBlock}>
             <Typography className={classes.messageStyle}>
               You’re running out of people.
