@@ -174,7 +174,6 @@ const useStyles = makeStyles()({
       minHeight: 594,
       height: 'calc(100vh - 188px)',
       position: 'static',
-      //minHeight: 500,
       maxHeight: '100vh',
     },
   },
