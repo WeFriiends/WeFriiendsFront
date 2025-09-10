@@ -37,18 +37,18 @@ const SwipesPage = () => {
         <Friends onClick={selectFriend} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
-        {friendsData ? (
-          <UserProfileWrapperRightCol
-            handleCloseFriendProfile={handleCloseFriendProfile}
-          >
-            <UserProfile user={friendsData} />
-            <UserProfileButton startChat={startChat} />
-          </UserProfileWrapperRightCol>
-        ) : (
-          <Box>
+        <Box className={classes.stickyRightCol}>
+          {friendsData ? (
+            <UserProfileWrapperRightCol
+              handleCloseFriendProfile={handleCloseFriendProfile}
+            >
+              <UserProfile user={friendsData} />
+              <UserProfileButton startChat={startChat} />
+            </UserProfileWrapperRightCol>
+          ) : (
             <SwipesWithFilters />
-          </Box>
-        )}
+          )}
+        </Box>
       </Box>
     </Grid>
   )
@@ -75,7 +75,7 @@ const useStyles = makeStyles()({
     flexDirection: 'column',
     paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
-      alignItems: 'start',
+      alignItems: 'stretch',
       justifyContent: 'space-between',
       flexDirection: 'row',
     },
@@ -102,5 +102,9 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('md')]: {
       width: 450,
     },
+  },
+  stickyRightCol: {
+    position: 'sticky',
+    top: 0,
   },
 })

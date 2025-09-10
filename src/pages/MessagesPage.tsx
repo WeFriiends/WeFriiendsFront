@@ -44,46 +44,54 @@ const MessagesPage = () => {
         <Messages onClick={handleClick} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
-        {selectedChat ? (
-          <Box className={classes.wrapperChat}>
-            <Box className={classes.topSpacePlaceholderProfile} />
-            <ChatHeader selectedChat={selectedChat} onClose={handleCloseChat} />
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: '20px',
-                height: 'calc(100% - 200px)',
-                flexGrow: 1,
-              }}
-            >
-              {Object.keys(messages).length != 0 &&
-              selectedChat?.id === friendId ? (
-                <DisplayingChat data={messages} userId={userId} />
-              ) : (
-                <StartChatting />
-              )}
-              <Box className={classes.sendMessageSection}>
-                <TextareaAutosize
-                  minRows={1}
-                  maxRows={10}
-                  placeholder="Type a message"
-                  className={classes.textArea}
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                />
-                <Button onClick={handleSendMessage} className={classes.sendBtn}>
-                  Send
-                </Button>
+        <Box className={classes.stickyRightCol}>
+          {selectedChat ? (
+            <Box className={classes.wrapperChat}>
+              <Box className={classes.topSpacePlaceholderProfile} />
+              <ChatHeader
+                selectedChat={selectedChat}
+                onClose={handleCloseChat}
+              />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '20px',
+                  height: 'calc(100% - 200px)',
+                  flexGrow: 1,
+                }}
+              >
+                {Object.keys(messages).length != 0 &&
+                selectedChat?.id === friendId ? (
+                  <DisplayingChat data={messages} userId={userId} />
+                ) : (
+                  <StartChatting />
+                )}
+                <Box className={classes.sendMessageSection}>
+                  <TextareaAutosize
+                    minRows={1}
+                    maxRows={10}
+                    placeholder="Type a message"
+                    className={classes.textArea}
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                  />
+                  <Button
+                    onClick={handleSendMessage}
+                    className={classes.sendBtn}
+                  >
+                    Send
+                  </Button>
+                </Box>
               </Box>
             </Box>
-          </Box>
-        ) : (
-          <Box className={classes.wrapperSwipes}>
-            <SwipesWithFilters />
-          </Box>
-        )}
+          ) : (
+            <Box className={classes.wrapperSwipes}>
+              <SwipesWithFilters />
+            </Box>
+          )}
+        </Box>
       </Box>
     </Grid>
   )
@@ -163,9 +171,10 @@ const useStyles = makeStyles()({
     background: theme.palette.common.white,
     position: 'fixed',
     [theme.breakpoints.up('md')]: {
-      height: '100%',
+      minHeight: 594,
+      height: 'calc(100vh - 188px)',
       position: 'static',
-      minHeight: 635,
+      maxHeight: '100vh',
     },
   },
   wrapperSwipes: {
@@ -191,7 +200,7 @@ const useStyles = makeStyles()({
     flexDirection: 'column',
     paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
-      alignItems: 'start',
+      alignItems: 'stretch',
       justifyContent: 'space-between',
       flexDirection: 'row',
     },
@@ -222,5 +231,9 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('md')]: {
       width: 450,
     },
+  },
+  stickyRightCol: {
+    position: 'sticky',
+    top: 0,
   },
 })
