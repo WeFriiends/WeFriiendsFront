@@ -41,22 +41,24 @@ const FriendsPage = () => {
         <Friends onClick={selectFriend} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
-        {friendsData ? (
-          <Box className={classes.wrapperFriend}>
-            <Box className={classes.wrapperFriendMobile}>
-              <UserProfileWrapperRightCol
-                handleCloseFriendProfile={handleCloseFriendProfile}
-              >
-                <UserProfile user={friendsData} />
-                <UserProfileButton startChat={startChat} />
-              </UserProfileWrapperRightCol>
+        <Box className={classes.stickyRightCol}>
+          {friendsData ? (
+            <Box className={classes.wrapperFriend}>
+              <Box className={classes.wrapperFriendMobile}>
+                <UserProfileWrapperRightCol
+                  handleCloseFriendProfile={handleCloseFriendProfile}
+                >
+                  <UserProfile user={friendsData} />
+                  <UserProfileButton startChat={startChat} />
+                </UserProfileWrapperRightCol>
+              </Box>
             </Box>
-          </Box>
-        ) : (
-          <Box className={classes.wrapperSwipes}>
-            <SwipesWithFilters />
-          </Box>
-        )}
+          ) : (
+            <Box className={classes.wrapperSwipes}>
+              <SwipesWithFilters />
+            </Box>
+          )}
+        </Box>
       </Box>
     </Grid>
   )
@@ -98,8 +100,6 @@ const useStyles = makeStyles()({
     display: 'none',
     [theme.breakpoints.up('md')]: {
       display: 'block',
-      //position: 'sticky', //todo: good to make both columns sticky
-      //top: 0,
     },
   },
   twoColumnLayoutWrapper: {
@@ -110,7 +110,7 @@ const useStyles = makeStyles()({
     flexDirection: 'column',
     paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
-      alignItems: 'start',
+      alignItems: 'stretch',
       justifyContent: 'space-between',
       flexDirection: 'row',
     },
@@ -141,5 +141,9 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('md')]: {
       width: 450,
     },
+  },
+  stickyRightCol: {
+    position: 'sticky',
+    top: 0,
   },
 })
