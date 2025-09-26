@@ -1,28 +1,37 @@
-import { Typography } from '@mui/material'
+import { Typography, Box } from '@mui/material'
 import theme from 'styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 
-const NoNewMatchesOrMessages = ({ text }: { text: string }) => {
+interface NoNewMatchesOrMessagesProps {
+  text: string
+  callToAction?: string
+}
+
+const NoNewMatchesOrMessages: React.FC<NoNewMatchesOrMessagesProps> = ({
+  text,
+  callToAction = 'Start searching!',
+}) => {
   const { classes } = useStyles()
 
   return (
-    <Typography className={classes.textOnEmptyTabs}>
-      {text}
-      <br />
-      Start searching!
+    <Box className={classes.container}>
+      <Typography className={classes.textOnEmptyTabs}>
+        {text}
+        <br />
+        {callToAction}
+      </Typography>
       <img src="/img/friends/arrow.svg" alt="arrow" className={classes.arrow} />
-    </Typography>
+    </Box>
   )
 }
+
 export default NoNewMatchesOrMessages
 
 const useStyles = makeStyles()({
-  textOnEmptyTabs: {
-    color: theme.palette.primary.main,
-    fontSize: 18,
-    fontWeight: 500,
-    lineHeight: 1.5,
-    maxWidth: 262,
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     position: 'fixed',
     bottom: 105,
     left: '50%',
@@ -33,15 +42,23 @@ const useStyles = makeStyles()({
       transform: 'none',
       margin: '0 auto',
     },
-
     [theme.breakpoints.up('md')]: {
-      fontSize: 24,
-      fontWeight: 500,
-      maxWidth: 'none',
       position: 'static',
       transform: 'none',
       marginTop: 70,
       width: 'auto',
+    },
+  },
+  textOnEmptyTabs: {
+    color: theme.palette.primary.main,
+    fontSize: 18,
+    fontWeight: 500,
+    lineHeight: 1.5,
+    maxWidth: 262,
+    textAlign: 'left',
+    [theme.breakpoints.up('md')]: {
+      fontSize: 24,
+      maxWidth: 'none',
     },
   },
   arrow: {
@@ -49,6 +66,7 @@ const useStyles = makeStyles()({
     height: 160,
     transform: 'rotate(75deg)',
     marginTop: 40,
+    marginLeft: '-80px',
     [theme.breakpoints.up('md')]: {
       position: 'static',
       display: 'block',

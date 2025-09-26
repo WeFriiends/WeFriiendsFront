@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
-import NoNewMatches from './NoNewMatchesOrMessages'
+import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { useMatches } from 'hooks/useMatches'
 //import { useNewFriendsList } from 'hooks/useFriendsList'
 import theme from 'styles/createTheme'
@@ -50,7 +50,7 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   }
 
   if (userFriends?.length === 0) {
-    return <NoNewMatches text="You don’t have new matches." />
+    return <NoNewMatchesOrMessages text="You don't have new matches." />
   }
 
   return (
