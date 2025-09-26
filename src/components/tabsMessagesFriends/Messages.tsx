@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserLastMessage } from 'types/UserLastMessage'
-import NoNewMatches from './NoNewMatchesOrMessages'
+import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useLastMessagesList } from 'hooks/useLastMessagesList'
 import theme from '../../styles/createTheme'
@@ -26,7 +26,7 @@ const Messages = ({ onClick }: any) => {
 
   if (userMessages?.length == 0) {
     return (
-      <NoNewMatches text="You don’t have any messages. You need to find friends first!" />
+      <NoNewMatchesOrMessages text="You don't have any messages. You need to find friends first!" />
     )
   }
   return (

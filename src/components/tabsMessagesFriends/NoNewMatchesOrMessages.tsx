@@ -1,46 +1,79 @@
-import { Box, Typography } from '@mui/material'
+import { Typography, Box } from '@mui/material'
 import theme from 'styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 
-const NoNewMatchesOrMessages = ({ text }: { text: string }) => {
+interface NoNewMatchesOrMessagesProps {
+  text: string
+  callToAction?: string
+}
+
+const NoNewMatchesOrMessages: React.FC<NoNewMatchesOrMessagesProps> = ({
+  text,
+  callToAction = 'Start searching!',
+}) => {
   const { classes } = useStyles()
 
   return (
-    <Box className={classes.centeredForMobile}>
-      <Typography className={classes.textOnEmptyTabs}>{text}</Typography>
+    <Box className={classes.container}>
       <Typography className={classes.textOnEmptyTabs}>
-        Start searching!
+        {text}
+        <br />
+        {callToAction}
       </Typography>
-      <Box className={classes.arrow}>
-        <img src="/img/friends/arrow.svg" alt="arrow" />
-      </Box>
+      <img src="/img/friends/arrow.svg" alt="arrow" className={classes.arrow} />
     </Box>
   )
 }
+
 export default NoNewMatchesOrMessages
 
 const useStyles = makeStyles()({
-  textOnEmptyTabs: {
-    color: theme.palette.primary.main,
-    fontSize: 24,
-    fontWeight: 500,
-  },
-  centeredForMobile: {
+  container: {
     display: 'flex',
     flexDirection: 'column',
-    [theme.breakpoints.down('sm')]: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: 'calc(100vh - 222px)',
-      textAlign: 'center',
+    alignItems: 'center',
+    position: 'fixed',
+    bottom: 105,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 'calc(100vw - 40px)',
+    '@media (max-height: 470px)': {
+      position: 'static',
+      transform: 'none',
+      margin: '0 auto',
+    },
+    [theme.breakpoints.up('md')]: {
+      position: 'static',
+      transform: 'none',
+      marginTop: 70,
+      width: 'auto',
+    },
+  },
+  textOnEmptyTabs: {
+    color: theme.palette.primary.main,
+    fontSize: 18,
+    fontWeight: 500,
+    lineHeight: 1.5,
+    maxWidth: 262,
+    textAlign: 'left',
+    [theme.breakpoints.up('md')]: {
+      fontSize: 24,
+      maxWidth: 'none',
     },
   },
   arrow: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginRight: '30px',
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
+    width: 160,
+    height: 160,
+    transform: 'rotate(75deg)',
+    marginTop: 40,
+    marginLeft: '-80px',
+    [theme.breakpoints.up('md')]: {
+      position: 'static',
+      display: 'block',
+      marginLeft: 'auto',
+      marginTop: 15,
+      transform: 'none',
+      height: 'auto',
     },
   },
 })
