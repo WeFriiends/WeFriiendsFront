@@ -11,8 +11,8 @@ const TabsMessagesFriends: React.FC = () => {
   const location = useLocation()
   const { pathname } = location
 
-//const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
-//const friendsList = [] // temporary solution, until API for the new friends list is added, for now we use matches instead of it
+  // const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
+  // const friendsList = [] // temporary solution, until API for the new friends list is added, for now we use matches instead of it
   const { data: friendsList } = useMatches()
 
   return (
