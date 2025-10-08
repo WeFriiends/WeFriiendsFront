@@ -2,7 +2,7 @@ import axios from 'axios'
 import { UserPicsType, Location, UserPreferences } from 'types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 
-const API_BASE_URL = 'http://localhost:8080/api/profile'
+const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api/profile`
 
 interface CreateProfileDto {
   name: string
