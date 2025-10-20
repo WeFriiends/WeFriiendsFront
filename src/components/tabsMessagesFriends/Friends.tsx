@@ -5,7 +5,6 @@ import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { useMatches } from 'hooks/useMatches'
-//import { useNewFriendsList } from 'hooks/useFriendsList'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
 import { mockFriends } from '../../mocks/mockApiService'
@@ -94,7 +93,6 @@ const useStyles = makeStyles()({
     },
     [theme.breakpoints.up('md')]: {
       width: 190,
-      height: 230,
     },
   },
   smallPhoto: {
