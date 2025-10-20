@@ -1,21 +1,65 @@
 import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import { useAuth0 } from '@auth0/auth0-react'
+import { db } from '../chatExample/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 const UserProfileButton = ({
   skip,
   beFriend,
   startChat,
+  userId,
 }: {
   skip?: () => void
   beFriend?: () => void
   startChat?: () => void
+  userId?: string
 }) => {
   const { classes } = useStyles()
+  const { user } = useAuth0()
+
+  const handleStartChat = async () => {
+    if (startChat) {
+      try {
+        // Get current user ID from Auth0
+        const currentUserId = user?.sub
+
+        if (currentUserId && userId) {
+          // Create conversation ID by removing "auth0|" prefix, sorting, and joining with "_"
+          const cleanCurrentUserId = currentUserId.replace('auth0|', '')
+          const cleanUserId = userId.replace('auth0|', '')
+          const sortedUserIds = [cleanCurrentUserId, cleanUserId].sort()
+          const conversationId = sortedUserIds.join('_')
+
+          // Create conversation document in Firestore
+          const conversationRef = doc(db, 'conversations', conversationId)
+          await setDoc(conversationRef, {
+            participants: [cleanCurrentUserId, cleanUserId],
+            lastMessage: 'Chat just has been created.',
+            lastMessageAt: serverTimestamp(),
+            lastMessageSender: cleanCurrentUserId,
+            lastMessageSeen: false,
+            createdAt: serverTimestamp(),
+          })
+
+          console.log('Conversation document created successfully')
+        } else {
+          console.error('Missing user IDs for chat connection')
+        }
+      } catch (error) {
+        console.error('Error creating chat connection:', error)
+      }
+
+      // Call the original startChat function
+      startChat()
+    }
+  }
+
   return (
     <>
       <Box className={classes.buttonSection}>
         {startChat && (
-          <Button className={classes.whiteButton} onClick={startChat}>
+          <Button className={classes.whiteButton} onClick={handleStartChat}>
             Start chat
           </Button>
         )}

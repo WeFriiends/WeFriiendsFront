@@ -49,7 +49,10 @@ const FriendsPage = () => {
                   handleCloseFriendProfile={handleCloseFriendProfile}
                 >
                   <UserProfile user={friendsData} />
-                  <UserProfileButton startChat={startChat} />
+                  <UserProfileButton
+                    startChat={startChat}
+                    userId={friendsData.id}
+                  />
                 </UserProfileWrapperRightCol>
               </Box>
             </Box>
