@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 import { useAuth0 } from '@auth0/auth0-react'
 import { db } from '../chatExample/firebase'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { useConversationsStore } from 'zustand/conversationsStore'
 
 const UserProfileButton = ({
   skip,
@@ -17,6 +18,7 @@ const UserProfileButton = ({
 }) => {
   const { classes } = useStyles()
   const { user } = useAuth0()
+  const { fetchConversations } = useConversationsStore()
 
   const handleStartChat = async () => {
     if (startChat) {
@@ -43,6 +45,12 @@ const UserProfileButton = ({
           })
 
           console.log('Conversation document created successfully')
+
+          // Force refresh of conversations after creating a new chat
+          if (user?.sub) {
+            console.log('Refreshing conversations after creating new chat')
+            await fetchConversations(user.sub, true)
+          }
         } else {
           console.error('Missing user IDs for chat connection')
         }

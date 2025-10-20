@@ -96,6 +96,7 @@ const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
   // Fetch conversations when component mounts or user changes
   useEffect(() => {
     if (user?.sub) {
+      // The fetchConversations method will check if a refetch is needed
       fetchConversations(user.sub)
     }
   }, [fetchConversations, user])

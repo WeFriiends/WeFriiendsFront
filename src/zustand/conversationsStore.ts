@@ -11,17 +11,54 @@ interface ConversationsState {
   conversations: UserLastMessage[]
   loading: boolean
   error: Error | null
-  fetchConversations: (userId?: string) => Promise<void>
+  lastFetched: number | null
+  fetchConversations: (userId?: string, forceRefresh?: boolean) => Promise<void>
+  shouldRefetch: (userId?: string) => boolean
 }
 
 export const useConversationsStore = create<ConversationsState>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       conversations: [],
       loading: false,
       error: null,
+      lastFetched: null,
 
-      fetchConversations: async (userId?: string) => {
+      shouldRefetch: (userId?: string) => {
+        const state = get()
+
+        // If there's no userId, we can't fetch conversations
+        if (!userId) {
+          return false
+        }
+
+        // If we've never fetched before, we should fetch
+        if (state.lastFetched === null) {
+          return true
+        }
+
+        // If we have conversations but they're older than 5 minutes, we should refetch
+        // const fiveMinutesInMs = 5 * 60 * 1000
+        // if (Date.now() - state.lastFetched > fiveMinutesInMs) {
+        //   return true
+        // }
+
+        // If we have no conversations, we should fetch
+        if (state.conversations.length === 0) {
+          return true
+        }
+
+        // Otherwise, we don't need to refetch
+        return false
+      },
+
+      fetchConversations: async (userId?: string, forceRefresh = false) => {
+        // If we don't need to refetch and we're not forcing a refresh, return early
+        if (!forceRefresh && !get().shouldRefetch(userId)) {
+          console.log('Using cached conversations data')
+          return
+        }
+
         set({ loading: true, error: null })
 
         try {
@@ -30,7 +67,11 @@ export const useConversationsStore = create<ConversationsState>()(
             const response = await mockAxiosInstance.get<UserLastMessage[]>(
               'lastMessages'
             )
-            set({ conversations: response.data, loading: false })
+            set({
+              conversations: response.data,
+              loading: false,
+              lastFetched: Date.now(),
+            })
             return
           }
 
@@ -116,7 +157,11 @@ export const useConversationsStore = create<ConversationsState>()(
           }
 
           console.log('Final processed user conversations:', userConversations)
-          set({ conversations: userConversations, loading: false })
+          set({
+            conversations: userConversations,
+            loading: false,
+            lastFetched: Date.now(),
+          })
         } catch (error) {
           console.error('Error fetching data for conversations:', error)
           set({
