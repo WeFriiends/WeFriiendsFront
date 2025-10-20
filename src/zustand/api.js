@@ -33,12 +33,8 @@ export const updateProfile = (profileData, token) =>
   request('patch', '/', profileData, token)
 export const deleteProfile = (token) => request('delete', '/', {}, token)
 export const getUserById = async (userId, token) => {
-  console.log(`Fetching user profile with userId=${userId} as path parameter`)
-  console.log(`Using auth token: ${token ? 'Yes' : 'No'}`)
-
   try {
     const response = await request('get', `/${userId}`, {}, token)
-    console.log(`API response:`, response.data)
     return response.data
   } catch (error) {
     console.error(`Error fetching user profile with userId=${userId}:`, error)

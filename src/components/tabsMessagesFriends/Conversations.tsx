@@ -83,7 +83,7 @@ interface ConversationsProps {
  * When a conversation is clicked, it passes the selected user profile to the parent component
  */
 const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
-  const { conversations, loading, error, fetchConversations } =
+  const { conversations, loading, error, subscribeToConversations } =
     useConversationsStore()
   const { user } = useAuth0()
   const [userChatProfile, setUserChatProfile] = useState<UserChatProfile>({
@@ -93,13 +93,13 @@ const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
     avatar: '',
   })
 
-  // Fetch conversations when component mounts or user changes
+  // Subscribe to conversations when component mounts
   useEffect(() => {
     if (user?.sub) {
-      // The fetchConversations method will check if a refetch is needed
-      fetchConversations(user.sub)
+      // Subscribe to real-time updates for conversations
+      subscribeToConversations(user.sub)
     }
-  }, [fetchConversations, user])
+  }, [subscribeToConversations, user])
 
   /**
    * Handle click on a conversation item

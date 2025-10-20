@@ -58,18 +58,16 @@ export const useUserProfileStore = create<UserProfilesState>()(
         }))
 
         try {
-          console.log(`Fetching profile for user: ${userId}`)
+          // console.log(`Fetching profile for user: ${userId}`)
 
           // Get the authentication token
           const { token } = useAuthStore.getState()
-          console.log(
-            `Token from useAuthStore: ${token ? 'Available' : 'Not available'}`
-          )
+          // console.log(`Token from useAuthStore: ${token ? 'Available' : 'Not available'}`)
 
           // Fetch the profile with the token
           const profile = await getUserById(userId, token)
 
-          console.log(`Profile fetched:`, profile)
+          // console.log(`Profile fetched:`, profile)
 
           // Update the store with the fetched profile
           set((state) => ({

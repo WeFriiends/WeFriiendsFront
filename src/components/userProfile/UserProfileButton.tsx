@@ -18,7 +18,7 @@ const UserProfileButton = ({
 }) => {
   const { classes } = useStyles()
   const { user } = useAuth0()
-  const { fetchConversations } = useConversationsStore()
+  useConversationsStore() // Keep the import for potential future use
 
   const handleStartChat = async () => {
     if (startChat) {
@@ -44,13 +44,7 @@ const UserProfileButton = ({
             createdAt: serverTimestamp(),
           })
 
-          console.log('Conversation document created successfully')
-
-          // Force refresh of conversations after creating a new chat
-          if (user?.sub) {
-            console.log('Refreshing conversations after creating new chat')
-            await fetchConversations(user.sub, true)
-          }
+          // console.log('Conversation document created successfully')
         } else {
           console.error('Missing user IDs for chat connection')
         }
