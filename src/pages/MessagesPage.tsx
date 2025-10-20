@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import Messages from 'components/tabsMessagesFriends/Messages'
+import Conversations from 'components/tabsMessagesFriends/Conversations'
 import theme from './../styles/createTheme'
 import { UserChatProfile } from 'types/UserProfileData'
 import messages from '../components/chat/chat.json'
@@ -30,7 +30,7 @@ const MessagesPage = () => {
         }`}
       >
         <TabsMessagesFriends />
-        <Messages onClick={handleClick} />
+        <Conversations onClick={handleClick} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
