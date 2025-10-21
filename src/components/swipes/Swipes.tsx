@@ -11,7 +11,6 @@ import theme from '../../styles/createTheme'
 import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
 import Loader from 'common/svg/Loader'
-import { shouldUseMockData } from 'utils/mockUtils'
 
 const Swipes = () => {
   const { classes } = useStyles()
@@ -100,8 +99,7 @@ const Swipes = () => {
   return (
     <>
       <Box>
-        {!shouldUseMockData() &&
-        (isLoading || potentialFriends === undefined) ? (
+        {isLoading || potentialFriends === undefined ? (
           <Box className={classes.mainBlock}>
             <Loader />
           </Box>

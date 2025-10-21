@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { UserLastMessage } from 'types/UserLastMessage'
-import mockAxiosInstance from '../mocks/mockAxiosInstance'
-import { shouldUseMockData } from '../utils/mockUtils'
 import { cleanUserId } from '../utils/userIdUtils'
 import { db } from '../services/firebase'
 import {
@@ -85,19 +83,6 @@ export const useConversationsStore = create<ConversationsState>()(
         set({ loading: true, error: null })
 
         try {
-          // Check if we should use mock data
-          if (shouldUseMockData()) {
-            const response = await mockAxiosInstance.get<UserLastMessage[]>(
-              'lastMessages'
-            )
-            set({
-              conversations: response.data,
-              loading: false,
-              lastFetched: Date.now(),
-            })
-            return
-          }
-
           if (!userId) {
             console.error('No user ID provided')
             set({ conversations: [] as UserLastMessage[], loading: false })
@@ -197,14 +182,6 @@ export const useConversationsStore = create<ConversationsState>()(
         if (get().unsubscribe) {
           console.log(
             'Already subscribed to conversations, skipping subscription'
-          )
-          return
-        }
-
-        // If we're using mock data, don't set up a listener
-        if (shouldUseMockData()) {
-          console.log(
-            'Using mock data, not setting up conversation subscription'
           )
           return
         }

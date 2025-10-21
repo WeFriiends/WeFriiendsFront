@@ -14,7 +14,6 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
-import { shouldUseMockData } from '../utils/mockUtils'
 
 interface FirestoreMessage {
   senderId: string
@@ -52,12 +51,6 @@ export const useChatStore = create<ChatState>()(
         if (get().unsubscribe) {
           console.log('Already subscribed to messages, unsubscribing first')
           get().unsubscribeFromMessages()
-        }
-
-        // If we're using mock data, don't set up a listener
-        if (shouldUseMockData()) {
-          console.log('Using mock data, not setting up messages subscription')
-          return
         }
 
         if (!conversationId) {

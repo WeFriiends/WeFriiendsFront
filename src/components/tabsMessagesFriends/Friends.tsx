@@ -7,7 +7,6 @@ import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { useMatchesStore } from 'zustand/friendsStore'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
-import { mockFriends } from '../../mocks/mockApiService'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
@@ -18,18 +17,9 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   const { matches: userFriends } = useMatchesStore()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
 
-  // Find the complete profile from mockFriends
-  const convertToUserProfileData = (friend: FriendsMatch): UserProfileData => {
-    // Find the profile with matching ID in mockFriends
-    const fullProfile = mockFriends.find((profile) => profile.id === friend.id)
-
-    // If found, return the full profile
-    if (fullProfile) {
-      return fullProfile
-    }
-
-    // Fallback to creating a minimal profile if not found in mocks
-    return {
+  const handleClick = (friend: FriendsMatch) => {
+    setSelectedFriendId(friend.id)
+    onClick({
       id: friend.id,
       name: friend.name,
       age: friend.age.toString(),
@@ -39,13 +29,7 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
       likedMe: false,
       reasons: [],
       preferences: {},
-    }
-  }
-
-  const handleClick = (friend: FriendsMatch) => {
-    const userProfileData = convertToUserProfileData(friend)
-    setSelectedFriendId(friend.id)
-    onClick(userProfileData)
+    })
   }
 
   if (userFriends?.length === 0) {
