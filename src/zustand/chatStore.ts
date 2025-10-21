@@ -68,13 +68,13 @@ export const useChatStore = create<ChatState>()(
         // Check if we have this conversation in the cache
         const cachedChat = get().messagesCache[conversationId]
         if (cachedChat) {
-          console.log('Using cached messages for conversation:', conversationId)
+          // console.log('Using cached messages for conversation:', conversationId)
           // todo: cache doesn't work normally, it shouldn't fire "Firebase Messages Snapshot Update" when switching between chats
           // Set currentChat from cache for immediate display
-          set({
-            currentChat: cachedChat,
-            loading: false,
-          })
+          // set({
+          //   currentChat: cachedChat,
+          //   loading: false,
+          // })
           // Continue to set up the listener to receive updates
         }
 
