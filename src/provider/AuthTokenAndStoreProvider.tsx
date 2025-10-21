@@ -23,10 +23,8 @@ const AuthTokenAndStoreProvider = ({
   const { fetchMatches, startPeriodicFetching, stopPeriodicFetching } =
     useMatchesStore()
 
-  const {
-    subscribeToConversations,
-    fetchConversations,
-  } = useConversationsStore()
+  const { subscribeToConversations, fetchConversations } =
+    useConversationsStore()
 
   // Флаги, предотвращающие повторные запросы
   const hasFetchedProfile = useRef(false)
