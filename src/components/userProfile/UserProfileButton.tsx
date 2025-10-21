@@ -2,7 +2,7 @@ import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useAuth0 } from '@auth0/auth0-react'
 import { db } from '../chatExample/firebase'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useNavigate } from 'react-router-dom'
 
@@ -34,18 +34,27 @@ const UserProfileButton = ({
         const sortedUserIds = [cleanCurrentUserId, cleanUserId].sort()
         const conversationId = sortedUserIds.join('_')
 
-        // Create conversation document in Firestore
+        // Get a reference to the conversation document
         const conversationRef = doc(db, 'conversations', conversationId)
-        await setDoc(conversationRef, {
-          participants: [cleanCurrentUserId, cleanUserId],
-          lastMessage: 'Chat just has been created.',
-          lastMessageAt: serverTimestamp(),
-          lastMessageSender: cleanCurrentUserId,
-          lastMessageSeen: false,
-          createdAt: serverTimestamp(),
-        })
 
-        // console.log('Conversation document created successfully')
+        // Check if the document already exists
+        const docSnap = await getDoc(conversationRef)
+
+        // Only create the document if it doesn't exist
+        if (!docSnap.exists()) {
+          // Create conversation document in Firestore
+          await setDoc(conversationRef, {
+            participants: [cleanCurrentUserId, cleanUserId],
+            lastMessage: 'Chat just has been created.',
+            lastMessageAt: serverTimestamp(),
+            lastMessageSender: cleanCurrentUserId,
+            lastMessageSeen: false,
+            createdAt: serverTimestamp(),
+          })
+          console.log('Conversation document created successfully')
+        } else {
+          console.log('Conversation document already exists, skipping creation')
+        }
       } else {
         console.error('Missing user IDs for chat connection')
       }
