@@ -5,4 +5,6 @@ export interface UserLastMessage {
   age: string
   lastMessage: string
   messageCount: string
+  conversationRef: string
+  lastMessageSeen: boolean
 }

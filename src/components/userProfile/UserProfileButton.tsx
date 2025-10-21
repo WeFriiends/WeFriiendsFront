@@ -1,10 +1,9 @@
 import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useAuth0 } from '@auth0/auth0-react'
-import { db } from '../chatExample/firebase'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useNavigate } from 'react-router-dom'
+import { cleanUserId } from '../../utils/userIdUtils'
 
 const UserProfileButton = ({
   skip,
@@ -19,7 +18,9 @@ const UserProfileButton = ({
 }) => {
   const { classes } = useStyles()
   const { user } = useAuth0()
-  useConversationsStore() // Keep the import for potential future use
+  const createConversation = useConversationsStore(
+    (state) => state.createConversation
+  )
   const navigate = useNavigate()
 
   const handleStartChat = async () => {
@@ -28,33 +29,8 @@ const UserProfileButton = ({
       const currentUserId = user?.sub
 
       if (currentUserId && userId) {
-        // Create conversation ID by removing "auth0|" prefix, sorting, and joining with "_"
-        const cleanCurrentUserId = currentUserId.replace('auth0|', '')
-        const cleanUserId = userId.replace('auth0|', '')
-        const sortedUserIds = [cleanCurrentUserId, cleanUserId].sort()
-        const conversationId = sortedUserIds.join('_')
-
-        // Get a reference to the conversation document
-        const conversationRef = doc(db, 'conversations', conversationId)
-
-        // Check if the document already exists
-        const docSnap = await getDoc(conversationRef)
-
-        // Only create the document if it doesn't exist
-        if (!docSnap.exists()) {
-          // Create conversation document in Firestore
-          await setDoc(conversationRef, {
-            participants: [cleanCurrentUserId, cleanUserId],
-            lastMessage: 'Chat just has been created.',
-            lastMessageAt: serverTimestamp(),
-            lastMessageSender: cleanCurrentUserId,
-            lastMessageSeen: false,
-            createdAt: serverTimestamp(),
-          })
-          console.log('Conversation document created successfully')
-        } else {
-          console.log('Conversation document already exists, skipping creation')
-        }
+        // Create conversation using the store function
+        await createConversation(currentUserId, userId)
       } else {
         console.error('Missing user IDs for chat connection')
       }
@@ -64,8 +40,7 @@ const UserProfileButton = ({
 
     // Navigate to the messages page with the specific user ID (using only first 8 characters)
     if (userId) {
-      const cleanUserId = userId.replace('auth0|', '')
-      const shortUserId = cleanUserId.substring(0, 8)
+      const shortUserId = cleanUserId(userId).substring(0, 8)
       navigate(`/messages/${shortUserId}`)
     }
   }

@@ -7,29 +7,64 @@ import StartChatting from './StartChatting'
 import DisplayingChat from './DisplayingChat'
 import ChatHeader from './ChatHeader'
 import { Chat } from 'types/Chat'
+import { useChatStore } from '../../zustand/chatStore'
+import { useAuth0 } from '@auth0/auth0-react'
+import { useConversationsStore } from '../../zustand/conversationsStore'
+import { cleanUserId } from '../../utils/userIdUtils'
 
 interface ChatContainerProps {
   selectedChat: UserChatProfile
   onClose: () => void
   messages: Chat
-  userId: string
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({
   selectedChat,
   onClose,
   messages,
-  userId,
 }) => {
   const { classes } = useStyles()
   const [messageText, setMessageText] = useState('')
+  const { user } = useAuth0()
+  const userId = user?.sub || ''
+  const sendMessage = useChatStore((state) => state.sendMessage)
+  const loading = useChatStore((state) => state.loading)
+  const { conversations } = useConversationsStore()
 
-  const friendId = messages.participants.find((el) => el !== userId)
+  // Find the conversation with the matching ID to get the conversationRef
+  const conversation = conversations.find((conv) => conv.id === selectedChat.id)
+  const conversationRef = conversation?.conversationRef
 
-  const handleSendMessage = () => {
-    // Here you would typically send the message to your backend
-    // For now, we'll just clear the textarea
-    setMessageText('')
+  // Use selectedChat.id as the receiverId
+  const receiverId = selectedChat.id
+
+  // Determine chatId - use conversationRef if available, otherwise fall back to messages.chatId
+  const chatId = conversationRef || messages.chatId
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !receiverId) return
+
+    if (!chatId) {
+      console.error('No conversation reference found')
+      return
+    }
+
+    // Remove "auth0|" prefix from userId for senderId
+    const cleanSenderId = cleanUserId(userId)
+
+    try {
+      await sendMessage(chatId, {
+        senderId: cleanSenderId,
+        receiverId: receiverId,
+        text: messageText,
+        seen: false,
+      })
+
+      // Clear the textarea after sending
+      setMessageText('')
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    }
   }
 
   return (
@@ -46,7 +81,8 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
           flexGrow: 1,
         }}
       >
-        {Object.keys(messages).length != 0 && selectedChat?.id === friendId ? (
+        {Object.keys(messages).length != 0 &&
+        messages.participants.includes(receiverId) ? (
           <DisplayingChat data={messages} userId={userId} />
         ) : (
           <StartChatting />
@@ -59,9 +95,19 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
             className={classes.textArea}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                handleSendMessage()
+              }
+            }}
           />
-          <Button onClick={handleSendMessage} className={classes.sendBtn}>
-            Send
+          <Button
+            onClick={handleSendMessage}
+            className={classes.sendBtn}
+            disabled={loading || !messageText.trim()}
+          >
+            {loading ? 'Sending...' : 'Send'}
           </Button>
         </Box>
       </Box>

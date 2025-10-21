@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 import { UserLastMessage } from 'types/UserLastMessage'
 import mockAxiosInstance from '../mocks/mockAxiosInstance'
 import { shouldUseMockData } from '../utils/mockUtils'
+import { cleanUserId } from '../utils/userIdUtils'
 import { db } from '../components/chatExample/firebase'
 import {
   collection,
@@ -11,6 +12,10 @@ import {
   where,
   orderBy,
   onSnapshot,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { useUserProfileStore } from './userProfileStore'
 
@@ -24,12 +29,13 @@ interface ConversationsState {
   shouldRefetch: (userId?: string) => boolean
   subscribeToConversations: (userId: string) => void
   unsubscribeFromConversations: () => void
+  createConversation: (currentUserId: string, userId: string) => Promise<string>
 }
 
 export const useConversationsStore = create<ConversationsState>()(
   devtools(
     (set, get) => ({
-      conversations: [],
+      conversations: [] as UserLastMessage[],
       loading: false,
       error: null,
       lastFetched: null,
@@ -94,12 +100,12 @@ export const useConversationsStore = create<ConversationsState>()(
 
           if (!userId) {
             console.error('No user ID provided')
-            set({ conversations: [], loading: false })
+            set({ conversations: [] as UserLastMessage[], loading: false })
             return
           }
 
           // Remove "auth0|" prefix from user ID if it exists
-          const cleanCurrentUserId = userId.replace('auth0|', '')
+          const cleanCurrentUserId = cleanUserId(userId)
 
           // Get conversations where the current user is a participant
           const conversationsRef = collection(db, 'conversations')
@@ -159,6 +165,11 @@ export const useConversationsStore = create<ConversationsState>()(
               lastMessage: conversationData.lastMessage || '',
               messageCount:
                 conversationData.lastMessageSeen === false ? '1' : '0',
+              conversationRef: doc.id,
+              lastMessageSeen:
+                conversationData.lastMessageSeen !== undefined
+                  ? conversationData.lastMessageSeen
+                  : false,
             }
 
             // console.log(`Created UserLastMessage with profile data:`, {userId: fullUserId, hasProfile: !!profile, userMessage,})
@@ -206,7 +217,7 @@ export const useConversationsStore = create<ConversationsState>()(
         console.log('Subscribing to conversations for user:', userId)
 
         // Remove "auth0|" prefix from user ID if it exists
-        const cleanCurrentUserId = userId.replace('auth0|', '')
+        const cleanCurrentUserId = cleanUserId(userId)
 
         // Create a query for conversations where the current user is a participant
         const conversationsRef = collection(db, 'conversations')
@@ -278,6 +289,11 @@ export const useConversationsStore = create<ConversationsState>()(
                   lastMessage: conversationData.lastMessage || '',
                   messageCount:
                     conversationData.lastMessageSeen === false ? '1' : '0',
+                  conversationRef: doc.id,
+                  lastMessageSeen:
+                    conversationData.lastMessageSeen !== undefined
+                      ? conversationData.lastMessageSeen
+                      : false,
                 }
 
                 console.log(`Created UserLastMessage with profile data:`, {
@@ -330,6 +346,55 @@ export const useConversationsStore = create<ConversationsState>()(
           console.log('Unsubscribing from conversations')
           unsubscribe()
           set({ unsubscribe: null })
+        }
+      },
+
+      createConversation: async (currentUserId, userId) => {
+        set({ loading: true, error: null })
+        try {
+          if (!currentUserId || !userId) {
+            console.error('Missing user IDs for chat connection')
+          }
+
+          // Create conversation ID by removing "auth0|" prefix, sorting, and joining with "_"
+          const cleanCurrentUserId = cleanUserId(currentUserId)
+          const cleanUserIdVar = cleanUserId(userId)
+          const sortedUserIds = [cleanCurrentUserId, cleanUserIdVar].sort()
+          const conversationId = sortedUserIds.join('_')
+
+          // Get a reference to the conversation document
+          const conversationRef = doc(db, 'conversations', conversationId)
+
+          // Check if the document already exists
+          const docSnap = await getDoc(conversationRef)
+
+          // Only create the document if it doesn't exist
+          if (!docSnap.exists()) {
+            // Create conversation document in Firestore
+            await setDoc(conversationRef, {
+              participants: [cleanCurrentUserId, cleanUserIdVar],
+              lastMessage: 'Chat just has been created.',
+              lastMessageAt: serverTimestamp(),
+              lastMessageSender: cleanCurrentUserId,
+              lastMessageSeen: false,
+              createdAt: serverTimestamp(),
+            })
+            console.log('Conversation document created successfully')
+          } else {
+            console.log(
+              'Conversation document already exists, skipping creation'
+            )
+          }
+
+          set({ loading: false })
+          return conversationId
+        } catch (error) {
+          console.error('Error creating chat connection:', error)
+          set({
+            error: error instanceof Error ? error : new Error(String(error)),
+            loading: false,
+          })
+          throw error
         }
       },
     }),

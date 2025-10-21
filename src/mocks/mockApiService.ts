@@ -611,6 +611,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '38',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_101',
+    lastMessageSeen: false,
   },
   {
     id: '102',
@@ -619,6 +621,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '40',
     lastMessage: "Hello! Nice to meet you! I'm Elena. Can...",
     messageCount: '3',
+    conversationRef: 'conversation_102',
+    lastMessageSeen: false,
   },
   {
     id: '103',
@@ -627,6 +631,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '36',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '0',
+    conversationRef: 'conversation_103',
+    lastMessageSeen: true,
   },
   {
     id: '104',
@@ -635,6 +641,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '42',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_104',
+    lastMessageSeen: false,
   },
   {
     id: '106',
@@ -643,6 +651,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '35',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_106',
+    lastMessageSeen: false,
   },
   {
     id: '107',
@@ -651,6 +661,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '38',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_107',
+    lastMessageSeen: true,
   },
   {
     id: '108',
@@ -659,6 +671,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '40',
     lastMessage: "Hello! Nice to meet you! I'm Elena. Can...",
     messageCount: '3',
+    conversationRef: 'conversation_108',
+    lastMessageSeen: false,
   },
   {
     id: '109',
@@ -667,6 +681,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '36',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '0',
+    conversationRef: 'conversation_109',
+    lastMessageSeen: true,
   },
   {
     id: '110',
@@ -675,6 +691,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '42',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_110',
+    lastMessageSeen: false,
   },
   {
     id: '111',
@@ -683,6 +701,8 @@ const mockLastMessages: UserLastMessage[] = [
     age: '35',
     lastMessage: "Hello! Nice to meet you! I'm Elena",
     messageCount: '1',
+    conversationRef: 'conversation_111',
+    lastMessageSeen: true,
   },
 ]
 

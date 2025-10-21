@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Conversations from 'components/tabsMessagesFriends/Conversations'
@@ -14,18 +14,21 @@ import { useConversationsStore } from 'zustand/conversationsStore'
 const MessagesPage = () => {
   const { classes } = useStyles()
   const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
-  const userId = '1'
   const { userId: urlUserId } = useParams<{ userId: string }>()
   const { conversations, fetchConversations } = useConversationsStore()
 
   // Function to find a conversation by shortened userId in URL (first 8 characters)
-  const findConversationByShortId = (shortId: string) => {
-    // This implementation checks if the conversation id starts with or includes the 8-character shortId
-    return conversations.find(
-      (conversation) =>
-        conversation.id.startsWith(shortId) || conversation.id.includes(shortId)
-    )
-  }
+  const findConversationByShortId = useCallback(
+    (shortId: string) => {
+      // This implementation checks if the conversation id starts with or includes the 8-character shortId
+      return conversations.find(
+        (conversation) =>
+          conversation.id.startsWith(shortId) ||
+          conversation.id.includes(shortId)
+      )
+    },
+    [conversations]
+  )
 
   useEffect(() => {
     // Fetch conversations if we have a userId in the URL
@@ -50,6 +53,7 @@ const MessagesPage = () => {
         setSelectedChat(userProfile)
       }
     }
+    // eslint-disable-next-line
   }, [urlUserId, conversations])
 
   const handleClick = (user: UserChatProfile) => {
@@ -77,7 +81,6 @@ const MessagesPage = () => {
               selectedChat={selectedChat}
               onClose={handleCloseChat}
               messages={messages}
-              userId={userId}
             />
           ) : (
             <Box className={classes.wrapperSwipes}>
