@@ -113,7 +113,7 @@ export const useConversationsStore = create<ConversationsState>()(
           // Execute the query
           const querySnapshot = await getDocs(conversationsQuery)
 
-          console.log('Firebase Query Results:', {
+          console.log('🔥 Firebase Query Results:', {
             totalDocuments: querySnapshot.size,
             documents: querySnapshot.docs.map((doc) => ({
               id: doc.id,
