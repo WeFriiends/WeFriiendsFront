@@ -7,7 +7,7 @@ import { UserChatProfile } from 'types/UserProfileData'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import ChatContainer from 'components/chat/ChatContainer'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useChatStore } from 'zustand/chatStore'
 
@@ -15,6 +15,7 @@ const MessagesPage = () => {
   const { classes } = useStyles()
   const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
   const { userId: urlUserId } = useParams<{ userId: string }>()
+  const navigate = useNavigate()
   const { conversations, fetchConversations } = useConversationsStore()
   const { currentChat, subscribeToMessages, unsubscribeFromMessages } =
     useChatStore()
@@ -55,7 +56,7 @@ const MessagesPage = () => {
         setSelectedChat(userProfile)
 
         // Clean the URL by removing the userId parameter without reloading the page
-        // navigate('/messages', { replace: true })
+        navigate('/messages', { replace: true })
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

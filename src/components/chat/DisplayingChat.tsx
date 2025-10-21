@@ -15,7 +15,7 @@ const DisplayingChat = ({ data, userId }: { data: Chat; userId: string }) => {
         <StartChatting />
       ) : (
         <Box className={classes.messagesArea}>
-          {data.messages.map((message: Message) => (
+          {[...data.messages].reverse().map((message: Message) => (
             <Box
               key={message.messageId}
               sx={{
@@ -59,7 +59,7 @@ export default DisplayingChat
 const useStyles = makeStyles()({
   messagesArea: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column-reverse',
     gap: '12px',
     marginTop: 31,
     padding: '13px 22px 12px',
