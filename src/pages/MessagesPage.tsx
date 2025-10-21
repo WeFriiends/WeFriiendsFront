@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Conversations from 'components/tabsMessagesFriends/Conversations'
@@ -8,11 +8,49 @@ import messages from '../components/chat/chat.json'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import ChatContainer from 'components/chat/ChatContainer'
+import { useParams } from 'react-router-dom'
+import { useConversationsStore } from 'zustand/conversationsStore'
 
 const MessagesPage = () => {
   const { classes } = useStyles()
   const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
   const userId = '1'
+  const { userId: urlUserId } = useParams<{ userId: string }>()
+  const { conversations, fetchConversations } = useConversationsStore()
+
+  // Function to find a conversation by shortened userId in URL (first 8 characters)
+  const findConversationByShortId = (shortId: string) => {
+    // This implementation checks if the conversation id starts with or includes the 8-character shortId
+    return conversations.find(
+      (conversation) =>
+        conversation.id.startsWith(shortId) || conversation.id.includes(shortId)
+    )
+  }
+
+  useEffect(() => {
+    // Fetch conversations if we have a userId in the URL
+    if (urlUserId) {
+      fetchConversations()
+    }
+  }, [urlUserId, fetchConversations])
+
+  useEffect(() => {
+    // If we have a userId in the URL and conversations are loaded, find the matching conversation
+    if (urlUserId && conversations.length > 0) {
+      const matchedConversation = findConversationByShortId(urlUserId)
+
+      if (matchedConversation) {
+        // Create a UserChatProfile from the matched conversation
+        const userProfile: UserChatProfile = {
+          id: matchedConversation.id,
+          name: matchedConversation.name,
+          age: matchedConversation.age,
+          avatar: matchedConversation.avatar,
+        }
+        setSelectedChat(userProfile)
+      }
+    }
+  }, [urlUserId, conversations])
 
   const handleClick = (user: UserChatProfile) => {
     setSelectedChat(user)
