@@ -3,7 +3,6 @@ import { Box, Button, TextareaAutosize } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { UserChatProfile } from 'types/UserProfileData'
-import StartChatting from './StartChatting'
 import DisplayingChat from './DisplayingChat'
 import ChatHeader from './ChatHeader'
 import { Chat } from 'types/Chat'
@@ -82,34 +81,35 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
         }}
       >
         {Object.keys(messages).length != 0 &&
-        messages.participants.includes(receiverId) ? (
-          <DisplayingChat data={messages} userId={userId} />
-        ) : (
-          <StartChatting />
-        )}
-        <Box className={classes.sendMessageSection}>
-          <TextareaAutosize
-            minRows={1}
-            maxRows={10}
-            placeholder="Type a message"
-            className={classes.textArea}
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleSendMessage()
-              }
-            }}
-          />
-          <Button
-            onClick={handleSendMessage}
-            className={classes.sendBtn}
-            disabled={loading || !messageText.trim()}
-          >
-            {loading ? 'Sending...' : 'Send'}
-          </Button>
-        </Box>
+          messages.participants.includes(receiverId) && (
+            <>
+              <DisplayingChat data={messages} userId={userId} />
+
+              <Box className={classes.sendMessageSection}>
+                <TextareaAutosize
+                  minRows={1}
+                  maxRows={10}
+                  placeholder="Type a message"
+                  className={classes.textArea}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleSendMessage()
+                    }
+                  }}
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className={classes.sendBtn}
+                  disabled={loading || !messageText.trim()}
+                >
+                  {loading ? 'Sending...' : 'Send'}
+                </Button>
+              </Box>
+            </>
+          )}
       </Box>
     </Box>
   )

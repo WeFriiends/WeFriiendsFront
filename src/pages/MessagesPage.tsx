@@ -4,18 +4,20 @@ import { makeStyles } from 'tss-react/mui'
 import Conversations from 'components/tabsMessagesFriends/Conversations'
 import theme from './../styles/createTheme'
 import { UserChatProfile } from 'types/UserProfileData'
-import messages from '../components/chat/chat.json'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import ChatContainer from 'components/chat/ChatContainer'
 import { useParams } from 'react-router-dom'
 import { useConversationsStore } from 'zustand/conversationsStore'
+import { useChatStore } from 'zustand/chatStore'
 
 const MessagesPage = () => {
   const { classes } = useStyles()
   const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
   const { userId: urlUserId } = useParams<{ userId: string }>()
   const { conversations, fetchConversations } = useConversationsStore()
+  const { currentChat, subscribeToMessages, unsubscribeFromMessages } =
+    useChatStore()
 
   // Function to find a conversation by shortened userId in URL (first 8 characters)
   const findConversationByShortId = useCallback(
@@ -51,9 +53,12 @@ const MessagesPage = () => {
           avatar: matchedConversation.avatar,
         }
         setSelectedChat(userProfile)
+
+        // Clean the URL by removing the userId parameter without reloading the page
+        // navigate('/messages', { replace: true })
       }
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlUserId, conversations])
 
   const handleClick = (user: UserChatProfile) => {
@@ -62,7 +67,35 @@ const MessagesPage = () => {
 
   const handleCloseChat = () => {
     setSelectedChat(null)
+    unsubscribeFromMessages()
   }
+
+  // Subscribe to messages when selectedChat changes
+  useEffect(() => {
+    if (selectedChat) {
+      // Find the conversation with the matching ID to get the conversationRef
+      const conversation = conversations.find(
+        (conv) => conv.id === selectedChat.id
+      )
+      if (conversation && conversation.conversationRef) {
+        // Subscribe to messages using the conversationRef
+        subscribeToMessages(conversation.conversationRef)
+      } else {
+        // If no conversation is found or no conversationRef, unsubscribe from messages
+        unsubscribeFromMessages()
+      }
+    }
+
+    // Cleanup function to unsubscribe when component unmounts or selectedChat changes
+    return () => {
+      unsubscribeFromMessages()
+    }
+  }, [
+    selectedChat,
+    conversations,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ])
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
@@ -80,7 +113,13 @@ const MessagesPage = () => {
             <ChatContainer
               selectedChat={selectedChat}
               onClose={handleCloseChat}
-              messages={messages}
+              messages={
+                currentChat || {
+                  chatId: '',
+                  participants: [],
+                  messages: [],
+                }
+              }
             />
           ) : (
             <Box className={classes.wrapperSwipes}>

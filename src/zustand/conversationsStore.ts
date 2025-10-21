@@ -4,7 +4,7 @@ import { UserLastMessage } from 'types/UserLastMessage'
 import mockAxiosInstance from '../mocks/mockAxiosInstance'
 import { shouldUseMockData } from '../utils/mockUtils'
 import { cleanUserId } from '../utils/userIdUtils'
-import { db } from '../components/chatExample/firebase'
+import { db } from '../services/firebase'
 import {
   collection,
   getDocs,
