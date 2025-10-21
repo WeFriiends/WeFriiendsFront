@@ -24,10 +24,8 @@ const MessagesPage = () => {
   const findConversationByShortId = useCallback(
     (shortId: string) => {
       // This implementation checks if the conversation id starts with or includes the 8-character shortId
-      return conversations.find(
-        (conversation) =>
-          conversation.id.startsWith(shortId) ||
-          conversation.id.includes(shortId)
+      return conversations.find((conversation) =>
+        conversation.id.startsWith(shortId)
       )
     },
     [conversations]
