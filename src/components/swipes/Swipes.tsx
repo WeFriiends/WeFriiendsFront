@@ -1,5 +1,4 @@
 import { Box, Button, Typography } from '@mui/material'
-import { addNewFriend } from 'actions/friendsServices'
 import Match from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
@@ -9,7 +8,7 @@ import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from 'types/UserProfileData'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import theme from '../../styles/createTheme'
-import { usePotentialFriendsStore } from 'zustand/friendsStore'
+import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
 import Loader from 'common/svg/Loader'
 import { shouldUseMockData } from 'utils/mockUtils'
@@ -29,8 +28,10 @@ const Swipes = () => {
     handleLike,
     handleDislike,
     fetchPotentialFriends,
-    loading,
+    isLoading,
   } = usePotentialFriendsStore()
+
+  const { addFriend } = useMatchesStore()
 
   const { data: profile } = useProfileStore()
 
@@ -73,7 +74,7 @@ const Swipes = () => {
 
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
-      addNewFriend(currentPotentialFriend.id)
+      addFriend(currentPotentialFriend.id)
       setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
       setIsMatchModalOpen(true)
     } else {
@@ -99,7 +100,8 @@ const Swipes = () => {
   return (
     <>
       <Box>
-        {!shouldUseMockData() && (loading || potentialFriends === undefined) ? (
+        {!shouldUseMockData() &&
+        (isLoading || potentialFriends === undefined) ? (
           <Box className={classes.mainBlock}>
             <Loader />
           </Box>

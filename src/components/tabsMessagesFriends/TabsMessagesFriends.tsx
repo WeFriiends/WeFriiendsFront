@@ -1,19 +1,15 @@
 import * as React from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-// import { useNewFriendsList } from 'hooks/useFriendsList'  *temporarily commented out - until API for the new friends list is added*
 import { Link, useLocation } from 'react-router-dom'
 import theme from '../../styles/createTheme'
-import { useMatches } from 'hooks/useMatches'
+import { useMatchesStore } from 'zustand/friendsStore'
 
 const TabsMessagesFriends: React.FC = () => {
   const { classes } = useStyles()
   const location = useLocation()
   const { pathname } = location
-
-  // const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
-  // const friendsList = [] // temporary solution, until API for the new friends list is added, for now we use matches instead of it
-  const { data: friendsList } = useMatches()
+  const { matches: friendsList } = useMatchesStore()
 
   return (
     <>

@@ -9,6 +9,7 @@ import {
 } from './api'
 import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
+import { usePotentialFriendsStore } from './friendsStore'
 
 interface AuthState {
   token: string | null
@@ -199,10 +200,25 @@ export const useProfileStore = create<ProfileStore>()(
         },
 
         updateProfile: async (profileData, token) => {
-          return await fetchData(
+          const response = await fetchData(
             () => updateProfile(profileData, token),
             'updateProfile'
           )
+
+          // If the update was successful and it's a distance or age range update, refresh potential friends
+          if (
+            response &&
+            response.status === 200 &&
+            (profileData.friendsDistance !== undefined ||
+              profileData.friendsAgeMin !== undefined ||
+              profileData.friendsAgeMax !== undefined)
+          ) {
+            // Get the potential friends store and refresh the list
+            const potentialFriendsStore = usePotentialFriendsStore.getState()
+            potentialFriendsStore.refreshPotentialFriends()
+          }
+
+          return response
         },
 
         deleteProfile: async (token) =>

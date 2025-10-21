@@ -4,7 +4,7 @@ import { makeStyles } from 'tss-react/mui'
 import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
-import { useMatches } from 'hooks/useMatches'
+import { useMatchesStore } from 'zustand/friendsStore'
 import theme from 'styles/createTheme'
 import classnames from 'classnames'
 import { mockFriends } from '../../mocks/mockApiService'
@@ -15,7 +15,7 @@ interface FriendsProps {
 
 const Friends: React.FC<FriendsProps> = ({ onClick }) => {
   const { classes } = useStyles()
-  const { data: userFriends } = useMatches()
+  const { matches: userFriends } = useMatchesStore()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
 
   // Find the complete profile from mockFriends

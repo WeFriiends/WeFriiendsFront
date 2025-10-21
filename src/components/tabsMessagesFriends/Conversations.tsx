@@ -1,12 +1,11 @@
 import * as React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserLastMessage } from 'types/UserLastMessage'
 import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useConversationsStore } from 'zustand/conversationsStore'
-import { useAuth0 } from '@auth0/auth0-react'
 import theme from '../../styles/createTheme'
 
 // Component for displaying loading state
@@ -83,23 +82,13 @@ interface ConversationsProps {
  * When a conversation is clicked, it passes the selected user profile to the parent component
  */
 const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
-  const { conversations, loading, error, subscribeToConversations } =
-    useConversationsStore()
-  const { user } = useAuth0()
+  const { conversations, loading, error } = useConversationsStore()
   const [userChatProfile, setUserChatProfile] = useState<UserChatProfile>({
     id: '-1',
     name: '',
     age: '',
     avatar: '',
   })
-
-  // Subscribe to conversations when component mounts
-  useEffect(() => {
-    if (user?.sub) {
-      // Subscribe to real-time updates for conversations
-      subscribeToConversations(user.sub)
-    }
-  }, [subscribeToConversations, user])
 
   /**
    * Handle click on a conversation item

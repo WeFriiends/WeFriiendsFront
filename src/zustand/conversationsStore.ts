@@ -223,7 +223,7 @@ export const useConversationsStore = create<ConversationsState>()(
           conversationsQuery,
           async (querySnapshot) => {
             try {
-              console.log('Firebase Snapshot Update:', {
+              console.log('🔥 Firebase Snapshot Update:', {
                 totalDocuments: querySnapshot.size,
                 documents: querySnapshot.docs.map((doc) => ({
                   id: doc.id,
