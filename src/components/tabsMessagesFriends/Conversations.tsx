@@ -75,13 +75,17 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 // Main component props
 interface ConversationsProps {
   onClick: (userProfile: UserChatProfile) => void
+  selectedId?: string
 }
 
 /**
  * Conversations component displays a list of user conversations
  * When a conversation is clicked, it passes the selected user profile to the parent component
  */
-const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
+const Conversations: React.FC<ConversationsProps> = ({
+  onClick,
+  selectedId,
+}) => {
   const { conversations, loading, error } = useConversationsStore()
   const [userChatProfile, setUserChatProfile] = useState<UserChatProfile>({
     id: '-1',
@@ -128,7 +132,11 @@ const Conversations: React.FC<ConversationsProps> = ({ onClick }) => {
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
-          isSelected={userChatProfile.id === conversation.id}
+          isSelected={
+            selectedId
+              ? conversation.id === selectedId
+              : userChatProfile.id === conversation.id
+          }
           onClick={handleClick}
         />
       ))}

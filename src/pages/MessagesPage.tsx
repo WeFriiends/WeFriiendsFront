@@ -104,7 +104,7 @@ const MessagesPage = () => {
         }`}
       >
         <TabsMessagesFriends />
-        <Conversations onClick={handleClick} />
+        <Conversations onClick={handleClick} selectedId={selectedChat?.id} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
