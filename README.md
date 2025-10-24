@@ -137,3 +137,128 @@ To run the project use command:
 ```
 docker-compose up
 ```
+
+# Deploying to Namecheap Shared Hosting
+
+This guide will help you deploy the WeFriiendsWeb application to Namecheap shared hosting.
+
+## Prerequisites
+
+1. A Namecheap hosting account with:
+   - cPanel access
+   - Node.js support (most Namecheap shared hosting plans support Node.js)
+   - FTP access credentials
+
+2. FTP client (like FileZilla, Cyberduck, or WinSCP)
+
+## Deployment Steps
+
+### 1. Build the Application
+
+First, build the application locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Create production build
+npm run build
+```
+
+This will create a `build` directory with optimized production files. The build process has been tested and works correctly, generating all necessary files for deployment.
+
+### 2. Configure Environment Variables
+
+Before deploying, make sure your production environment variables are properly set:
+
+1. Create a `.env.production` file in your project root with the necessary environment variables:
+   ```
+   REACT_APP_AUTH0_DOMAIN=your-auth0-domain
+   REACT_APP_AUTH0_CLIENT_ID=your-auth0-client-id
+   REACT_APP_AUTH0_CALLBACK_URL=https://your-domain.com/callback
+   REACT_APP_FIREBASE_API_KEY=your-firebase-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-firebase-auth-domain
+   REACT_APP_FIREBASE_PROJECT_ID=your-firebase-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-firebase-storage-bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-firebase-messaging-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-firebase-app-id
+   REACT_APP_FIREBASE_MEASUREMENT_ID=your-firebase-measurement-id
+   REACT_APP_API_BASE_URL=https://your-api-domain.com
+   ```
+
+2. Run the build command again to include these production variables:
+   ```bash
+   npm run build
+   ```
+
+### 3. Upload Files to Namecheap Hosting
+
+1. Log in to your Namecheap cPanel
+2. Find the FTP credentials in cPanel (usually under "Files" > "FTP Accounts")
+3. Connect to your server using an FTP client with these credentials
+4. Navigate to the public_html directory (or the directory specified for your domain)
+5. Upload all files and folders from the `build` directory to this location
+
+The `build` directory contains the following files and folders that need to be uploaded:
+
+- `index.html` - The main HTML file
+- `asset-manifest.json` - A manifest file for assets
+- `favicon.ico` - The website favicon
+- `logo192.png` and `logo512.png` - Logo images
+- `manifest.json` - Web app manifest for PWA functionality
+- `robots.txt` - File for search engine crawlers
+- `_redirects` - Configuration for URL redirects
+- `static/` directory - Contains all CSS and JavaScript files
+- `img/` directory - Contains image assets
+- Any other files or folders in the build directory
+
+Make sure to maintain the exact directory structure when uploading.
+
+### 4. Configure .htaccess for React Router
+
+Since this application uses React Router for client-side routing, you need to create an `.htaccess` file to handle routes properly:
+
+1. Create a file named `.htaccess` in the root of your hosting directory with the following content:
+   ```
+   <IfModule mod_rewrite.c>
+     RewriteEngine On
+     RewriteBase /
+     RewriteRule ^index\.html$ - [L]
+     RewriteCond %{REQUEST_FILENAME} !-f
+     RewriteCond %{REQUEST_FILENAME} !-d
+     RewriteCond %{REQUEST_FILENAME} !-l
+     RewriteRule . /index.html [L]
+   </IfModule>
+   ```
+
+2. Upload this file to the same directory where you uploaded the build files
+
+### 5. Update DNS Settings (if needed)
+
+If you're using a new domain or subdomain:
+
+1. Go to your Namecheap account dashboard
+2. Navigate to "Domain List" and select your domain
+3. Click "Manage" and then "Advanced DNS"
+4. Add or update the necessary A, CNAME, or other records to point to your hosting
+
+### 6. Test Your Deployment
+
+1. Visit your website URL to ensure everything is working correctly
+2. Test all major functionality, especially authentication and Firebase connections
+3. Check browser console for any errors
+
+### Troubleshooting
+
+- **404 Errors on Routes**: Make sure the `.htaccess` file is properly configured
+- **API Connection Issues**: Verify that your `REACT_APP_API_BASE_URL` is correctly set
+- **Authentication Problems**: Check Auth0 configuration and callback URLs. If after login you're redirected to http://localhost:3000/callback instead of your production URL, make sure to update the REACT_APP_AUTH0_CALLBACK_URL in your .env file to use your production domain (e.g., https://frontend.wefriiends.com/callback)
+- **Firebase Connection Issues**: Verify Firebase configuration variables
+
+### Updating Your Deployment
+
+To update your application:
+
+1. Make changes to your code locally
+2. Run `npm run build` to create a new build
+3. Upload the new build files to your hosting, replacing the old files
