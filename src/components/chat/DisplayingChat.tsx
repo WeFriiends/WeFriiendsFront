@@ -2,42 +2,55 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from './../../styles/createTheme'
 import { Chat, Message } from 'types/Chat'
+import { cleanUserId } from '../../utils/userIdUtils'
+import StartChatting from './StartChatting'
 
 const DisplayingChat = ({ data, userId }: { data: Chat; userId: string }) => {
   const { classes } = useStyles()
+  const cleanUserIdVar = cleanUserId(userId)
 
   return (
-    <Box className={classes.messagesArea}>
-      {data.messages.map((message: Message) => (
-        <Box
-          key={message.messageId}
-          sx={{
-            alignSelf: message.senderId === userId ? 'flex-end' : 'flex-start',
-            backgroundColor:
-              message.senderId === userId ? '#FEDED2' : '#EEEEEE',
-          }}
-          className={classes.message}
-        >
-          <Typography className={classes.messageText}>
-            {message.message}
-          </Typography>
-          <Typography
-            className={classes.messageDate}
-            sx={{
-              textAlign: message.senderId === userId ? 'right' : 'left',
-            }}
-          >
-            {new Date(message.timestamp).toLocaleString([], {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </Typography>
+    <>
+      {data.messages.length === 0 ? (
+        <StartChatting />
+      ) : (
+        <Box className={classes.messagesArea}>
+          {[...data.messages].reverse().map((message: Message) => (
+            <Box
+              key={message.messageId}
+              sx={{
+                alignSelf:
+                  message.senderId === cleanUserIdVar
+                    ? 'flex-end'
+                    : 'flex-start',
+                backgroundColor:
+                  message.senderId === cleanUserIdVar ? '#FEDED2' : '#EEEEEE',
+              }}
+              className={classes.message}
+            >
+              <Typography className={classes.messageText}>
+                {message.message}
+              </Typography>
+              <Typography
+                className={classes.messageDate}
+                sx={{
+                  textAlign:
+                    message.senderId === cleanUserIdVar ? 'right' : 'left',
+                }}
+              >
+                {new Date(message.timestamp).toLocaleString([], {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Typography>
+            </Box>
+          ))}
         </Box>
-      ))}
-    </Box>
+      )}
+    </>
   )
 }
 
@@ -46,7 +59,7 @@ export default DisplayingChat
 const useStyles = makeStyles()({
   messagesArea: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column-reverse',
     gap: '12px',
     marginTop: 31,
     padding: '13px 22px 12px',
@@ -61,6 +74,7 @@ const useStyles = makeStyles()({
     maxWidth: '85%',
     padding: '12px',
     borderRadius: '10px',
+    wordWrap: 'break-word',
   },
   messageText: {
     fontSize: '14px',

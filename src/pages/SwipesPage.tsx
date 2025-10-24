@@ -5,7 +5,6 @@ import UserProfile from 'components/userProfile/UserProfile'
 import UserProfileButton from 'components/userProfile/UserProfileButton'
 import { UserProfileData } from 'types/UserProfileData'
 import Friends from 'components/tabsMessagesFriends/Friends'
-import { useNavigate } from 'react-router-dom'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import theme from '../styles/createTheme'
@@ -16,14 +15,8 @@ const SwipesPage = () => {
 
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
-  const navigate = useNavigate()
-
   const selectFriend = (user: UserProfileData) => {
     setFriendsData(user)
-  }
-
-  const startChat = () => {
-    navigate('/messages')
   }
 
   const handleCloseFriendProfile = () => {
@@ -43,7 +36,7 @@ const SwipesPage = () => {
               handleCloseFriendProfile={handleCloseFriendProfile}
             >
               <UserProfile user={friendsData} />
-              <UserProfileButton startChat={startChat} />
+              <UserProfileButton startChat={true} userId={friendsData.id} />
             </UserProfileWrapperRightCol>
           ) : (
             <SwipesWithFilters />

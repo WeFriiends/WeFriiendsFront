@@ -13,7 +13,6 @@ const Dashboard = () => {
     { path: '/user/near-me', label: 'Near Me' },
     { path: '/user/my-account', label: 'My Account' },
     { path: '/user/new-match', label: 'New Match' },
-    { path: '/chat', label: 'ChatExample' },
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/report', label: 'Report Dialog Example' },
     { path: '/delete', label: 'Delete User Dialog Example' },

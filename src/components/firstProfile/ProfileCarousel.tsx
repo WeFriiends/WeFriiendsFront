@@ -177,12 +177,16 @@ const ProfileCarousel = () => {
 
       filesToUpload.forEach((file) => formData.append('files', file))
 
-      await axios.post('http://localhost:8080/api/profile', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
 
       clearLocalStorage([
         'name',

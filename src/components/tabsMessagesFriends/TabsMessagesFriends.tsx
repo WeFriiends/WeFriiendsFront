@@ -1,17 +1,15 @@
 import * as React from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-// import { useNewFriendsList } from 'hooks/useFriendsList'  *temporarily commented out - until API for the new friends list is added*
 import { Link, useLocation } from 'react-router-dom'
 import theme from '../../styles/createTheme'
+import { useMatchesStore } from 'zustand/friendsStore'
 
 const TabsMessagesFriends: React.FC = () => {
   const { classes } = useStyles()
   const location = useLocation()
   const { pathname } = location
-
-  // const { data: friendsList } = useNewFriendsList() *temporarily commented out - until API for the new friends list is added*
-  const friendsList = [] // temporary solution, until API for the new friends list is added
+  const { matches: friendsList } = useMatchesStore()
 
   return (
     <>
@@ -38,7 +36,7 @@ const TabsMessagesFriends: React.FC = () => {
           }}
           className={classes.labelStyle}
         >
-          {`New friends (${friendsList?.length})`}
+          {`New friends (${friendsList?.length || 0})`}
         </Link>
       </Box>
     </>
