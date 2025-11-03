@@ -5,6 +5,7 @@ import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { handleLogout as logoutUtil } from '../../utils/logoutUtils'
 
 const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
@@ -13,11 +14,7 @@ const HelpAndSupport: React.FC = () => {
   const token = useAuthStore((state) => state.token)
 
   const handleLogout = () => {
-    logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    })
+    logoutUtil(logout)
   }
 
   const deleteAccount = async () => {
@@ -26,7 +23,7 @@ const HelpAndSupport: React.FC = () => {
     if (token) {
       try {
         await deleteProfile(token)
-        logout({ logoutParams: { returnTo: window.location.origin } })
+        logoutUtil(logout)
       } catch (err) {
         console.error('Error deleting account:', err)
       }

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { devtools, persist } from 'zustand/middleware'
 import {
   createProfile as apiCreateProfile,
   getProfile,
@@ -13,7 +13,7 @@ import { usePotentialFriendsStore } from './friendsStore'
 
 interface AuthState {
   token: string | null
-  setToken: (token: string) => void
+  setToken: (token: string | null) => void
 }
 
 interface Profile {
@@ -85,10 +85,17 @@ const initialState: ProfileState & {
   cloudUrls: [],
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  setToken: (token) => set({ token }),
-}))
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
+      setToken: (token) => set({ token }),
+    }),
+    {
+      name: 'auth-storage',
+    }
+  )
+)
 
 export const useProfileStore = create<ProfileStore>()(
   devtools(
