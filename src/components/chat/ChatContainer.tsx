@@ -9,7 +9,6 @@ import { Chat } from 'types/Chat'
 import { useChatStore } from '../../zustand/chatStore'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useConversationsStore } from '../../zustand/conversationsStore'
-import { cleanUserId } from '../../utils/userIdUtils'
 
 interface ChatContainerProps {
   selectedChat: UserChatProfile
@@ -48,12 +47,9 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
       return
     }
 
-    // Remove "auth0|" prefix from userId for senderId
-    const cleanSenderId = cleanUserId(userId)
-
     try {
       await sendMessage(chatId, {
-        senderId: cleanSenderId,
+        senderId: userId,
         receiverId: receiverId,
         text: messageText,
         seen: false,

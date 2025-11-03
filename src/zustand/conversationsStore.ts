@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { UserLastMessage } from 'types/UserLastMessage'
-import { cleanUserId } from '../utils/userIdUtils'
 import { db } from '../services/firebase'
 import {
   collection,
@@ -89,14 +88,13 @@ export const useConversationsStore = create<ConversationsState>()(
             return
           }
 
-          // Remove "auth0|" prefix from user ID if it exists
-          const cleanCurrentUserId = cleanUserId(userId)
+          const currentUserId = userId
 
           // Get conversations where the current user is a participant
           const conversationsRef = collection(db, 'conversations')
           const conversationsQuery = query(
             conversationsRef,
-            where('participants', 'array-contains', cleanCurrentUserId),
+            where('participants', 'array-contains', currentUserId),
             orderBy('lastMessageAt', 'desc')
           )
           const userConversations: UserLastMessage[] = []
@@ -122,7 +120,7 @@ export const useConversationsStore = create<ConversationsState>()(
 
             // Get the other participant's ID
             const otherParticipantId = conversationData.participants.find(
-              (participantId: string) => participantId !== cleanCurrentUserId
+              (participantId: string) => participantId !== currentUserId
             )
 
             // Add "auth0|" prefix if it's not already there
@@ -193,14 +191,13 @@ export const useConversationsStore = create<ConversationsState>()(
 
         console.log('Subscribing to conversations for user:', userId)
 
-        // Remove "auth0|" prefix from user ID if it exists
-        const cleanCurrentUserId = cleanUserId(userId)
+        const currentUserId = userId
 
         // Create a query for conversations where the current user is a participant
         const conversationsRef = collection(db, 'conversations')
         const conversationsQuery = query(
           conversationsRef,
-          where('participants', 'array-contains', cleanCurrentUserId),
+          where('participants', 'array-contains', currentUserId),
           orderBy('lastMessageAt', 'desc')
         )
 
@@ -233,8 +230,7 @@ export const useConversationsStore = create<ConversationsState>()(
 
                 // Get the other participant's ID
                 const otherParticipantId = conversationData.participants.find(
-                  (participantId: string) =>
-                    participantId !== cleanCurrentUserId
+                  (participantId: string) => participantId !== currentUserId
                 )
 
                 // Add "auth0|" prefix if it's not already there
@@ -333,10 +329,8 @@ export const useConversationsStore = create<ConversationsState>()(
             console.error('Missing user IDs for chat connection')
           }
 
-          // Create conversation ID by removing "auth0|" prefix, sorting, and joining with "_"
-          const cleanCurrentUserId = cleanUserId(currentUserId)
-          const cleanUserIdVar = cleanUserId(userId)
-          const sortedUserIds = [cleanCurrentUserId, cleanUserIdVar].sort()
+          // Create conversation ID by sorting user IDs and joining with "_"
+          const sortedUserIds = [currentUserId, userId].sort()
           const conversationId = sortedUserIds.join('_')
 
           // Get a reference to the conversation document
@@ -347,12 +341,12 @@ export const useConversationsStore = create<ConversationsState>()(
 
           // Only create the document if it doesn't exist
           if (!docSnap.exists()) {
-            // Create conversation document in Firestore
+            // Create a conversation document in Firestore
             await setDoc(conversationRef, {
-              participants: [cleanCurrentUserId, cleanUserIdVar],
+              participants: [currentUserId, userId],
               lastMessage: 'Chat just has been created.',
               lastMessageAt: serverTimestamp(),
-              lastMessageSender: cleanCurrentUserId,
+              lastMessageSender: currentUserId,
               lastMessageSeen: false,
               createdAt: serverTimestamp(),
             })
