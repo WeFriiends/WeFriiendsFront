@@ -123,14 +123,11 @@ export const useConversationsStore = create<ConversationsState>()(
               (participantId: string) => participantId !== currentUserId
             )
 
-            // Add "auth0|" prefix if it's not already there
-            const fullUserId = otherParticipantId.startsWith('auth0|')
-              ? otherParticipantId
-              : `auth0|${otherParticipantId}`
-
             // Fetch the user profile
-            // console.log(`Fetching profile for user: ${fullUserId}`)
-            const profile = await userProfileStore.fetchUserProfile(fullUserId)
+            // console.log(`Fetching profile for user: ${otherParticipantId}`)
+            const profile = await userProfileStore.fetchUserProfile(
+              otherParticipantId
+            )
 
             // Create a UserLastMessage object with profile data if available
             const userMessage: UserLastMessage = {
@@ -155,7 +152,7 @@ export const useConversationsStore = create<ConversationsState>()(
                   : false,
             }
 
-            // console.log(`Created UserLastMessage with profile data:`, {userId: fullUserId, hasProfile: !!profile, userMessage,})
+            // console.log(`Created UserLastMessage with profile data:`, {userId: otherParticipantId, hasProfile: !!profile, userMessage,})
 
             userConversations.push(userMessage)
           }
@@ -233,15 +230,10 @@ export const useConversationsStore = create<ConversationsState>()(
                   (participantId: string) => participantId !== currentUserId
                 )
 
-                // Add "auth0|" prefix if it's not already there
-                const fullUserId = otherParticipantId.startsWith('auth0|')
-                  ? otherParticipantId
-                  : `auth0|${otherParticipantId}`
-
                 // Fetch the user profile
-                // console.log(`Fetching profile for user: ${fullUserId}`)
+                console.log(`Fetching profile for user: ${otherParticipantId}`)
                 const profile = await userProfileStore.fetchUserProfile(
-                  fullUserId
+                  otherParticipantId
                 )
 
                 // Create a UserLastMessage object with profile data if available
@@ -270,7 +262,7 @@ export const useConversationsStore = create<ConversationsState>()(
                 }
 
                 console.log(`Created UserLastMessage with profile data:`, {
-                  userId: fullUserId,
+                  userId: otherParticipantId,
                   hasProfile: !!profile,
                   userMessage,
                 })
