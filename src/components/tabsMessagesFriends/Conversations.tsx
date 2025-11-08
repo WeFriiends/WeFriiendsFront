@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserLastMessage } from 'types/UserLastMessage'
@@ -32,45 +32,54 @@ interface ConversationItemProps {
   onClick: (conversation: UserLastMessage) => void
 }
 
-const ConversationItem: React.FC<ConversationItemProps> = ({
-  conversation,
-  isSelected,
-  onClick,
-}) => {
-  const { classes } = useStyles()
+// Memoized envelope image component to prevent unnecessary re-renders
+const EnvelopeIcon = React.memo(() => (
+  <img src="/img/messages/envelope.svg" alt="You have new conversations!" />
+))
 
-  const handleClick = () => {
-    onClick(conversation)
-  }
+// Memoized conversation item component to prevent unnecessary re-renders
+const ConversationItem = React.memo<ConversationItemProps>(
+  ({ conversation, isSelected, onClick }) => {
+    const { classes } = useStyles()
 
-  return (
-    <Box key={conversation.id} onClick={handleClick}>
-      <Box
-        className={`${classes.conversationBlock} ${
-          isSelected ? classes.selected : ''
-        }`}
-      >
-        <Avatar src={conversation.avatar} sx={{ width: 66, height: 66 }} />
-        <Box className={classes.conversationContent}>
-          <Typography className={classes.name}>
-            {conversation.name}, {conversation.age}
-          </Typography>
-          <Typography className={classes.conversationText}>
-            {conversation.lastMessage}
-          </Typography>
-        </Box>
-        {conversation.messageCount !== '0' && (
+    const handleClick = useCallback(() => {
+      onClick(conversation)
+    }, [onClick, conversation])
+
+    // Memoize the notification indicator to prevent unnecessary re-renders
+    const notificationIndicator = useMemo(() => {
+      if (conversation.messageCount !== '0') {
+        return (
           <Box className={classes.conversationAlert}>
-            <img
-              src="/img/messages/envelope.svg"
-              alt="You have new conversations!"
-            />
+            <EnvelopeIcon />
           </Box>
-        )}
+        )
+      }
+      return null
+    }, [conversation.messageCount, classes.conversationAlert])
+
+    return (
+      <Box key={conversation.id} onClick={handleClick}>
+        <Box
+          className={`${classes.conversationBlock} ${
+            isSelected ? classes.selected : ''
+          }`}
+        >
+          <Avatar src={conversation.avatar} sx={{ width: 66, height: 66 }} />
+          <Box className={classes.conversationContent}>
+            <Typography className={classes.name}>
+              {conversation.name}, {conversation.age}
+            </Typography>
+            <Typography className={classes.conversationText}>
+              {conversation.lastMessage}
+            </Typography>
+          </Box>
+          {notificationIndicator}
+        </Box>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
+)
 
 // Main component props
 interface ConversationsProps {
