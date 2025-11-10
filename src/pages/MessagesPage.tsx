@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import Conversations from 'components/tabsMessagesFriends/Conversations'
 import theme from './../styles/createTheme'
-import { UserChatProfile } from 'types/UserProfileData'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
 import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
 import ChatContainer from 'components/chat/ChatContainer'
@@ -13,12 +12,10 @@ import { useChatStore } from 'zustand/chatStore'
 
 const MessagesPage = () => {
   const { classes } = useStyles()
-  const [selectedChat, setSelectedChat] = useState<UserChatProfile | null>(null)
   const { userId: urlUserId } = useParams<{ userId: string }>()
   const navigate = useNavigate()
   const { conversations, fetchConversations } = useConversationsStore()
-  const { currentChat, subscribeToMessages, unsubscribeFromMessages } =
-    useChatStore()
+  const { setSelectedChatId } = useChatStore()
 
   // Function to find a conversation by shortened userId in URL (first 8 characters)
   const findConversationByShortId = useCallback(
@@ -44,82 +41,42 @@ const MessagesPage = () => {
       const matchedConversation = findConversationByShortId(urlUserId)
 
       if (matchedConversation) {
-        // Create a UserChatProfile from the matched conversation
-        const userProfile: UserChatProfile = {
-          id: matchedConversation.id,
-          name: matchedConversation.name,
-          age: matchedConversation.age,
-          avatar: matchedConversation.avatar,
-        }
-        setSelectedChat(userProfile)
+        // Set the selected chat ID in the chatStore
+        setSelectedChatId(matchedConversation.id)
 
         // Clean the URL by removing the userId parameter without reloading the page
         navigate('/messages', { replace: true })
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlUserId, conversations])
-
-  const handleClick = (user: UserChatProfile) => {
-    setSelectedChat(user)
-  }
+  }, [urlUserId, conversations, setSelectedChatId])
 
   const handleCloseChat = () => {
-    setSelectedChat(null)
-    unsubscribeFromMessages()
+    // Clear the selected chat ID in the chatStore
+    setSelectedChatId(null)
+    // We don't unsubscribe when closing chat, only when tab/app is closed
   }
 
-  // Subscribe to messages when selectedChat changes
-  useEffect(() => {
-    if (selectedChat) {
-      // Find the conversation with the matching ID to get the conversationRef
-      const conversation = conversations.find(
-        (conv) => conv.id === selectedChat.id
-      )
-      if (conversation && conversation.conversationRef) {
-        // Subscribe to messages using the conversationRef
-        subscribeToMessages(conversation.conversationRef)
-      } else {
-        // If no conversation is found or no conversationRef, unsubscribe from messages
-        unsubscribeFromMessages()
-      }
-    }
+  // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
+  // Note: unsubscription on tab/app close is handled globally in chatStore.ts
 
-    // Cleanup function to unsubscribe when component unmounts or selectedChat changes
-    return () => {
-      unsubscribeFromMessages()
-    }
-  }, [
-    selectedChat,
-    conversations,
-    subscribeToMessages,
-    unsubscribeFromMessages,
-  ])
+  // Get the selectedChatId from the chatStore to determine UI state
+  const { selectedChatId } = useChatStore()
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box
         className={`${classes.twoColumnLayoutColLeft} ${
-          selectedChat ? 'stopScrollHideOnMobile' : ''
+          selectedChatId ? 'stopScrollHideOnMobile' : ''
         }`}
       >
         <TabsMessagesFriends />
-        <Conversations onClick={handleClick} selectedId={selectedChat?.id} />
+        <Conversations />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {selectedChat ? (
-            <ChatContainer
-              selectedChat={selectedChat}
-              onClose={handleCloseChat}
-              messages={
-                currentChat || {
-                  chatId: '',
-                  participants: [],
-                  messages: [],
-                }
-              }
-            />
+          {selectedChatId ? (
+            <ChatContainer onClose={handleCloseChat} />
           ) : (
             <Box className={classes.wrapperSwipes}>
               <SwipesWithFilters />

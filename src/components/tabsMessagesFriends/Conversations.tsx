@@ -1,11 +1,12 @@
 import * as React from 'react'
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserLastMessage } from 'types/UserLastMessage'
 import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useConversationsStore } from 'zustand/conversationsStore'
+import { useChatStore } from 'zustand/chatStore'
 import theme from '../../styles/createTheme'
 
 // Component for displaying loading state
@@ -83,29 +84,28 @@ const ConversationItem = React.memo<ConversationItemProps>(
 
 // Main component props
 interface ConversationsProps {
-  onClick: (userProfile: UserChatProfile) => void
+  onClick?: (userProfile: UserChatProfile) => void
   selectedId?: string
 }
 
 /**
  * Conversations component displays a list of user conversations
- * When a conversation is clicked, it passes the selected user profile to the parent component
+ * When a conversation is clicked, it updates the selected chat ID in the chatStore
  */
 const Conversations: React.FC<ConversationsProps> = ({
   onClick,
   selectedId,
 }) => {
   const { conversations, loading, error } = useConversationsStore()
-  const [userChatProfile, setUserChatProfile] = useState<UserChatProfile>({
-    id: '-1',
-    name: '',
-    age: '',
-    avatar: '',
-  })
+  const { selectedChatId, setSelectedChatId } = useChatStore()
+
+  // Use the provided selectedId or the selectedChatId from the store
+  const effectiveSelectedId = selectedId || selectedChatId
 
   /**
    * Handle click on a conversation item
-   * Updates the selected user profile and passes it to the parent component
+   * Updates the selected chat ID in the chatStore
+   * Also calls the onClick prop if provided (for backward compatibility)
    */
   const handleClick = useCallback(
     (conversation: UserLastMessage) => {
@@ -115,10 +115,16 @@ const Conversations: React.FC<ConversationsProps> = ({
         age: conversation.age,
         avatar: conversation.avatar,
       }
-      setUserChatProfile(userProfile)
-      onClick(userProfile)
+
+      // Update the selected chat ID in the chatStore
+      setSelectedChatId(conversation.id)
+
+      // Call the onClick prop if provided (for backward compatibility)
+      if (onClick) {
+        onClick(userProfile)
+      }
     },
-    [onClick]
+    [onClick, setSelectedChatId]
   )
 
   // Render appropriate component based on state
@@ -141,11 +147,7 @@ const Conversations: React.FC<ConversationsProps> = ({
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
-          isSelected={
-            selectedId
-              ? conversation.id === selectedId
-              : userChatProfile.id === conversation.id
-          }
+          isSelected={conversation.id === effectiveSelectedId}
           onClick={handleClick}
         />
       ))}

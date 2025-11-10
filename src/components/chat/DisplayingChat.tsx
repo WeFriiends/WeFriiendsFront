@@ -1,11 +1,19 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from './../../styles/createTheme'
-import { Chat, Message } from 'types/Chat'
+import { Message } from 'types/Chat'
 import StartChatting from './StartChatting'
+import { useChatStore } from '../../zustand/chatStore'
+import { useAuth0 } from '@auth0/auth0-react'
 
-const DisplayingChat = ({ data, userId }: { data: Chat; userId: string }) => {
+const DisplayingChat = () => {
   const { classes } = useStyles()
+  const { currentChat } = useChatStore()
+  const { user } = useAuth0()
+  const userId = user?.sub || ''
+
+  // If there's no currentChat, use an empty object with an empty messages array
+  const data = currentChat || { chatId: '', participants: [], messages: [] }
 
   return (
     <>
