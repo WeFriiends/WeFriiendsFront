@@ -40,7 +40,8 @@ interface ChatState {
   refreshMessages: (conversationId: string) => Promise<void>
   sendMessage: (
     conversationId: string,
-    message: Omit<FirestoreMessage, 'createdAt'>
+    message: Omit<FirestoreMessage, 'createdAt'>,
+    currentUserId: string
   ) => Promise<void>
 }
 
@@ -355,7 +356,7 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      sendMessage: async (conversationId, message) => {
+      sendMessage: async (conversationId, message, currentUserId) => {
         set({ loading: true, error: null })
         try {
           // Add message to the messages subcollection
@@ -376,10 +377,11 @@ export const useChatStore = create<ChatState>()(
 
           // Update the conversation document with the last message info
           const conversationRef = doc(db, 'conversations', conversationId)
+
           await updateDoc(conversationRef, {
             lastMessage: message.text,
             lastMessageAt: serverTimestamp(),
-            lastMessageSeen: false,
+            lastMessageSeen: message.senderId === currentUserId,
           })
 
           // We don't need to update the local state here

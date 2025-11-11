@@ -13,6 +13,7 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore'
 import { useUserProfileStore } from './userProfileStore'
 
@@ -27,6 +28,10 @@ interface ConversationsState {
   subscribeToConversations: (userId: string) => void
   unsubscribeFromConversations: () => void
   createConversation: (currentUserId: string, userId: string) => Promise<string>
+  setConversationSeen: (
+    currentUserId: string,
+    userId: string
+  ) => Promise<string>
 }
 
 export const useConversationsStore = create<ConversationsState>()(
@@ -356,6 +361,52 @@ export const useConversationsStore = create<ConversationsState>()(
           set({
             error: error instanceof Error ? error : new Error(String(error)),
             loading: false,
+          })
+          throw error
+        }
+      },
+
+      setConversationSeen: async (currentUserId, userId) => {
+        try {
+          if (!currentUserId || !userId) {
+            console.error('Missing user IDs for setConversationSeen')
+            return ''
+          }
+
+          // Conversation ID: те же самые sorted user IDs
+          const sortedUserIds = [currentUserId, userId].sort()
+          const conversationId = sortedUserIds.join('_')
+
+          const conversationRef = doc(db, 'conversations', conversationId)
+
+          // Проверяем, существует ли документ
+          const docSnap = await getDoc(conversationRef)
+          if (!docSnap.exists()) {
+            console.error('Conversation does not exist:', conversationId)
+            return conversationId
+          }
+
+          // Обновляем только одно поле (не затираем весь документ)
+          await updateDoc(conversationRef, {
+            lastMessageSeen: true,
+          })
+
+          console.log(`✅ lastMessageSeen set to true for ${conversationId}`)
+
+          // Можно сразу обновить локальный store, чтобы UI отразил seen
+          set((state) => ({
+            conversations: state.conversations.map((conv) =>
+              conv.conversationRef === conversationId
+                ? { ...conv, lastMessageSeen: true, messageCount: '0' }
+                : conv
+            ),
+          }))
+
+          return conversationId
+        } catch (error) {
+          console.error('❌ Error setting lastMessageSeen:', error)
+          set({
+            error: error instanceof Error ? error : new Error(String(error)),
           })
           throw error
         }

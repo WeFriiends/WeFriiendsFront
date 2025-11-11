@@ -60,12 +60,16 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
     }
 
     try {
-      await sendMessage(chatId, {
-        senderId: userId,
-        receiverId: receiverId,
-        text: messageText,
-        seen: false,
-      })
+      await sendMessage(
+        chatId,
+        {
+          senderId: userId,
+          receiverId: receiverId,
+          text: messageText,
+          seen: false,
+        },
+        userId
+      )
 
       // Clear the textarea after sending
       setMessageText('')

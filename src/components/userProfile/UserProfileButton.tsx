@@ -20,6 +20,9 @@ const UserProfileButton = ({
   const createConversation = useConversationsStore(
     (state) => state.createConversation
   )
+  const setConversationSeen = useConversationsStore(
+    (state) => state.setConversationSeen
+  )
   const navigate = useNavigate()
 
   const handleStartChat = async () => {
@@ -30,6 +33,7 @@ const UserProfileButton = ({
       if (currentUserId && userId) {
         // Create conversation using the store function
         await createConversation(currentUserId, userId)
+        await setConversationSeen(currentUserId, userId)
       } else {
         console.error('Missing user IDs for chat connection')
       }
