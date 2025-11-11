@@ -9,33 +9,44 @@ import { Chat } from 'types/Chat'
 import { useChatStore } from '../../zustand/chatStore'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useConversationsStore } from '../../zustand/conversationsStore'
-import { cleanUserId } from '../../utils/userIdUtils'
 
 interface ChatContainerProps {
-  selectedChat: UserChatProfile
+  selectedChat?: UserChatProfile
   onClose: () => void
-  messages: Chat
+  messages?: Chat
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({
   selectedChat,
   onClose,
-  messages,
+  messages: propMessages,
 }) => {
   const { classes } = useStyles()
   const [messageText, setMessageText] = useState('')
   const { user } = useAuth0()
   const userId = user?.sub || ''
-  const sendMessage = useChatStore((state) => state.sendMessage)
-  const loading = useChatStore((state) => state.loading)
+  const { sendMessage, loading, currentChat, selectedChatId } = useChatStore()
   const { conversations } = useConversationsStore()
 
+  // Use the messages from props if provided, otherwise use currentChat from the store
+  const messages = propMessages ||
+    currentChat || { chatId: '', participants: [], messages: [] }
+
+  // Find the selected chat profile from conversations if not provided as a prop
+  const effectiveSelectedChat =
+    selectedChat ||
+    (selectedChatId
+      ? conversations.find((conv) => conv.id === selectedChatId)
+      : null)
+
   // Find the conversation with the matching ID to get the conversationRef
-  const conversation = conversations.find((conv) => conv.id === selectedChat.id)
+  const conversation = effectiveSelectedChat
+    ? conversations.find((conv) => conv.id === effectiveSelectedChat.id)
+    : null
   const conversationRef = conversation?.conversationRef
 
-  // Use selectedChat.id as the receiverId
-  const receiverId = selectedChat.id
+  // Use effectiveSelectedChat.id as the receiverId if available
+  const receiverId = effectiveSelectedChat?.id || ''
 
   // Determine chatId - use conversationRef if available, otherwise fall back to messages.chatId
   const chatId = conversationRef || messages.chatId
@@ -48,16 +59,17 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
       return
     }
 
-    // Remove "auth0|" prefix from userId for senderId
-    const cleanSenderId = cleanUserId(userId)
-
     try {
-      await sendMessage(chatId, {
-        senderId: cleanSenderId,
-        receiverId: receiverId,
-        text: messageText,
-        seen: false,
-      })
+      await sendMessage(
+        chatId,
+        {
+          senderId: userId,
+          receiverId: receiverId,
+          text: messageText,
+          seen: false,
+        },
+        userId
+      )
 
       // Clear the textarea after sending
       setMessageText('')
@@ -69,7 +81,9 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   return (
     <Box className={classes.wrapperChat}>
       <Box className={classes.topSpacePlaceholderProfile} />
-      <ChatHeader selectedChat={selectedChat} onClose={onClose} />
+      {effectiveSelectedChat && (
+        <ChatHeader selectedChat={effectiveSelectedChat} onClose={onClose} />
+      )}
       <Box
         sx={{
           display: 'flex',
@@ -80,10 +94,11 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
           flexGrow: 1,
         }}
       >
-        {Object.keys(messages).length != 0 &&
-          messages.participants.includes(receiverId) && (
+        {effectiveSelectedChat &&
+          messages &&
+          Object.keys(messages).length !== 0 && (
             <>
-              <DisplayingChat data={messages} userId={userId} />
+              <DisplayingChat />
 
               <Box className={classes.sendMessageSection}>
                 <TextareaAutosize

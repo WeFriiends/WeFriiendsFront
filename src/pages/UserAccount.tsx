@@ -2,6 +2,7 @@ import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
 import Loader from '../common/svg/Loader'
+import { handleLogout as logoutUtil } from '../utils/logoutUtils'
 
 const UserAccount = () => {
   const { logout } = useAuth0()
@@ -21,7 +22,7 @@ const UserAccount = () => {
     if (token) {
       try {
         await deleteProfile(token)
-        logout({ logoutParams: { returnTo: window.location.origin } })
+        logoutUtil(logout)
       } catch (err) {
         console.error('Error deleting account:', err)
       }
@@ -76,13 +77,7 @@ const UserAccount = () => {
           ))}
         </h2>
       </div>
-      <button
-        onClick={() =>
-          logout({ logoutParams: { returnTo: window.location.origin } })
-        }
-      >
-        Log Out
-      </button>
+      <button onClick={() => logoutUtil(logout)}>Log Out</button>
       <button onClick={handleProfileUpdate}>Update profile</button>
       <button onClick={deleteAccount}>Delete account</button>
     </div>

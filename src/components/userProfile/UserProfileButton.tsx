@@ -3,7 +3,6 @@ import { makeStyles } from 'tss-react/mui'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useNavigate } from 'react-router-dom'
-import { cleanUserId } from '../../utils/userIdUtils'
 
 const UserProfileButton = ({
   skip,
@@ -21,6 +20,9 @@ const UserProfileButton = ({
   const createConversation = useConversationsStore(
     (state) => state.createConversation
   )
+  const setConversationSeen = useConversationsStore(
+    (state) => state.setConversationSeen
+  )
   const navigate = useNavigate()
 
   const handleStartChat = async () => {
@@ -31,6 +33,7 @@ const UserProfileButton = ({
       if (currentUserId && userId) {
         // Create conversation using the store function
         await createConversation(currentUserId, userId)
+        await setConversationSeen(currentUserId, userId)
       } else {
         console.error('Missing user IDs for chat connection')
       }
@@ -40,8 +43,7 @@ const UserProfileButton = ({
 
     // Navigate to the messages page with the specific user ID (using only first 8 characters)
     if (userId) {
-      const shortUserId = cleanUserId(userId).substring(0, 8)
-      navigate(`/messages/${shortUserId}`)
+      navigate(`/messages/${userId}`)
     }
   }
 

@@ -8,6 +8,19 @@ interface AuthTokenAndStoreProviderProps {
   children: ReactNode
 }
 
+function isTokenExpired(token?: string, leewaySeconds = 30) {
+  if (!token) return true
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const exp = payload.exp as number | undefined
+    if (!exp) return true
+    const now = Math.floor(Date.now() / 1000)
+    return now + leewaySeconds >= exp // true если истёк или истекает через <30 сек
+  } catch {
+    return true
+  }
+}
+
 const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
@@ -47,6 +60,14 @@ const AuthTokenAndStoreProvider = ({
       }
 
       try {
+        let accessToken = token
+
+        if (!accessToken || isTokenExpired(accessToken)) {
+          accessToken = await getAccessTokenSilently()
+          setToken(accessToken)
+          console.log('🔄 Refreshed access token')
+        }
+
         // проверяем, что первый профиль заполнен и записываем в стор
         if (!hasCheckedProfile.current && token) {
           hasCheckedProfile.current = true // Помечаем, что запрос происходит
@@ -96,12 +117,9 @@ const AuthTokenAndStoreProvider = ({
     }
   }, [hasProfile, fetchMatches, startPeriodicFetching, stopPeriodicFetching])
 
-  // Effect for fetching and subscribing to conversations
+  // Fetching conversations and subscribing to conversations updates
   useEffect(() => {
     if (hasProfile && user?.sub) {
-      // Initial fetch - no need
-      // fetchConversations(user.sub)
-      // Subscribe to real-time updates for conversations
       subscribeToConversations(user.sub)
     }
     // No cleanup function here - unsubscription happens only when browser is closed

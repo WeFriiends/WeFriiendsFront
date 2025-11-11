@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   Avatar,
   BottomNavigation,
@@ -8,27 +8,21 @@ import {
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useActivePage } from '../../context/activePageContext'
-import { generateNavigationConfig } from '../../helpers/navigationConfigHelper'
-import { NavigationItems } from '../navigationItems/NavigationItems'
 import theme from '../../styles/createTheme'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useProfileStore } from '../../zustand/store'
+import IconChat from './../../common/svg/IconChat'
+import IconLightning from './../../common/svg/IconLightning'
+import IconII from './../../common/svg/IconII'
+import IconProfile from './../../common/svg/IconProfile'
+import IconNearMe from './../../common/svg/IconNearMe'
+import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 
 const NavBar = () => {
   const { classes } = useStyles()
   const { activePage, setNewActivePage } = useActivePage()
-  const navigationConfig = generateNavigationConfig()
   const navigate = useNavigate()
   const { data: profile, loading } = useProfileStore()
-
-  // Set current active menu item if we open the corresponding link
-  useEffect(() => {
-    const currentNavigationItem = navigationConfig.filter(
-      (NavigationItem) => NavigationItem.linkTo === window.location.pathname
-    )
-    currentNavigationItem.length > 0 &&
-      setNewActivePage(currentNavigationItem[0].value)
-  }, [navigationConfig, setNewActivePage])
 
   return (
     <>
@@ -38,18 +32,119 @@ const NavBar = () => {
         </Box>
         <BottomNavigation
           value={activePage}
-          onChange={(event, newValue) => setNewActivePage(newValue)}
+          onChange={(event, newValue) => {
+            setNewActivePage(newValue)
+          }}
           className={classes.navList}
         >
-          {NavigationItems({
-            activePage,
-            navigationConfig,
-          })}
+          <BottomNavigationAction
+            value="nearme"
+            component={Link}
+            to="/near-me"
+            icon={
+              <IconNearMe
+                color={
+                  activePage === 'nearme'
+                    ? theme.palette.primary.main
+                    : theme.customPalette.colorNavIcon
+                }
+              />
+            }
+            sx={{
+              width: { xs: 20, lg: 31 },
+              height: { xs: 24, lg: 37 },
+            }}
+            disableRipple
+            disableTouchRipple
+          />
+          <BottomNavigationAction
+            value="wholikedyou"
+            component={Link}
+            to="/who-liked-you"
+            icon={
+              <IconLightning
+                color={
+                  activePage === 'wholikedyou'
+                    ? theme.palette.primary.main
+                    : theme.customPalette.colorNavIcon
+                }
+              />
+            }
+            sx={{
+              width: { xs: 20, lg: 26 },
+              height: { xs: 27, lg: 38 },
+            }}
+            disableRipple
+            disableTouchRipple
+          />
+          <BottomNavigationAction
+            value="friends"
+            component={Link}
+            to="/swipes"
+            icon={
+              <IconII
+                color={
+                  activePage === 'friends'
+                    ? theme.palette.primary.main
+                    : theme.customPalette.colorNavIcon
+                }
+              />
+            }
+            sx={{
+              width: { xs: 15, lg: 32 },
+              height: { xs: 25, lg: 50 },
+            }}
+            disableRipple
+            disableTouchRipple
+          />
+          <BottomNavigationAction
+            value="chat"
+            component={Link}
+            to="/messages"
+            icon={
+              <IconChat
+                color={
+                  activePage === 'chat'
+                    ? theme.palette.primary.main
+                    : theme.customPalette.colorNavIcon
+                }
+              />
+            }
+            sx={{
+              width: { xs: 25, lg: 30 },
+              height: { xs: 25, lg: 30 },
+            }}
+            disableRipple
+            disableTouchRipple
+          />
+          <BottomNavigationAction
+            value="profile"
+            component={Link}
+            to="/my-account"
+            icon={
+              <IconProfile
+                color={
+                  activePage === 'profile'
+                    ? theme.palette.primary.main
+                    : theme.customPalette.colorNavIcon
+                }
+              />
+            }
+            sx={{
+              width: { xs: 24, lg: 24 },
+              height: { xs: 26, lg: 26 },
+            }}
+            disableRipple
+            disableTouchRipple
+          />
         </BottomNavigation>
         <Button
           variant="text"
           disableRipple
-          onClick={() => navigate('/my-account')}
+          onClick={() => {
+            navigate('/my-account')
+            setNewActivePage('profile')
+          }}
           className={`${classes.userDetails} ${
             activePage === 'profile' && classes.userDetailsActive
           }`}

@@ -1,12 +1,14 @@
 import * as React from 'react'
-import { useState, useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { UserLastMessage } from 'types/UserLastMessage'
 import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useConversationsStore } from 'zustand/conversationsStore'
+import { useChatStore } from 'zustand/chatStore'
 import theme from '../../styles/createTheme'
+import { useAuth0 } from '@auth0/auth0-react'
 
 // Component for displaying loading state
 const LoadingState: React.FC = () => <div>Loading conversations...</div>
@@ -32,84 +34,106 @@ interface ConversationItemProps {
   onClick: (conversation: UserLastMessage) => void
 }
 
-const ConversationItem: React.FC<ConversationItemProps> = ({
-  conversation,
-  isSelected,
-  onClick,
-}) => {
-  const { classes } = useStyles()
+// Memoized envelope image component to prevent unnecessary re-renders
+const EnvelopeIcon = React.memo(() => (
+  <img src="/img/messages/envelope.svg" alt="You have new conversations!" />
+))
 
-  const handleClick = () => {
-    onClick(conversation)
-  }
+// Memoized conversation item component to prevent unnecessary re-renders
+const ConversationItem = React.memo<ConversationItemProps>(
+  ({ conversation, isSelected, onClick }) => {
+    const { classes } = useStyles()
 
-  return (
-    <Box key={conversation.id} onClick={handleClick}>
-      <Box
-        className={`${classes.conversationBlock} ${
-          isSelected ? classes.selected : ''
-        }`}
-      >
-        <Avatar src={conversation.avatar} sx={{ width: 66, height: 66 }} />
-        <Box className={classes.conversationContent}>
-          <Typography className={classes.name}>
-            {conversation.name}, {conversation.age}
-          </Typography>
-          <Typography className={classes.conversationText}>
-            {conversation.lastMessage}
-          </Typography>
-        </Box>
-        {conversation.messageCount !== '0' && (
+    const handleClick = useCallback(() => {
+      onClick(conversation)
+    }, [onClick, conversation])
+
+    // Memoize the notification indicator to prevent unnecessary re-renders
+    const notificationIndicator = useMemo(() => {
+      if (!conversation.lastMessageSeen) {
+        return (
           <Box className={classes.conversationAlert}>
-            <img
-              src="/img/messages/envelope.svg"
-              alt="You have new conversations!"
-            />
+            <EnvelopeIcon />
           </Box>
-        )}
+        )
+      }
+      return null
+    }, [classes.conversationAlert, conversation.lastMessageSeen])
+
+    return (
+      <Box key={conversation.id} onClick={handleClick}>
+        <Box
+          className={`${classes.conversationBlock} ${
+            isSelected ? classes.selected : ''
+          }`}
+        >
+          <Avatar src={conversation.avatar} sx={{ width: 66, height: 66 }} />
+          <Box className={classes.conversationContent}>
+            <Typography className={classes.name}>
+              {conversation.name}, {conversation.age}
+            </Typography>
+            <Typography className={classes.conversationText}>
+              {conversation.lastMessage}
+            </Typography>
+          </Box>
+          {notificationIndicator}
+        </Box>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
+)
 
 // Main component props
 interface ConversationsProps {
-  onClick: (userProfile: UserChatProfile) => void
+  onClick?: (userProfile: UserChatProfile) => void
   selectedId?: string
 }
 
 /**
  * Conversations component displays a list of user conversations
- * When a conversation is clicked, it passes the selected user profile to the parent component
+ * When a conversation is clicked, it updates the selected chat ID in the chatStore
  */
 const Conversations: React.FC<ConversationsProps> = ({
   onClick,
   selectedId,
 }) => {
+  const { user } = useAuth0()
   const { conversations, loading, error } = useConversationsStore()
-  const [userChatProfile, setUserChatProfile] = useState<UserChatProfile>({
-    id: '-1',
-    name: '',
-    age: '',
-    avatar: '',
-  })
+  const { selectedChatId, setSelectedChatId } = useChatStore()
+
+  // Use the provided selectedId or the selectedChatId from the store
+  const effectiveSelectedId = selectedId || selectedChatId
+
+  const setConversationSeen = useConversationsStore(
+    (state) => state.setConversationSeen
+  )
 
   /**
    * Handle click on a conversation item
-   * Updates the selected user profile and passes it to the parent component
+   * Updates the selected chat ID in the chatStore
+   * Also calls the onClick prop if provided (for backward compatibility)
    */
   const handleClick = useCallback(
-    (conversation: UserLastMessage) => {
+    async (conversation: UserLastMessage) => {
       const userProfile: UserChatProfile = {
         id: conversation.id,
         name: conversation.name,
         age: conversation.age,
         avatar: conversation.avatar,
       }
-      setUserChatProfile(userProfile)
-      onClick(userProfile)
+
+      // Update the selected chat ID in the chatStore
+      setSelectedChatId(conversation.id)
+      const currentUserId = user?.sub
+      if (currentUserId)
+        await setConversationSeen(currentUserId, conversation.id)
+
+      // Call the onClick prop if provided (for backward compatibility)
+      if (onClick) {
+        onClick(userProfile)
+      }
     },
-    [onClick]
+    [onClick, setSelectedChatId, setConversationSeen, user?.sub]
   )
 
   // Render appropriate component based on state
@@ -132,11 +156,7 @@ const Conversations: React.FC<ConversationsProps> = ({
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
-          isSelected={
-            selectedId
-              ? conversation.id === selectedId
-              : userChatProfile.id === conversation.id
-          }
+          isSelected={conversation.id === effectiveSelectedId}
           onClick={handleClick}
         />
       ))}

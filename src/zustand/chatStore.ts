@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { db } from '../services/firebase'
+import { useConversationsStore } from './conversationsStore'
 import {
   collection,
   addDoc,
@@ -11,6 +12,7 @@ import {
   orderBy,
   onSnapshot,
   getDoc,
+  getDocs,
   Timestamp,
 } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
@@ -28,12 +30,18 @@ interface ChatState {
   messagesCache: Record<string, Chat>
   loading: boolean
   error: Error | null
-  unsubscribe: (() => void) | null
+  // Map of conversation IDs to unsubscribe functions
+  subscriptions: Record<string, () => void>
+  // Selected chat ID for decoupled components
+  selectedChatId: string | null
+  setSelectedChatId: (chatId: string | null) => void
   subscribeToMessages: (conversationId: string) => void
   unsubscribeFromMessages: () => void
+  refreshMessages: (conversationId: string) => Promise<void>
   sendMessage: (
     conversationId: string,
-    message: Omit<FirestoreMessage, 'createdAt'>
+    message: Omit<FirestoreMessage, 'createdAt'>,
+    currentUserId: string
   ) => Promise<void>
 }
 
@@ -44,13 +52,160 @@ export const useChatStore = create<ChatState>()(
       messagesCache: {},
       loading: false,
       error: null,
-      unsubscribe: null,
+      subscriptions: {},
+      selectedChatId: null,
+
+      setSelectedChatId: (chatId) => {
+        set({ selectedChatId: chatId })
+
+        // If we have a chat ID, update currentChat and subscribe to messages for that conversation
+        if (chatId) {
+          const { conversations } = useConversationsStore.getState()
+          const conversation = conversations.find((conv) => conv.id === chatId)
+          if (conversation && conversation.conversationRef) {
+            const { conversationRef } = conversation
+
+            // Check if we have this conversation in the cache
+            const { messagesCache } = get()
+            const cachedChat = messagesCache[conversationRef]
+
+            if (cachedChat) {
+              // If we have the conversation in the cache, update currentChat immediately
+              console.log(
+                'Using cached messages for conversation:',
+                conversationRef
+              )
+              set({
+                currentChat: cachedChat,
+                loading: false,
+              })
+            } else {
+              // If we don't have the conversation in the cache, create an empty chat object
+              // This will be updated when the subscription receives data from Firebase
+              console.log(
+                'Creating empty chat object for conversation:',
+                conversationRef
+              )
+              set({
+                currentChat: {
+                  chatId: conversationRef,
+                  participants: [chatId], // Add the selected chat ID as a participant
+                  messages: [],
+                },
+                loading: true,
+              })
+            }
+
+            // Subscribe to messages for this conversation
+            get().subscribeToMessages(conversationRef)
+          }
+        } else {
+          // If we don't have a chat ID, clear the currentChat
+          set({ currentChat: null })
+        }
+      },
+
+      refreshMessages: async (conversationId) => {
+        if (!conversationId) {
+          console.error('No conversation ID provided for refresh')
+          return
+        }
+
+        console.log('Refreshing messages for conversation:', conversationId)
+        set({ loading: true, error: null })
+
+        try {
+          // Create a query for messages in this conversation
+          const messagesRef = collection(
+            db,
+            'conversations',
+            conversationId,
+            'messages'
+          )
+          const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
+
+          // Get the messages
+          const querySnapshot = await getDocs(messagesQuery)
+
+          // Convert the messages to the format expected by the Chat interface
+          const messages = querySnapshot.docs.map((doc) => {
+            const data = doc.data()
+            return {
+              messageId: doc.id,
+              senderId: data.senderId,
+              timestamp:
+                data.createdAt instanceof Timestamp
+                  ? data.createdAt.toDate().toISOString()
+                  : new Date().toISOString(),
+              message: data.text,
+              readStatus: !data.seen,
+            }
+          }) as Message[]
+
+          // Create a Chat object
+          const chat: Chat = {
+            chatId: conversationId,
+            participants: [], // This will be populated from the conversation document
+            messages,
+          }
+
+          // Get the conversation document to get the participants
+          const conversationRef = doc(db, 'conversations', conversationId)
+          const conversationDoc = await getDoc(conversationRef)
+          if (conversationDoc.exists()) {
+            const conversationData = conversationDoc.data()
+            chat.participants = conversationData.participants || []
+          }
+
+          // Update the cache
+          set((state) => ({
+            messagesCache: {
+              ...state.messagesCache,
+              [conversationId]: chat,
+            },
+            loading: false,
+          }))
+
+          // console.log(
+          //   'Successfully refreshed messages for conversation:',
+          //   conversationId
+          // )
+        } catch (error) {
+          console.error('Error refreshing messages:', error)
+          set({
+            error: error instanceof Error ? error : new Error(String(error)),
+            loading: false,
+          })
+        }
+      },
 
       subscribeToMessages: (conversationId) => {
-        // Check if we already have an active subscription
-        if (get().unsubscribe) {
-          console.log('Already subscribed to messages, unsubscribing first')
-          get().unsubscribeFromMessages()
+        // Check if we're already subscribed to this conversation
+        const { subscriptions, messagesCache } = get()
+        if (subscriptions[conversationId]) {
+          console.log(
+            'Already subscribed to this conversation, keeping subscription'
+          )
+          // Update currentChat with cached messages for this conversation
+          if (messagesCache[conversationId]) {
+            console.log(
+              'Using cached messages for conversation:',
+              conversationId
+            )
+            set({
+              currentChat: messagesCache[conversationId],
+              loading: false,
+            })
+          }
+          return
+        }
+
+        // We don't unsubscribe from previous conversations as per requirements
+        if (Object.keys(subscriptions).length > 0) {
+          console.log(
+            'Already subscribed to other conversation(s), keeping all subscriptions'
+          )
+          // No unsubscription here - we keep all subscriptions active
         }
 
         if (!conversationId) {
@@ -61,13 +216,12 @@ export const useChatStore = create<ChatState>()(
         // Check if we have this conversation in the cache
         const cachedChat = get().messagesCache[conversationId]
         if (cachedChat) {
-          // console.log('Using cached messages for conversation:', conversationId)
-          // todo: cache doesn't work normally, it shouldn't fire "Firebase Messages Snapshot Update" when switching between chats
+          console.log('Using cached messages for conversation:', conversationId)
           // Set currentChat from cache for immediate display
-          // set({
-          //   currentChat: cachedChat,
-          //   loading: false,
-          // })
+          set({
+            currentChat: cachedChat,
+            loading: false,
+          })
           // Continue to set up the listener to receive updates
         }
 
@@ -85,10 +239,13 @@ export const useChatStore = create<ChatState>()(
         // Set up the listener
         set({ loading: true, error: null })
 
-        const unsubscribe = onSnapshot(
+        const unsubscribeSnapshot = onSnapshot(
           messagesQuery,
+          { includeMetadataChanges: false },
           async (querySnapshot) => {
             try {
+              if (querySnapshot.metadata.hasPendingWrites) return
+
               console.log('🔥 Firebase Messages Snapshot Update:', {
                 totalDocuments: querySnapshot.size,
                 documents: querySnapshot.docs.map((doc) => ({
@@ -112,28 +269,30 @@ export const useChatStore = create<ChatState>()(
                 }
               }) as Message[]
 
-              // Create a Chat object
+              // Получаем участников один раз
+              let participants: string[] = []
+              const conversationDoc = await getDoc(
+                doc(db, 'conversations', conversationId)
+              )
+              if (conversationDoc.exists()) {
+                participants = conversationDoc.data().participants || []
+              }
+
               const chat: Chat = {
                 chatId: conversationId,
-                participants: [], // This will be populated from the conversation document
+                participants,
                 messages,
               }
 
-              // Get the conversation document to get the participants
-              const conversationRef = doc(db, 'conversations', conversationId)
-              const conversationDoc = await getDoc(conversationRef)
-              if (conversationDoc.exists()) {
-                const conversationData = conversationDoc.data()
-                chat.participants = conversationData.participants || []
-              }
-
-              // Update both currentChat and cache
               set((state) => ({
-                currentChat: chat,
                 messagesCache: {
                   ...state.messagesCache,
-                  [conversationId]: chat,
+                  [conversationId]: chat, // всегда обновляем кеш
                 },
+                currentChat:
+                  state.currentChat?.chatId === conversationId
+                    ? chat
+                    : state.currentChat, // обновляем только если открыт
                 loading: false,
               }))
             } catch (error) {
@@ -147,15 +306,17 @@ export const useChatStore = create<ChatState>()(
           },
           (error) => {
             console.error('Error in messages snapshot listener:', error)
-            set({
-              error,
-              loading: false,
-            })
+            set({ error, loading: false })
           }
         )
 
-        // Store the unsubscribe function
-        set({ unsubscribe })
+        // Store the unsubscribe function in the subscriptions map
+        set((state) => ({
+          subscriptions: {
+            ...state.subscriptions,
+            [conversationId]: unsubscribeSnapshot,
+          },
+        }))
         console.log(
           'Successfully subscribed to messages for conversation:',
           conversationId
@@ -163,9 +324,13 @@ export const useChatStore = create<ChatState>()(
       },
 
       unsubscribeFromMessages: () => {
-        const { unsubscribe, currentChat } = get()
-        if (unsubscribe) {
-          console.log('Unsubscribing from messages')
+        const { subscriptions, currentChat } = get()
+        const subscriptionKeys = Object.keys(subscriptions)
+
+        if (subscriptionKeys.length > 0) {
+          console.log(
+            `Unsubscribing from ${subscriptionKeys.length} conversations`
+          )
 
           // Store current chat in cache if it exists
           if (currentChat) {
@@ -181,12 +346,17 @@ export const useChatStore = create<ChatState>()(
             }))
           }
 
-          unsubscribe()
-          set({ unsubscribe: null, currentChat: null })
+          // Unsubscribe from all conversations
+          subscriptionKeys.forEach((conversationId) => {
+            subscriptions[conversationId]()
+            console.log(`Unsubscribed from conversation: ${conversationId}`)
+          })
+
+          set({ subscriptions: {}, currentChat: null })
         }
       },
 
-      sendMessage: async (conversationId, message) => {
+      sendMessage: async (conversationId, message, currentUserId) => {
         set({ loading: true, error: null })
         try {
           // Add message to the messages subcollection
@@ -196,7 +366,8 @@ export const useChatStore = create<ChatState>()(
             conversationId,
             'messages'
           )
-          const docRef = await addDoc(messagesRef, {
+
+          await addDoc(messagesRef, {
             senderId: message.senderId,
             receiverId: message.receiverId,
             text: message.text,
@@ -206,62 +377,24 @@ export const useChatStore = create<ChatState>()(
 
           // Update the conversation document with the last message info
           const conversationRef = doc(db, 'conversations', conversationId)
+
           await updateDoc(conversationRef, {
             lastMessage: message.text,
             lastMessageAt: serverTimestamp(),
-            lastMessageSeen: false,
+            lastMessageSeen: message.senderId === currentUserId,
           })
 
-          // Update the local cache with the new message
-          const { currentChat, messagesCache } = get()
+          // We don't need to update the local state here
+          // The onSnapshot listener will handle updating the UI when Firebase sends the update
+          // This prevents the duplicate message issue
+          set({ loading: false })
 
-          // Create a new Message object for the sent message
-          const newMessage: Message = {
-            messageId: docRef.id,
-            senderId: message.senderId,
-            timestamp: new Date().toISOString(), // Use current time as timestamp
-            message: message.text,
-            readStatus: false,
-          }
-
-          // If we have a current chat and it matches the conversation ID, update it
-          if (currentChat && currentChat.chatId === conversationId) {
-            const updatedChat: Chat = {
-              ...currentChat,
-              messages: [...currentChat.messages, newMessage],
-            }
-
-            // Update both currentChat and cache
-            set({
-              currentChat: updatedChat,
-              messagesCache: {
-                ...messagesCache,
-                [conversationId]: updatedChat,
-              },
-              loading: false,
-            })
-          }
-          // If we have the conversation in cache but it's not the current chat, just update the cache
-          else if (messagesCache[conversationId]) {
-            const cachedChat = messagesCache[conversationId]
-            const updatedChat: Chat = {
-              ...cachedChat,
-              messages: [...cachedChat.messages, newMessage],
-            }
-
-            set({
-              messagesCache: {
-                ...messagesCache,
-                [conversationId]: updatedChat,
-              },
-              loading: false,
-            })
-          } else {
-            // If we don't have the chat in cache, just set loading to false
-            set({ loading: false })
-          }
+          // Log for debugging
+          console.log(
+            '✅ Message sent to Firebase, waiting for snapshot update'
+          )
         } catch (error) {
-          console.error('Error sending message:', error)
+          console.error('❌ Error sending message:', error)
           set({
             error: error instanceof Error ? error : new Error(String(error)),
             loading: false,
@@ -273,14 +406,35 @@ export const useChatStore = create<ChatState>()(
   )
 )
 
-// Add event listener for beforeunload to unsubscribe when browser is closed
+// Track if the app is being closed (not just a tab)
+let isAppClosing = false
+
+// Add event listeners to detect when the app is closed vs when a tab is switched
 if (typeof window !== 'undefined') {
+  // When visibility changes (tab switch, minimize), mark that we're not closing the app
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      isAppClosing = false
+    }
+  })
+
+  // When page is about to unload and we haven't detected a tab switch,
+  // it's likely the app is closing
   window.addEventListener('beforeunload', () => {
     // Get the current store state and unsubscribe if needed
     const store = useChatStore.getState()
-    if (store.unsubscribe) {
-      console.log('Browser closing, unsubscribing from messages')
+    if (Object.keys(store.subscriptions).length > 0 && isAppClosing) {
+      console.log('App closing, unsubscribing from all conversations')
       store.unsubscribeFromMessages()
     }
   })
+
+  // Set isAppClosing to true when the page is focused
+  // This helps distinguish between tab switching and app closing
+  window.addEventListener('focus', () => {
+    isAppClosing = true
+  })
+
+  // Initialize isAppClosing based on current visibility state
+  isAppClosing = document.visibilityState === 'visible'
 }
