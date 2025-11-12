@@ -30,25 +30,55 @@ export interface UserProfile {
   }
 }
 
+// Interface for cached profile with timestamp
+interface CachedProfile {
+  profile: UserProfile
+  timestamp: number
+}
+
 interface UserProfilesState {
-  profiles: Record<string, UserProfile>
+  profileCache: Record<string, CachedProfile>
   loading: Record<string, boolean>
   error: Record<string, Error | null>
-  fetchUserProfile: (userId: string) => Promise<UserProfile | undefined>
+  fetchUserProfile: (
+    userId: string,
+    forceRefresh?: boolean
+  ) => Promise<UserProfile | undefined>
+  isCacheValid: (userId: string) => boolean
 }
 
 export const useUserProfileStore = create<UserProfilesState>()(
   devtools(
     (set, get) => ({
-      profiles: {},
+      profileCache: {},
       loading: {},
       error: {},
 
-      fetchUserProfile: async (userId: string) => {
-        // If we already have the profile and it's not loading, return it
-        const { profiles, loading } = get()
-        if (profiles[userId] && !loading[userId]) {
-          return profiles[userId]
+      isCacheValid: (userId: string) => {
+        const { profileCache } = get()
+        const cachedData = profileCache[userId]
+
+        if (!cachedData) return false
+
+        // Cache is valid for 10 minutes (600000 ms)
+        const cacheValidityPeriod = 10 * 60 * 1000
+        const now = Date.now()
+
+        return now - cachedData.timestamp < cacheValidityPeriod
+      },
+
+      fetchUserProfile: async (userId: string, forceRefresh = false) => {
+        // If we already have the profile, it's not loading, and we don't need to refresh it
+        const { profileCache, loading, isCacheValid } = get()
+
+        if (
+          !forceRefresh &&
+          profileCache[userId] &&
+          !loading[userId] &&
+          isCacheValid(userId)
+        ) {
+          console.log(`♻️Found cached profile for user: ${userId}`)
+          return profileCache[userId].profile
         }
 
         // Set loading state for this userId
@@ -69,9 +99,15 @@ export const useUserProfileStore = create<UserProfilesState>()(
 
           // console.log(`Profile fetched:`, profile)
 
-          // Update the store with the fetched profile
+          // Update the store with the fetched profile and timestamp
           set((state) => ({
-            profiles: { ...state.profiles, [userId]: profile },
+            profileCache: {
+              ...state.profileCache,
+              [userId]: {
+                profile,
+                timestamp: Date.now(),
+              },
+            },
             loading: { ...state.loading, [userId]: false },
           }))
 
