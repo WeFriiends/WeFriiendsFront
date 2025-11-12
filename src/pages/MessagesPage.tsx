@@ -18,11 +18,11 @@ const MessagesPage = () => {
   const { setSelectedChatId } = useChatStore()
 
   // Function to find a conversation by shortened userId in URL (first 8 characters)
-  const findConversationByShortId = useCallback(
-    (shortId: string) => {
+  const findConversationById = useCallback(
+    (conversationId: string) => {
       // This implementation checks if the conversation id starts with or includes the 8-character shortId
-      return conversations.find((conversation) =>
-        conversation.id.startsWith(shortId)
+      return conversations.find(
+        (conversation) => conversation.id === conversationId
       )
     },
     [conversations]
@@ -38,7 +38,7 @@ const MessagesPage = () => {
   useEffect(() => {
     // If we have a userId in the URL and conversations are loaded, find the matching conversation
     if (urlUserId && conversations.length > 0) {
-      const matchedConversation = findConversationByShortId(urlUserId)
+      const matchedConversation = findConversationById(urlUserId)
 
       if (matchedConversation) {
         // Set the selected chat ID in the chatStore

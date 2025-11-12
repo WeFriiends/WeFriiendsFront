@@ -82,10 +82,10 @@ export const useChatStore = create<ChatState>()(
             } else {
               // If we don't have the conversation in the cache, create an empty chat object
               // This will be updated when the subscription receives data from Firebase
-              console.log(
-                'Creating empty chat object for conversation:',
-                conversationRef
-              )
+              // console.log(
+              //   'Creating empty chat object for conversation:',
+              //   conversationRef
+              // )
               set({
                 currentChat: {
                   chatId: conversationRef,
@@ -225,7 +225,7 @@ export const useChatStore = create<ChatState>()(
           // Continue to set up the listener to receive updates
         }
 
-        console.log('Subscribing to messages for conversation:', conversationId)
+        //console.log('Subscribing to messages for conversation:', conversationId)
 
         // Create a query for messages in this conversation
         const messagesRef = collection(
@@ -317,10 +317,10 @@ export const useChatStore = create<ChatState>()(
             [conversationId]: unsubscribeSnapshot,
           },
         }))
-        console.log(
-          'Successfully subscribed to messages for conversation:',
-          conversationId
-        )
+        // console.log(
+        //   'Successfully subscribed to messages for conversation:',
+        //   conversationId
+        // )
       },
 
       unsubscribeFromMessages: () => {
@@ -328,9 +328,9 @@ export const useChatStore = create<ChatState>()(
         const subscriptionKeys = Object.keys(subscriptions)
 
         if (subscriptionKeys.length > 0) {
-          console.log(
-            `Unsubscribing from ${subscriptionKeys.length} conversations`
-          )
+          // console.log(
+          //   `Unsubscribing from ${subscriptionKeys.length} conversations`
+          // )
 
           // Store current chat in cache if it exists
           if (currentChat) {
@@ -381,7 +381,8 @@ export const useChatStore = create<ChatState>()(
           await updateDoc(conversationRef, {
             lastMessage: message.text,
             lastMessageAt: serverTimestamp(),
-            lastMessageSeen: message.senderId === currentUserId,
+            lastMessageSeen: false,
+            lastMessageSender: currentUserId,
           })
 
           // We don't need to update the local state here

@@ -8,24 +8,7 @@ import { UserChatProfile } from 'types/UserProfileData'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useChatStore } from 'zustand/chatStore'
 import theme from '../../styles/createTheme'
-import { useAuth0 } from '@auth0/auth0-react'
-
-// Component for displaying loading state
-const LoadingState: React.FC = () => <div>Loading conversations...</div>
-
-// Component for displaying error state
-interface ErrorStateProps {
-  message: string
-}
-
-const ErrorState: React.FC<ErrorStateProps> = ({ message }) => (
-  <div>Error loading conversations: {message}</div>
-)
-
-// Component for displaying empty state
-const EmptyState: React.FC = () => (
-  <NoNewMatchesOrMessages text="You don't have any conversations. You need to find friends first!" />
-)
+import { useAuthStore } from '../../zustand/store'
 
 // Component for displaying a single conversation item
 interface ConversationItemProps {
@@ -43,6 +26,7 @@ const EnvelopeIcon = React.memo(() => (
 const ConversationItem = React.memo<ConversationItemProps>(
   ({ conversation, isSelected, onClick }) => {
     const { classes } = useStyles()
+    const currentUserId = useAuthStore((s) => s.currentUserId)
 
     const handleClick = useCallback(() => {
       onClick(conversation)
@@ -50,7 +34,10 @@ const ConversationItem = React.memo<ConversationItemProps>(
 
     // Memoize the notification indicator to prevent unnecessary re-renders
     const notificationIndicator = useMemo(() => {
-      if (!conversation.lastMessageSeen) {
+      if (
+        !conversation.lastMessageSeen &&
+        conversation.lastMessageSender !== currentUserId
+      ) {
         return (
           <Box className={classes.conversationAlert}>
             <EnvelopeIcon />
@@ -58,7 +45,12 @@ const ConversationItem = React.memo<ConversationItemProps>(
         )
       }
       return null
-    }, [classes.conversationAlert, conversation.lastMessageSeen])
+    }, [
+      classes.conversationAlert,
+      conversation.lastMessageSeen,
+      currentUserId,
+      conversation.lastMessageSender,
+    ])
 
     return (
       <Box key={conversation.id} onClick={handleClick}>
@@ -97,8 +89,10 @@ const Conversations: React.FC<ConversationsProps> = ({
   onClick,
   selectedId,
 }) => {
-  const { user } = useAuth0()
-  const { conversations, loading, error } = useConversationsStore()
+  const currentUserId = useAuthStore((s) => s.currentUserId)
+  const conversations = useConversationsStore((state) => state.conversations)
+  const loading = useConversationsStore((state) => state.loading)
+  const error = useConversationsStore((state) => state.error)
   const { selectedChatId, setSelectedChatId } = useChatStore()
 
   // Use the provided selectedId or the selectedChatId from the store
@@ -124,7 +118,6 @@ const Conversations: React.FC<ConversationsProps> = ({
 
       // Update the selected chat ID in the chatStore
       setSelectedChatId(conversation.id)
-      const currentUserId = user?.sub
       if (currentUserId)
         await setConversationSeen(currentUserId, conversation.id)
 
@@ -133,20 +126,22 @@ const Conversations: React.FC<ConversationsProps> = ({
         onClick(userProfile)
       }
     },
-    [onClick, setSelectedChatId, setConversationSeen, user?.sub]
+    [onClick, setSelectedChatId, setConversationSeen, currentUserId]
   )
 
-  // Render appropriate component based on state
+  // Render the appropriate component or message based on state
   if (loading) {
-    return <LoadingState />
+    return <div>Loading conversations...</div>
   }
 
   if (error) {
-    return <ErrorState message={error.message} />
+    return <div>Error loading conversations: {error.message}</div>
   }
 
   if (!conversations?.length) {
-    return <EmptyState />
+    return (
+      <NoNewMatchesOrMessages text="You don't have any conversations. You need to find friends first!" />
+    )
   }
 
   // Render conversation list
@@ -229,6 +224,15 @@ const useStyles = makeStyles()({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    animation: 'flickering 700ms  ease-in-out infinite alternate',
+    '@keyframes flickering': {
+      '0%': {
+        opacity: 0.8,
+      },
+      '100%': {
+        opacity: 1,
+      },
+    },
   },
 })
 

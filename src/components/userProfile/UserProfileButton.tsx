@@ -1,8 +1,8 @@
 import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { useAuth0 } from '@auth0/auth0-react'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../zustand/store'
 
 const UserProfileButton = ({
   skip,
@@ -16,24 +16,17 @@ const UserProfileButton = ({
   userId?: string
 }) => {
   const { classes } = useStyles()
-  const { user } = useAuth0()
+  const currentUserId = useAuthStore((s) => s.currentUserId)
   const createConversation = useConversationsStore(
     (state) => state.createConversation
-  )
-  const setConversationSeen = useConversationsStore(
-    (state) => state.setConversationSeen
   )
   const navigate = useNavigate()
 
   const handleStartChat = async () => {
     try {
-      // Get current user ID from Auth0
-      const currentUserId = user?.sub
-
       if (currentUserId && userId) {
         // Create conversation using the store function
         await createConversation(currentUserId, userId)
-        await setConversationSeen(currentUserId, userId)
       } else {
         console.error('Missing user IDs for chat connection')
       }

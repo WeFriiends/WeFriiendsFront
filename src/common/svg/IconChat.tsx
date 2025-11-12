@@ -5,12 +5,14 @@ import theme from '../../styles/createTheme'
 type IconChatProps = IconProps & {
   width?: number // Specific prop for LightningIcon
   height?: number
+  flickering?: boolean
 }
 
 const IconChat: React.FC<IconChatProps> = ({
   color = theme.palette.primary.main,
   width,
   height,
+  flickering = false,
 }) => {
   const { classes } = useStyles()
 
@@ -36,6 +38,15 @@ const IconChat: React.FC<IconChatProps> = ({
         fill={color}
         className={classes.iconTransition}
       />
+      {flickering && (
+        <circle
+          cx="calc(100% - 7px)"
+          cy="10px"
+          r="7px"
+          fill="#F46B5D"
+          strokeWidth="3"
+        ></circle>
+      )}
     </svg>
   )
 }

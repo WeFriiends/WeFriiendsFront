@@ -25,62 +25,54 @@ const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
   const { isAuthenticated, getAccessTokenSilently, user } = useAuth0()
-  const { token, setToken } = useAuthStore()
+  const { token, setToken, setUser } = useAuthStore()
   const {
     data: profile,
     getProfile,
     checkProfile,
     hasProfile,
   } = useProfileStore()
-
   const { fetchMatches, startPeriodicFetching, stopPeriodicFetching } =
     useMatchesStore()
-
-  const { subscribeToConversations, fetchConversations } =
-    useConversationsStore()
+  const { subscribeToConversations } = useConversationsStore()
 
   // Флаги, предотвращающие повторные запросы
   const hasFetchedProfile = useRef(false)
   const hasCheckedProfile = useRef(false)
 
+  // Auth watcher
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setUser(user)
+    }
+  }, [isAuthenticated, user, setUser])
+
+  // Token + Profile pipeline
   useEffect(() => {
     const fetchAuthData = async () => {
       try {
         let accessToken = token
-        if (!accessToken) {
-          accessToken = await getAccessTokenSilently()
-          setToken(accessToken)
-        }
-      } catch (error) {
-        // если не пришли данные профиля с бэка, по причине что бэк не залогинен
-        console.error(
-          'Consent or Login required (message from backend):',
-          error
-        )
-      }
-
-      try {
-        let accessToken = token
-
         if (!accessToken || isTokenExpired(accessToken)) {
           accessToken = await getAccessTokenSilently()
           setToken(accessToken)
-          console.log('🔄 Refreshed access token')
+          console.log('🔄 Token refreshed or obtained')
         }
 
         // проверяем, что первый профиль заполнен и записываем в стор
-        if (!hasCheckedProfile.current && token) {
+        if (!hasCheckedProfile.current && accessToken) {
           hasCheckedProfile.current = true // Помечаем, что запрос происходит
-          await checkProfile(token) // Дождаться завершения запроса после этого можно проверять hasProfile в стор
+          await checkProfile(accessToken) // Дождаться завершения запроса после этого можно проверять hasProfile в стор
         }
+
+        // Если профиль есть, но в сторе его нет — получаем данные
         if (
-          !profile && // стор не наполнен
           hasProfile === true && // при этом первый профиль заполнен
-          token && // токен получен
+          !profile && // стор не наполнен
+          accessToken && // токен получен
           !hasFetchedProfile.current // ранее не наполняли стор
         ) {
           hasFetchedProfile.current = true // Помечаем, что запрос происходит
-          getProfile(token)
+          await getProfile(accessToken)
         }
       } catch (error) {
         console.error(
@@ -90,16 +82,16 @@ const AuthTokenAndStoreProvider = ({
       }
     }
 
-    fetchAuthData()
+    if (isAuthenticated) fetchAuthData()
   }, [
     isAuthenticated,
-    getAccessTokenSilently,
     token,
-    setToken,
+    hasProfile,
     profile,
+    getAccessTokenSilently,
+    setToken,
     checkProfile,
     getProfile,
-    hasProfile,
   ])
 
   // Effect for fetching matches periodically
@@ -110,11 +102,8 @@ const AuthTokenAndStoreProvider = ({
       // Start periodic fetching every 2 minutes
       startPeriodicFetching()
     }
-
     // Cleanup function to stop periodic fetching when component unmounts
-    return () => {
-      stopPeriodicFetching()
-    }
+    return () => stopPeriodicFetching()
   }, [hasProfile, fetchMatches, startPeriodicFetching, stopPeriodicFetching])
 
   // Fetching conversations and subscribing to conversations updates
@@ -124,7 +113,7 @@ const AuthTokenAndStoreProvider = ({
     }
     // No cleanup function here - unsubscription happens only when browser is closed
     // via the beforeunload event listener in conversationsStore.ts
-  }, [hasProfile, user, fetchConversations, subscribeToConversations])
+  }, [hasProfile, user?.sub, subscribeToConversations])
 
   return <>{children}</>
 }

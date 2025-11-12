@@ -155,9 +155,14 @@ export const useConversationsStore = create<ConversationsState>()(
                 conversationData.lastMessageSeen !== undefined
                   ? conversationData.lastMessageSeen
                   : false,
+              lastMessageSender: conversationData.lastMessageSender,
             }
 
-            // console.log(`Created UserLastMessage with profile data:`, {userId: otherParticipantId, hasProfile: !!profile, userMessage,})
+            // console.log(`Created UserLastMessage with profile data:`, {
+            //   userId: otherParticipantId,
+            //   hasProfile: !!profile,
+            //   userMessage,
+            // })
 
             userConversations.push(userMessage)
           }
@@ -264,6 +269,7 @@ export const useConversationsStore = create<ConversationsState>()(
                     conversationData.lastMessageSeen !== undefined
                       ? conversationData.lastMessageSeen
                       : false,
+                  lastMessageSender: conversationData.lastMessageSender,
                 }
 
                 // console.log(`Created UserLastMessage with profile data:`, {
@@ -376,7 +382,6 @@ export const useConversationsStore = create<ConversationsState>()(
           // Conversation ID: те же самые sorted user IDs
           const sortedUserIds = [currentUserId, userId].sort()
           const conversationId = sortedUserIds.join('_')
-
           const conversationRef = doc(db, 'conversations', conversationId)
 
           // Проверяем, существует ли документ
@@ -386,14 +391,29 @@ export const useConversationsStore = create<ConversationsState>()(
             return conversationId
           }
 
-          // Обновляем только одно поле (не затираем весь документ)
+          const data = docSnap.data()
+          const lastMessageSender = data?.lastMessageSender
+          const lastMessageSeen = data?.lastMessageSeen
+
+          // если последнее сообщение отправил текущий пользователь,
+          // то не нужно отмечать как seen
+          if (lastMessageSender === currentUserId) {
+            return conversationId
+          }
+
+          // если уже было отмечено как seen, не дублируем обновление
+          if (lastMessageSeen === true) {
+            return conversationId
+          }
+
+          // Обновляем только нужное поле
           await updateDoc(conversationRef, {
             lastMessageSeen: true,
           })
 
-          console.log(`✅ lastMessageSeen set to true for ${conversationId}`)
+          //console.log(`✅ lastMessageSeen set to true for ${conversationId}`)
 
-          // Можно сразу обновить локальный store, чтобы UI отразил seen
+          // Обновляем локальный store, чтобы UI сразу отреагировал
           set((state) => ({
             conversations: state.conversations.map((conv) =>
               conv.conversationRef === conversationId

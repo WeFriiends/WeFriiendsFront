@@ -7,4 +7,5 @@ export interface UserLastMessage {
   messageCount: string
   conversationRef: string
   lastMessageSeen: boolean
+  lastMessageSender: string
 }

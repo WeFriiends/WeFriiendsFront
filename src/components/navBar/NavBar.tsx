@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   BottomNavigation,
@@ -10,19 +10,38 @@ import { makeStyles } from 'tss-react/mui'
 import { useActivePage } from '../../context/activePageContext'
 import theme from '../../styles/createTheme'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { useProfileStore } from '../../zustand/store'
+import { useAuthStore, useProfileStore } from '../../zustand/store'
 import IconChat from './../../common/svg/IconChat'
 import IconLightning from './../../common/svg/IconLightning'
 import IconII from './../../common/svg/IconII'
 import IconProfile from './../../common/svg/IconProfile'
 import IconNearMe from './../../common/svg/IconNearMe'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
+import { useConversationsStore } from '../../zustand/conversationsStore'
 
 const NavBar = () => {
   const { classes } = useStyles()
   const { activePage, setNewActivePage } = useActivePage()
   const navigate = useNavigate()
   const { data: profile, loading } = useProfileStore()
+  const [isNewMessage, setIsNewMessage] = useState(false)
+
+  const conversations = useConversationsStore((state) => state.conversations)
+  const currentUserId = useAuthStore((s) => s.currentUserId)
+
+  useEffect(() => {
+    if (
+      conversations.some(
+        (conversation) =>
+          !conversation.lastMessageSeen &&
+          conversation.lastMessageSender !== currentUserId
+      )
+    ) {
+      setIsNewMessage(true)
+    } else {
+      setIsNewMessage(false)
+    }
+  }, [conversations, currentUserId])
 
   return (
     <>
@@ -103,6 +122,7 @@ const NavBar = () => {
             to="/messages"
             icon={
               <IconChat
+                flickering={isNewMessage}
                 color={
                   activePage === 'chat'
                     ? theme.palette.primary.main

@@ -14,6 +14,9 @@ import { usePotentialFriendsStore } from './friendsStore'
 interface AuthState {
   token: string | null
   setToken: (token: string | null) => void
+  currentUserId: string | null
+  user: any | null
+  setUser: (user: any | null) => void
 }
 
 interface Profile {
@@ -89,7 +92,14 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
+      currentUserId: null,
+      user: null,
       setToken: (token) => set({ token }),
+      setUser: (user) =>
+        set({
+          user,
+          currentUserId: user?.sub || null,
+        }),
     }),
     {
       name: 'auth-storage',
