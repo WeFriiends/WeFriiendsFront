@@ -2,14 +2,21 @@ import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 
-const IconLightning: React.FC<IconProps> = ({ color }) => {
+type IconLightningProps = IconProps & {
+  flickering?: boolean
+}
+
+const IconLightning: React.FC<IconLightningProps> = ({
+  color,
+  flickering = false,
+}) => {
   const { classes } = useStyles()
   color ??= theme.palette.primary.main
 
   return (
     <svg
       preserveAspectRatio="xMidYMid meet"
-      viewBox="0 0 27 38"
+      viewBox="0 0 31 38"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={classes.iconLightning}
@@ -21,6 +28,15 @@ const IconLightning: React.FC<IconProps> = ({ color }) => {
         fill={color}
         className={classes.iconTransition}
       />
+      {flickering && (
+        <circle
+          cx="calc(100% - 7px)"
+          cy="14px"
+          r="7px"
+          fill="#F46B5D"
+          strokeWidth="3"
+        ></circle>
+      )}
     </svg>
   )
 }
@@ -33,6 +49,7 @@ const useStyles = makeStyles()(() => {
     },
     iconTransition: {
       transition: 'color .3s, stroke .3s, fill .3s',
+      marginRight: 4,
     },
   }
 })

@@ -82,6 +82,7 @@ const NavBar = () => {
             to="/who-liked-you"
             icon={
               <IconLightning
+                flickering={Math.random() >= 0.5}
                 color={
                   activePage === 'wholikedyou'
                     ? theme.palette.primary.main
@@ -92,6 +93,7 @@ const NavBar = () => {
             sx={{
               width: { xs: 20, lg: 26 },
               height: { xs: 27, lg: 38 },
+              pr: '8px',
             }}
             disableRipple
             disableTouchRipple
