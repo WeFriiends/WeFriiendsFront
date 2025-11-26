@@ -5,6 +5,7 @@ import { Box, Typography } from '@mui/material'
 import PrimaryButton from '../../common/components/PrimaryButton'
 import Status from 'components/firstProfile/Status'
 import Interests from '../firstProfile/interests/Interests'
+import UploadPhotos from 'components/firstProfile/uploadPhotos/UploadPhotos'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 
@@ -47,6 +48,10 @@ const ChangeProfileDialog = forwardRef(
         width={600}
       >
         {/* <UploadPhotos onPicChange={handlePicChange} /> */}
+        <Box>
+          <Typography className={classes.title}>Photos</Typography>
+          <UploadPhotos />
+        </Box>
         <Box className={classes.titleContainer}>
           <Typography className={classes.titleStatus}>
             I&apos;m Here For
