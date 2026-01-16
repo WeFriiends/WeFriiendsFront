@@ -82,5 +82,11 @@ const useStyles = makeStyles()(() => ({
     '&:hover': {
       cursor: 'pointer',
     },
+    '@media (max-width: 480px)': {
+      top: '10px',
+      right: '10px',
+      width: '28px',
+      height: '28px',
+    },
   },
 }))
