@@ -12,6 +12,7 @@ type CommonModalProps = {
   onClose: () => void
   height?: 240 | 320 | 370 | 470 | 605
   width?: 600
+  contentOverflow?: 'auto' | 'visible' | 'hidden'
 }
 
 export const CommonModal = ({
@@ -22,6 +23,7 @@ export const CommonModal = ({
   onClose,
   height,
   width,
+  contentOverflow = 'auto',
 }: CommonModalProps) => {
   const { classes } = useStyles()
 
@@ -47,7 +49,12 @@ export const CommonModal = ({
             <img src="/img/icon-close-modal.svg" alt="Close" />
           </Icon>
         </IconButton>
-        <Box className={classes.wrapperContent}>{children}</Box>
+        <Box
+          className={classes.wrapperContent}
+          sx={{ overflow: contentOverflow }}
+        >
+          {children}
+        </Box>
       </Box>
     </Modal>
   )
@@ -97,7 +104,6 @@ const useStyles = makeStyles()(() => ({
   wrapperContent: {
     margin: '0 15px',
     padding: '0 5px',
-    overflow: 'auto',
     maxHeight: '100%',
   },
 }))
