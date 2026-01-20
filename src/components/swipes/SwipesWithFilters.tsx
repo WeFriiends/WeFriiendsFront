@@ -45,5 +45,8 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('lg')]: {
       paddingTop: 0,
     },
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
 })
