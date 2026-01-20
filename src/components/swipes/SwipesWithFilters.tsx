@@ -39,6 +39,8 @@ const useStyles = makeStyles()({
     textDecorationColor: '#262626',
     paddingBottom: 31,
     paddingTop: 30,
+    cursor: 'default',
+    transition: 'color 0.3s ease',
     [theme.breakpoints.up('sm')]: {
       paddingTop: 60,
     },
@@ -47,6 +49,7 @@ const useStyles = makeStyles()({
     },
     '&:hover': {
       cursor: 'pointer',
+      color: '#F1562A',
     },
   },
 })
