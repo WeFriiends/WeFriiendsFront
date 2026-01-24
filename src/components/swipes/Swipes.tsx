@@ -11,6 +11,8 @@ import theme from '../../styles/createTheme'
 import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
 import Loader from 'common/svg/Loader'
+import { useAuth0 } from '@auth0/auth0-react'
+import { useConversationsStore } from 'zustand/conversationsStore'
 
 const Swipes = () => {
   const { classes } = useStyles()
@@ -22,6 +24,11 @@ const Swipes = () => {
   const [modalNewFriendAvatar, setModalNewFriendAvatar] = useState<string>('')
   const navigate = useNavigate()
 
+  const { user } = useAuth0()
+  const createConversation = useConversationsStore(
+    (state) => state.createConversation
+  )
+
   const {
     potentialFriends,
     handleLike,
@@ -31,7 +38,6 @@ const Swipes = () => {
   } = usePotentialFriendsStore()
 
   const { addFriend } = useMatchesStore()
-
   const { data: profile } = useProfileStore()
 
   // Fetch potential friends when profile is loaded
@@ -86,8 +92,22 @@ const Swipes = () => {
     setIsMatchModalOpen(false)
   }
 
-  const startChat = () => {
-    navigate('/messages')
+  const startChat = async () => {
+    try {
+      const currentUserId = user?.sub
+      const friendId = currentPotentialFriend.id
+
+      if (currentUserId && friendId) {
+        await createConversation(currentUserId, friendId)
+        navigate(`/messages/${friendId}`)
+      } else {
+        console.error('Missing user IDs for chat:', { currentUserId, friendId })
+        navigate('/messages')
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error)
+      navigate('/messages')
+    }
   }
 
   const NoMoreMatchesDialogRef = useRef<{
