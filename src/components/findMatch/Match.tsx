@@ -42,11 +42,7 @@ const Match: React.FC<MatchProps> = ({
             Wow! It’s a Match!
           </Typography>
           <Typography className={classes.subTitle}>
-            Anna was waiting for it for
-            <br />
-            soooo looong...
-            <br />
-            Hurry up to say hello to her!
+            Hurry up to say hello to your new friend!
           </Typography>
         </Box>
         <Box className={classes.buttonsContainer}>

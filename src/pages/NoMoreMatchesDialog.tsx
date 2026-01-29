@@ -36,6 +36,7 @@ const NoMoreMatchesDialog = forwardRef(
         modalDescription={props.description || ''}
         onClose={handleClose}
         height={605}
+        contentOverflow="visible"
       >
         <Box>
           <Typography variant="h2" className={classes.title}>
