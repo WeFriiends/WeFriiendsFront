@@ -76,13 +76,13 @@ const useStyles = makeStyles()(() => ({
     },
   },
   imageWrapper: {
-    borderRadius: '50%',
-    width: 81,
-    height: 81,
-    overflow: 'hidden',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    width: 81,
+    height: 81,
+    borderRadius: '50%',
+    overflow: 'hidden',
     [theme.breakpoints.up('sm')]: {
       width: 100,
       height: 100,
@@ -94,6 +94,8 @@ const useStyles = makeStyles()(() => ({
   },
   image: {
     width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   iconContainer: {
     position: 'absolute',
