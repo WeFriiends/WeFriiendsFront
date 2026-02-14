@@ -33,6 +33,7 @@ export const CommonModal = ({
       open={isOpened}
       aria-labelledby={modalTitle}
       aria-describedby={modalDescription}
+      onClose={onClose}
     >
       <Box
         className={classes.wrapper}
