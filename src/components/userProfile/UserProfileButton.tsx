@@ -1,72 +1,44 @@
 import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { useAuth0 } from '@auth0/auth0-react'
-import { useConversationsStore } from 'zustand/conversationsStore'
-import { useNavigate } from 'react-router-dom'
+import { useStartChatWith } from 'hooks/useStartChatWith'
 
-const UserProfileButton = ({
-  skip,
-  beFriend,
-  startChat,
-  userId,
-}: {
-  skip?: () => void
-  beFriend?: () => void
-  startChat?: boolean
-  userId?: string
-}) => {
-  const { classes } = useStyles()
-  const { user } = useAuth0()
-  const createConversation = useConversationsStore(
-    (state) => state.createConversation
-  )
-  const navigate = useNavigate()
-
-  const handleStartChat = async () => {
-    try {
-      // Get current user ID from Auth0
-      const currentUserId = user?.sub
-
-      if (currentUserId && userId) {
-        // Create conversation using the store function
-        await createConversation(currentUserId, userId)
-      } else {
-        console.error('Missing user IDs for chat connection')
-      }
-    } catch (error) {
-      console.error('Error creating chat connection:', error)
-    }
-
-    // Navigate to the messages page with the specific user ID (using only first 8 characters)
-    if (userId) {
-      navigate(`/messages/${userId}`)
-    }
-  }
-
-  return (
-    <>
-      <Box className={classes.buttonSection}>
-        {startChat && (
-          <Button className={classes.whiteButton} onClick={handleStartChat}>
-            Start chat
-          </Button>
-        )}
-        {skip && (
-          <Button className={classes.whiteButton} onClick={skip}>
-            Skip
-          </Button>
-        )}
-        {beFriend && (
-          <Button className={classes.orangeButton} onClick={beFriend}>
-            Be friend
-          </Button>
-        )}
-      </Box>
-    </>
-  )
+interface NewUser {
+  skip: () => void
+  beFriend: () => void
 }
 
-export default UserProfileButton
+interface Friend {
+  chatId: string
+}
+
+type UserProfileButtonProps = NewUser | Friend
+
+export function UserProfileButton(props: UserProfileButtonProps) {
+  const { classes } = useStyles()
+  const startChatWith = useStartChatWith()
+  return (
+    <Box className={classes.buttonSection}>
+      {'chatId' in props && (
+        <Button
+          className={classes.whiteButton}
+          onClick={() => startChatWith(props.chatId)}
+        >
+          Start chat
+        </Button>
+      )}
+      {'skip' in props && (
+        <Button className={classes.whiteButton} onClick={props.skip}>
+          Skip
+        </Button>
+      )}
+      {'beFriend' in props && (
+        <Button className={classes.orangeButton} onClick={props.beFriend}>
+          Be friend
+        </Button>
+      )}
+    </Box>
+  )
+}
 
 const useStyles = makeStyles()({
   buttonSection: {
