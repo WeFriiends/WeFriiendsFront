@@ -2,25 +2,29 @@ import { Box, Avatar, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { CommonModal } from 'common/components/CommonModal'
+import { useStartChatWith } from 'hooks/useStartChatWith'
 
 interface MatchProps {
+  matchedUser: {
+    id: string
+    avatar: string
+  } | null
   onClose: () => void
-  onChat: () => void
-  friendsAvatar: string
-  isMatchModalOpen: boolean
 }
 
-const Match: React.FC<MatchProps> = ({
-  onClose,
-  onChat,
-  friendsAvatar,
-  isMatchModalOpen,
-}) => {
+export function Match({ onClose, matchedUser }: MatchProps) {
   const { classes } = useStyles()
+  const startChatWith = useStartChatWith()
+
+  function handleStartChat() {
+    if (matchedUser) {
+      startChatWith(matchedUser.id)
+    }
+  }
 
   return (
     <CommonModal
-      isOpened={isMatchModalOpen}
+      isOpened={!!matchedUser}
       onClose={onClose}
       modalTitle={'modal-modal-title'}
       modalDescription={'modal-modal-description'}
@@ -34,7 +38,7 @@ const Match: React.FC<MatchProps> = ({
           />
           <Avatar
             className={`${classes.matchedAvatar} ${classes.newMatchAvatar}`}
-            src={friendsAvatar}
+            src={matchedUser?.avatar ?? ''}
           />
         </Box>
         <Box className={classes.info}>
@@ -57,9 +61,9 @@ const Match: React.FC<MatchProps> = ({
           <Button
             className={`${classes.button} ${classes.chatButton}`}
             startIcon={<img alt="Chat" src="/img/icon-chat.svg" />}
+            onClick={handleStartChat}
             disableFocusRipple
             disableRipple
-            onClick={onChat}
           >
             Chat
           </Button>
@@ -68,8 +72,6 @@ const Match: React.FC<MatchProps> = ({
     </CommonModal>
   )
 }
-
-export default Match
 
 const useStyles = makeStyles()({
   title: {

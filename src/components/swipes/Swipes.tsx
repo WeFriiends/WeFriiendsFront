@@ -1,9 +1,8 @@
 import { Box, Button, Typography } from '@mui/material'
-import Match from 'components/findMatch/Match'
+import { Match } from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
-import UserProfileButton from 'components/userProfile/UserProfileButton'
+import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from 'types/UserProfileData'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
@@ -11,23 +10,17 @@ import theme from '../../styles/createTheme'
 import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
 import Loader from 'common/svg/Loader'
-import { useAuth0 } from '@auth0/auth0-react'
-import { useConversationsStore } from 'zustand/conversationsStore'
 
 const Swipes = () => {
   const { classes } = useStyles()
   const [noPotentialFriends, setNoPotentialFriends] = useState(true)
-  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false)
   const [friendsData, setFriendsData] = useState<UserProfileData>(emptyProfile)
   const [currentPotentialFriend, setCurrentPotentialFriend] =
     useState<UserProfileData>(emptyProfile)
-  const [modalNewFriendAvatar, setModalNewFriendAvatar] = useState<string>('')
-  const navigate = useNavigate()
-
-  const { user } = useAuth0()
-  const createConversation = useConversationsStore(
-    (state) => state.createConversation
-  )
+  const [matchedUser, setMatchedUser] = useState<{
+    id: string
+    avatar: string
+  } | null>(null)
 
   const {
     potentialFriends,
@@ -80,34 +73,18 @@ const Swipes = () => {
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
       addFriend(currentPotentialFriend.id)
-      setModalNewFriendAvatar(currentPotentialFriend.photos[0].src)
-      setIsMatchModalOpen(true)
+      setMatchedUser({
+        id: currentPotentialFriend.id,
+        avatar: currentPotentialFriend.photos[0].src,
+      })
     } else {
       handleLike(currentPotentialFriend.id)
     }
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
-  const handleMatchClose = () => {
-    setIsMatchModalOpen(false)
-  }
-
-  const startChat = async () => {
-    try {
-      const currentUserId = user?.sub
-      const friendId = currentPotentialFriend.id
-
-      if (currentUserId && friendId) {
-        await createConversation(currentUserId, friendId)
-        navigate(`/messages/${friendId}`)
-      } else {
-        console.error('Missing user IDs for chat:', { currentUserId, friendId })
-        navigate('/messages')
-      }
-    } catch (error) {
-      console.error('Error starting chat:', error)
-      navigate('/messages')
-    }
+  function handleModalClose() {
+    setMatchedUser(null)
   }
 
   const NoMoreMatchesDialogRef = useRef<{
@@ -145,12 +122,7 @@ const Swipes = () => {
             <UserProfileButton skip={onSkip} beFriend={onBeFriend} />
           </>
         )}
-        <Match
-          isMatchModalOpen={isMatchModalOpen}
-          onClose={handleMatchClose}
-          onChat={startChat}
-          friendsAvatar={modalNewFriendAvatar}
-        />
+        <Match matchedUser={matchedUser} onClose={handleModalClose} />
       </Box>
       <NoMoreMatchesDialog
         ref={NoMoreMatchesDialogRef}
