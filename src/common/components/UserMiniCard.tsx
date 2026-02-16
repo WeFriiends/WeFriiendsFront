@@ -1,15 +1,17 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 import IconLightning from 'common/svg/IconLightning'
 import { UserMiniProfile } from 'common/types/userTypes'
 
+type Size = 'sm' | 'md' | 'lg'
+
 interface UserMiniCardProps {
   user: UserMiniProfile
+  size?: Size
 }
 
-export function UserMiniCard({ user }: UserMiniCardProps) {
-  const { classes } = useStyles()
+export function UserMiniCard({ user, size = 'lg' }: UserMiniCardProps) {
+  const { classes } = useStyles({ size })
   return (
     <Box className={classes.container}>
       <Box sx={{ position: 'relative' }}>
@@ -24,7 +26,7 @@ export function UserMiniCard({ user }: UserMiniCardProps) {
           </Box>
         </Box>
       </Box>
-      <Box component="aside">
+      <Box component="aside" className={classes.labelContainer}>
         <h4 className={classes.userName}>{user.name}</h4>
         <Box className={classes.distanceContainer}>
           <img src="/img/icon-location.svg" alt="distance" />
@@ -37,96 +39,106 @@ export function UserMiniCard({ user }: UserMiniCardProps) {
   )
 }
 
-const useStyles = makeStyles()(() => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingBlock: 22,
-    textAlign: 'center',
-    fontFamily: 'Inter',
-    width: '100%',
-    '& path': {
-      // lightning icon color mobile
-      fill: theme.palette.primary.main,
-    },
-    [theme.breakpoints.up('lg')]: {
+const useStyles = makeStyles<{ size: Size }>()((theme, { size }) => {
+  const cardSizes = {
+    sm: 80,
+    md: 100,
+    lg: 135,
+  }
+  return {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '0.2em 0.1em',
+      textAlign: 'center',
+      fontFamily: 'Inter',
+      width: '100%',
+      fontSize: cardSizes[size],
+      '@container (width < 130px)': {
+        fontSize: cardSizes.md,
+      },
       '& path': {
-        // lightning icon color desktop
-        fill: theme.customPalette.colorNavIcon,
+        // lightning icon color mobile
+        fill: theme.palette.primary.main,
+      },
+      [theme.breakpoints.up('lg')]: {
+        '& path': {
+          // lightning icon color desktop
+          fill: theme.customPalette.colorNavIcon,
+        },
+      },
+      '&:hover path': {
+        // lightning icon hover color desktop
+        fill: theme.palette.primary.main,
+      },
+      '& aside path': {
+        fill: 'transparent',
+        stroke: theme.palette.text.primary,
+      },
+      '&:hover aside path': {
+        fill: 'transparent',
+        stroke: theme.palette.text.primary,
+      },
+      '& h4': {
+        transition: 'color .3s',
+        width: '7em',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+      },
+      '&:hover h4': {
+        color: theme.palette.primary.main,
+      },
+      '& svg': {
+        display: 'block',
       },
     },
-    '&:hover path': {
-      // lightning icon hover color desktop
-      fill: theme.palette.primary.main,
+    labelContainer: {
+      paddingTop: '0.1em',
     },
-    '& aside path': {
-      fill: 'transparent',
-      stroke: theme.palette.text.primary,
+    imageWrapper: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '1em',
+      height: '1em',
+      borderRadius: '50%',
+      overflow: 'hidden',
     },
-    '&:hover aside path': {
-      fill: 'transparent',
-      stroke: theme.palette.text.primary,
+    image: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
     },
-    '& h4': {
-      transition: 'color .3s',
+    iconContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+
+      position: 'absolute',
+      top: '1%',
+      right: '-10%',
+      width: '50%',
+      height: '25%',
     },
-    '&:hover h4': {
-      color: theme.palette.primary.main,
+    userName: {
+      fontWeight: 500,
+      color: theme.palette.common.black,
+      fontSize: '0.12em',
+      lineHeight: 1.5,
+      transition: 'color 0.3s',
     },
-  },
-  imageWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 81,
-    height: 81,
-    borderRadius: '50%',
-    overflow: 'hidden',
-    [theme.breakpoints.up('sm')]: {
-      width: 100,
-      height: 100,
+    distanceContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingTop: '0.03em',
     },
-    [theme.breakpoints.up('md')]: {
-      width: 130,
-      height: 130,
+    distance: {
+      color: theme.palette.text.primary,
+      fontSize: '0.09em',
+      lineHeight: 1,
+      fontWeight: 500,
+      paddingLeft: '0.3em',
     },
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  iconContainer: {
-    position: 'absolute',
-    top: '1%',
-    right: '-10%',
-    width: '50%',
-    height: '25%',
-  },
-  userName: {
-    fontWeight: 500,
-    color: theme.palette.common.black,
-    fontSize: 12,
-    lineHeight: '20px',
-    padding: '5px 5px 0',
-    transition: 'color 0.3s',
-    [theme.breakpoints.up('lg')]: {
-      fontSize: 16,
-      paddingTop: 15,
-    },
-  },
-  distanceContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 3,
-  },
-  distance: {
-    color: theme.palette.text.primary,
-    fontSize: 12,
-    lineHeight: '20px',
-    fontWeight: 500,
-    paddingLeft: 4,
-  },
-}))
+  }
+})
