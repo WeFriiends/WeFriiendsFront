@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router'
 import { ComponentType, Suspense, lazy } from 'react'
 import AuthGuard from 'components/userAuth/AuthGuard'
 import LoadingScreen from 'common/svg/Loader'
-import LikedMePage from 'pages/LikedMePage'
+import WhoLikedMePage from 'pages/WhoLikedMePage'
 import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
@@ -82,8 +82,8 @@ const routes: RouteObject[] = [
       },
       {
         path: 'who-liked-you',
-        element: <LikedMePage />,
-        // element: <AuthGuard component={LikedMePage} />,
+        element: <WhoLikedMePage />,
+        // element: <AuthGuard component={WhoLikedMePage} />,
       },
       {
         path: 'near-me',
