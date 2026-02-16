@@ -39,6 +39,7 @@ export const addNewFriend = async (
     return response.status
   } catch (error) {
     console.error('Error by adding new friend:', error)
+    throw error
   }
 }
 
