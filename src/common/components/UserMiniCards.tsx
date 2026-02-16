@@ -1,6 +1,6 @@
 import { ImageList, ImageListItem } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { UserMiniCard } from '../../common/components/UserMiniCard'
+import { UserMiniCard } from './UserMiniCard'
 import { UserMiniProfile } from 'common/types/userTypes'
 
 interface UserMiniCardsProps {
