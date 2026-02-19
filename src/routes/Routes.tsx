@@ -14,7 +14,6 @@ import ErrorPage from 'pages/ErrorPage'
 import { Match } from '../components/findMatch/Match'
 import Messages from 'pages/MessagesPage'
 import UserAccount from 'pages/UserAccount'
-import NavBar from 'components/navBar/NavBar'
 import ReportDialogExamplePage from '../components/report/ReportDialogExamplePage'
 import DeleteUserDialogExamplePage from '../components/deleteUser/DeleteUserDialogExamplePage'
 import MyAccount from '../components/myAccount/MyAccount'
@@ -26,6 +25,7 @@ import SecurityDialogExamplePage from '../components/securityDialog/SecurityDial
 import Logout from '../pages/Logout'
 import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
 import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
+import Layout from 'components/layout/Layout'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -53,7 +53,7 @@ const routes: RouteObject[] = [
     element: <AuthGuard component={FirstProfile} />,
   },
   {
-    element: <NavBar />,
+    element: <Layout />,
     children: [
       {
         path: 'account',

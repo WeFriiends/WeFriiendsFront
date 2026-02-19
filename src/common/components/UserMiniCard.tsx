@@ -4,7 +4,6 @@ import IconLightning from 'common/svg/IconLightning'
 import { UserMiniProfile } from 'common/types/userTypes'
 
 type Size = 'sm' | 'md' | 'lg'
-
 interface UserMiniCardProps {
   user: UserMiniProfile
   size?: Size
@@ -14,7 +13,7 @@ export function UserMiniCard({ user, size = 'lg' }: UserMiniCardProps) {
   const { classes } = useStyles({ size })
   return (
     <Box className={classes.container}>
-      <Box sx={{ position: 'relative' }}>
+      <Box className={classes.positioner}>
         <Box className={classes.imageWrapper}>
           <img
             className={classes.image}
@@ -95,6 +94,9 @@ const useStyles = makeStyles<{ size: Size }>()((theme, { size }) => {
     },
     labelContainer: {
       paddingTop: '0.1em',
+    },
+    positioner: {
+      position: 'relative',
     },
     imageWrapper: {
       display: 'flex',

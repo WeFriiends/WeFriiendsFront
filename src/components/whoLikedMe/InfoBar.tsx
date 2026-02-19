@@ -1,6 +1,5 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 
 export function InfoBar() {
   const { classes } = useStyles()
@@ -17,7 +16,7 @@ export function InfoBar() {
   )
 }
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     marginBottom: 30,
   },
@@ -30,7 +29,7 @@ const useStyles = makeStyles()({
     [theme.breakpoints.up('sm')]: {
       paddingTop: 60,
     },
-    [theme.breakpoints.up('lg')]: {
+    [theme.breakpoints.up('md')]: {
       paddingTop: 0,
       paddingBottom: 20,
       textAlign: 'left',
@@ -40,8 +39,7 @@ const useStyles = makeStyles()({
   },
   description: {
     textAlign: 'center',
-
-    [theme.breakpoints.up('lg')]: {
+    [theme.breakpoints.up('md')]: {
       textAlign: 'left',
     },
     [theme.breakpoints.down('sm')]: {
@@ -50,4 +48,4 @@ const useStyles = makeStyles()({
       marginRight: 'auto',
     },
   },
-})
+}))
