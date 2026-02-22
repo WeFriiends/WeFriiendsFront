@@ -5,3 +5,10 @@ export type UserObjectType = {
   picture: string
   name: string
 }
+
+export interface UserMiniProfile {
+  id: string
+  name: string
+  distance: number
+  picture: string | null
+}

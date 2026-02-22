@@ -1,7 +1,6 @@
 import { useRoutes } from 'react-router-dom'
 import './App.css'
 import { ThemeProvider } from '@mui/material'
-import { ActivePageProvider } from './context/activePageContext'
 import theme from 'styles/createTheme'
 import routes from './routes/Routes'
 import { Auth0ProviderWithNavigate } from 'provider/Auth0ProviderWithNavigate'
@@ -12,9 +11,7 @@ const App = () => {
   return (
     <Auth0ProviderWithNavigate>
       <ThemeProvider theme={theme}>
-        <ActivePageProvider>
-          <GenderRedirectGuard>{content}</GenderRedirectGuard>
-        </ActivePageProvider>
+        <GenderRedirectGuard>{content}</GenderRedirectGuard>
       </ThemeProvider>
     </Auth0ProviderWithNavigate>
   )

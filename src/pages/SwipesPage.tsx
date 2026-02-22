@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
-import UserProfileButton from 'components/userProfile/UserProfileButton'
+import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { UserProfileData } from 'types/UserProfileData'
 import Friends from 'components/tabsMessagesFriends/Friends'
 import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
@@ -36,7 +36,7 @@ const SwipesPage = () => {
               handleCloseFriendProfile={handleCloseFriendProfile}
             >
               <UserProfile user={friendsData} />
-              <UserProfileButton startChat={true} userId={friendsData.id} />
+              <UserProfileButton chatId={friendsData.id} />
             </UserProfileWrapperRightCol>
           ) : (
             <SwipesWithFilters />

@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router'
 import { ComponentType, Suspense, lazy } from 'react'
 import AuthGuard from 'components/userAuth/AuthGuard'
 import LoadingScreen from 'common/svg/Loader'
-import YourLikesList from 'pages/YourLikesList'
+import WhoLikedMePage from 'pages/WhoLikedMePage'
 import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
@@ -11,10 +11,9 @@ import Swipes from 'pages/SwipesPage'
 import Invitation from '../components/invitation/Invitation'
 import ErrorMensSearch from 'pages/ErrorMensSearch'
 import ErrorPage from 'pages/ErrorPage'
-import Match from '../components/findMatch/Match'
+import { Match } from '../components/findMatch/Match'
 import Messages from 'pages/MessagesPage'
 import UserAccount from 'pages/UserAccount'
-import NavBar from 'components/navBar/NavBar'
 import ReportDialogExamplePage from '../components/report/ReportDialogExamplePage'
 import DeleteUserDialogExamplePage from '../components/deleteUser/DeleteUserDialogExamplePage'
 import MyAccount from '../components/myAccount/MyAccount'
@@ -26,6 +25,7 @@ import SecurityDialogExamplePage from '../components/securityDialog/SecurityDial
 import Logout from '../pages/Logout'
 import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
 import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
+import Layout from 'components/layout/Layout'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -53,7 +53,7 @@ const routes: RouteObject[] = [
     element: <AuthGuard component={FirstProfile} />,
   },
   {
-    element: <NavBar />,
+    element: <Layout />,
     children: [
       {
         path: 'account',
@@ -82,8 +82,8 @@ const routes: RouteObject[] = [
       },
       {
         path: 'who-liked-you',
-        element: <YourLikesList />,
-        // element: <AuthGuard component={YourLikesList} />,
+        element: <WhoLikedMePage />,
+        // element: <AuthGuard component={WhoLikedMePage} />,
       },
       {
         path: 'near-me',
@@ -103,10 +103,8 @@ const routes: RouteObject[] = [
           <>
             Hello World!
             <Match
-              isMatchModalOpen={true}
+              matchedUser={{ id: '-1', avatar: 'test.jpg' }}
               onClose={() => void {}}
-              onChat={() => void {}}
-              friendsAvatar={'test.jpg'}
             />
           </>
         ),
