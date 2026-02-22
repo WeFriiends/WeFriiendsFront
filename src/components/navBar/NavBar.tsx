@@ -26,10 +26,12 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 24,
-    flexGrow: 0,
+    width: '100%',
     margin: 0,
     padding: 0,
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 320,
+    },
     [theme.breakpoints.up('lg')]: {
       maxWidth: 420,
     },

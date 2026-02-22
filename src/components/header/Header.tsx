@@ -31,6 +31,7 @@ const useStyles = makeStyles()((theme) => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      gap: 32,
       padding: '30px 30px 80px',
       margin: '0 auto',
       maxWidth: 1024,

@@ -60,5 +60,10 @@ const useStyles = makeStyles()((theme) => ({
         height: 30,
       },
     },
+    [theme.breakpoints.down('sm')]: {
+      '& svg': {
+        height: 25,
+      },
+    },
   },
 }))
