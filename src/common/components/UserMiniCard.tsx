@@ -7,9 +7,14 @@ type Size = 'sm' | 'md' | 'lg'
 interface UserMiniCardProps {
   user: UserMiniProfile
   size?: Size
+  alwaysShowLightning?: boolean
 }
 
-export function UserMiniCard({ user, size = 'lg' }: UserMiniCardProps) {
+export function UserMiniCard({
+  user,
+  size = 'lg',
+  alwaysShowLightning = false,
+}: UserMiniCardProps) {
   const { classes } = useStyles({ size })
   return (
     <Box className={classes.container}>
@@ -17,12 +22,18 @@ export function UserMiniCard({ user, size = 'lg' }: UserMiniCardProps) {
         <Box className={classes.imageWrapper}>
           <img
             className={classes.image}
-            src={user.picture ?? ''}
+            src={
+              user.picture
+                ? user.picture
+                : '/img/firstProfile/female_active.svg'
+            }
             alt="Profile photo"
           />
-          <Box className={classes.iconContainer}>
-            <IconLightning />
-          </Box>
+          {(alwaysShowLightning || user.likedUsers) && (
+            <Box className={classes.iconContainer}>
+              <IconLightning />
+            </Box>
+          )}
         </Box>
       </Box>
       <Box component="aside" className={classes.labelContainer}>

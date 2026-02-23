@@ -6,9 +6,14 @@ import { UserMiniProfile } from 'common/types/userTypes'
 interface UserMiniCardsProps {
   users: UserMiniProfile[]
   onCardClick: (userId: string) => void
+  alwaysShowLightning?: boolean
 }
 
-export function UserMiniCards({ users, onCardClick }: UserMiniCardsProps) {
+export function UserMiniCards({
+  users,
+  onCardClick,
+  alwaysShowLightning = false,
+}: UserMiniCardsProps) {
   const { classes } = useStyles()
   return (
     <ImageList cols={6} gap={0} className={classes.list}>
@@ -18,7 +23,10 @@ export function UserMiniCards({ users, onCardClick }: UserMiniCardsProps) {
             onClick={() => onCardClick(user.id)}
             className={classes.button}
           >
-            <UserMiniCard user={user} />
+            <UserMiniCard
+              user={user}
+              alwaysShowLightning={alwaysShowLightning}
+            />
           </button>
         </ImageListItem>
       ))}

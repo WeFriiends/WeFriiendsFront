@@ -32,5 +32,11 @@ export function MiniCardsSection() {
     return <NoticeNoLikes />
   }
 
-  return <UserMiniCards users={data} onCardClick={handleCardClick} />
+  return (
+    <UserMiniCards
+      users={data}
+      onCardClick={handleCardClick}
+      alwaysShowLightning={true}
+    />
+  )
 }
