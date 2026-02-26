@@ -4,15 +4,13 @@ import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { UserProfileData } from 'types/UserProfileData'
-import Friends from 'components/tabsMessagesFriends/Friends'
-import SwipesWithFilters from 'components/swipes/SwipesWithFilters'
-import TabsMessagesFriends from '../components/tabsMessagesFriends/TabsMessagesFriends'
-import theme from '../styles/createTheme'
-import UserProfileWrapperRightCol from '../components/userProfile/UserProfileWrapperRightCol'
+import { Friends } from 'components/tabsMessagesFriends/Friends'
+import { SwipesWithFilters } from 'components/swipes/SwipesWithFilters'
+import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessagesFriends'
+import { UserProfileWrapperRightCol } from '../components/userProfile/UserProfileWrapperRightCol'
 
-const SwipesPage = () => {
+export default function SwipesPage() {
   const { classes } = useStyles()
-
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
   const selectFriend = (user: UserProfileData) => {
@@ -47,9 +45,7 @@ const SwipesPage = () => {
   )
 }
 
-export default SwipesPage
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   filters: {
     fontSize: 24,
     lineHeight: 1.5,
@@ -100,4 +96,4 @@ const useStyles = makeStyles()({
     position: 'sticky',
     top: 0,
   },
-})
+}))
