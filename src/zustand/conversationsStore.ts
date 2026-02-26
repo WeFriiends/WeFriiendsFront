@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { UserLastMessage } from 'types/UserLastMessage'
+import { Conversation } from 'types/Conversation'
 import { db } from '../services/firebase'
 import {
   collection,
@@ -17,7 +17,7 @@ import {
 import { useUserProfileStore } from './userProfileStore'
 
 interface ConversationsState {
-  conversations: UserLastMessage[]
+  conversations: Conversation[]
   loading: boolean
   error: Error | null
   lastFetched: number | null
@@ -32,7 +32,7 @@ interface ConversationsState {
 export const useConversationsStore = create<ConversationsState>()(
   devtools(
     (set, get) => ({
-      conversations: [] as UserLastMessage[],
+      conversations: [] as Conversation[],
       loading: false,
       error: null,
       lastFetched: null,
@@ -84,7 +84,7 @@ export const useConversationsStore = create<ConversationsState>()(
         try {
           if (!userId) {
             console.error('No user ID provided')
-            set({ conversations: [] as UserLastMessage[], loading: false })
+            set({ conversations: [] as Conversation[], loading: false })
             return
           }
 
@@ -97,7 +97,7 @@ export const useConversationsStore = create<ConversationsState>()(
             where('participants', 'array-contains', currentUserId),
             orderBy('lastMessageAt', 'desc')
           )
-          const userConversations: UserLastMessage[] = []
+          const userConversations: Conversation[] = []
 
           // Execute the query
           const querySnapshot = await getDocs(conversationsQuery)
@@ -130,7 +130,7 @@ export const useConversationsStore = create<ConversationsState>()(
             )
 
             // Create a UserLastMessage object with profile data if available
-            const userMessage: UserLastMessage = {
+            const userMessage: Conversation = {
               id: otherParticipantId,
               avatar:
                 profile?.photos?.[0]?.src ||
@@ -215,7 +215,7 @@ export const useConversationsStore = create<ConversationsState>()(
 
               // Get the userProfileStore instance
               const userProfileStore = useUserProfileStore.getState()
-              const userConversations: UserLastMessage[] = []
+              const userConversations: Conversation[] = []
 
               // Process the results
               for (const doc of querySnapshot.docs) {
@@ -237,7 +237,7 @@ export const useConversationsStore = create<ConversationsState>()(
                 )
 
                 // Create a UserLastMessage object with profile data if available
-                const userMessage: UserLastMessage = {
+                const userMessage: Conversation = {
                   id: otherParticipantId,
                   avatar:
                     profile?.photos?.[0]?.src ||
