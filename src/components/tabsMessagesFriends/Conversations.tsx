@@ -1,9 +1,9 @@
+import { useConversationsStore } from 'zustand/conversationsStore'
 import { ConversationItem } from './ConversationItem'
 import { NoNewMatchesOrMessages } from './NoNewMatchesOrMessages'
-import { useFetchConversations } from './hooks/useFetchConversations'
 
 export function Conversations() {
-  const { conversations, loading, error } = useFetchConversations()
+  const { conversations, loading, error } = useConversationsStore()
 
   if (loading) {
     return <div>Loading conversations...</div>
