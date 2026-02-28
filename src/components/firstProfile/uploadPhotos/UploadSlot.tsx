@@ -15,14 +15,14 @@ interface SlotProps {
 }
 
 const UploadSlot: React.FC<SlotProps> = ({
-  id,
-  bgPic,
-  openDeleteModal,
-  openPreviewModal,
-  setIsPicHuge,
-  resetSubmitClicked,
-}) => {
-  const { addTempPhoto, removeTempPhoto } = useProfileStore()
+                                           id,
+                                           bgPic,
+                                           openDeleteModal,
+                                           openPreviewModal,
+                                           setIsPicHuge,
+                                           resetSubmitClicked,
+                                         }) => {
+  const { addTempPhoto } = useProfileStore()
 
   const { classes } = useStyles()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -40,7 +40,7 @@ const UploadSlot: React.FC<SlotProps> = ({
 
     const url = URL.createObjectURL(file)
     const generatedId = () =>
-      Date.now().toString() + Math.random().toString(36).slice(2, 7)
+        Date.now().toString() + Math.random().toString(36).slice(2, 7)
 
     const temp: UserPicsType = {
       id: generatedId(),
@@ -60,40 +60,39 @@ const UploadSlot: React.FC<SlotProps> = ({
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    removeTempPhoto(id)
     openDeleteModal(id)
   }
 
   return (
-    <Box
-      className={classes.slot}
-      style={{ backgroundImage: bgPic ? `url(${bgPic})` : undefined }}
-      onClick={handleSlotClick}
-    >
-      {!bgPic && (
-        <Box className={classes.innerBox}>
-          <img src="/img/add-icon.svg" alt="add" />
-          <Typography className={classes.text}>Upload</Typography>
-        </Box>
-      )}
+      <Box
+          className={classes.slot}
+          style={{ backgroundImage: bgPic ? `url(${bgPic})` : undefined }}
+          onClick={handleSlotClick}
+      >
+        {!bgPic && (
+            <Box className={classes.innerBox}>
+              <img src="/img/add-icon.svg" alt="add" />
+              <Typography className={classes.text}>Upload</Typography>
+            </Box>
+        )}
 
-      {bgPic && (
-        <img
-          src="/img/add-icon.svg"
-          alt="remove"
-          className={classes.closeIcon}
-          onClick={handleDeleteClick}
+        {bgPic && (
+            <img
+                src="/img/add-icon.svg"
+                alt="remove"
+                className={classes.closeIcon}
+                onClick={handleDeleteClick}
+            />
+        )}
+
+        <input
+            ref={fileInputRef}
+            type="file"
+            accept=".png,.jpg,.jpeg"
+            className={classes.hiddenInput}
+            onChange={handleChange}
         />
-      )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".png,.jpg,.jpeg"
-        className={classes.hiddenInput}
-        onChange={handleChange}
-      />
-    </Box>
+      </Box>
   )
 }
 
