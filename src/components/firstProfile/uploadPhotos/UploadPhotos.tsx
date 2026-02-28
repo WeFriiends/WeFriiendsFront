@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {Box, Typography, FormHelperText} from '@mui/material'
 import {makeStyles} from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
-import {useProfileStore} from 'zustand/store'
+import {useAuthStore, useProfileStore} from 'zustand/store'
 import UploadSlot from './UploadSlot'
 import {PhotoModal} from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
@@ -19,7 +19,8 @@ const UploadPhotos: React.FC<Props> = ({
                                            resetSubmitClicked,
                                            setIsPicHuge,
                                        }) => {
-    const {tempPhotos, setTempPhotos, removeTempPhoto, data} = useProfileStore()
+    const {tempPhotos, setTempPhotos, data, deletePhoto} = useProfileStore()
+    const {token} = useAuthStore()
 
     useEffect(() => {
         if (data?.photos?.length && tempPhotos.length === 0) {
@@ -79,7 +80,7 @@ const UploadPhotos: React.FC<Props> = ({
                     isOpened
                     setIsDeleteModalOpened={() => setDeleteId(null)}
                     deleteChosenPic={() => {
-                        removeTempPhoto(deleteId)
+                        deletePhoto(deleteId, token!)
                         setDeleteId(null)
                     }}
                     setChosenId={() => void 0}

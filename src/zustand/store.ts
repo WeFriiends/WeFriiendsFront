@@ -71,6 +71,7 @@ interface ProfileActions {
     addPhoto: (photo: string) => void
     removePhoto: (photoId: string) => void
     uploadNewPhotos: (token: string) => Promise<void>
+    deletePhoto: (id: string, token: string) => Promise<void>
 }
 
 const initialState: ProfileState & {
@@ -277,6 +278,26 @@ export const useProfileStore = create<ProfileStore>()(
                             {headers: {Authorization: `Bearer ${token}`}}
                         )
                     }
+                },
+
+                deletePhoto: async (id: string, token: string) => {
+                    const {tempPhotos} = get()
+                    const photo = tempPhotos.find((p) => p.id === id)
+                    if (!photo) return
+
+                    if (!photo.blobFile && photo.url) {
+                        await axios.delete(
+                            `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                            {
+                                data: {photoUrl: photo.url},
+                                headers: {Authorization: `Bearer ${token}`},
+                            }
+                        )
+                    }
+
+                    set((s) => ({
+                        tempPhotos: s.tempPhotos.filter((p) => p.id !== id),
+                    }))
                 },
             }
         },
