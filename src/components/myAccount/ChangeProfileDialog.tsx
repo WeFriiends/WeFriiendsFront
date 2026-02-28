@@ -8,7 +8,7 @@ import Interests from 'components/firstProfile/interests/Interests'
 import PrimaryButton from 'common/components/PrimaryButton'
 import theme from 'styles/createTheme'
 import UploadPhotos from 'components/firstProfile/uploadPhotos/UploadPhotos'
-import axios from 'axios'
+
 
 interface ChangeProfileDialogProps {
     ref: Ref<{ handleOpenChangeProfileDialog: () => void }>
@@ -21,7 +21,7 @@ const ChangeProfileDialog = forwardRef(
         const [isSubmitClicked, setIsSubmitClicked] = useState(false)
         const [isSaving, setIsSaving] = useState(false)
         const {classes} = useStyles()
-        const {tempPhotos} = useProfileStore()
+        const {tempPhotos, uploadNewPhotos, getProfile} = useProfileStore()
         const {token} = useAuthStore()
 
         const handleOpenChangeProfileDialog = () => {
@@ -41,40 +41,10 @@ const ChangeProfileDialog = forwardRef(
         const handleSaveClick = async () => {
             setIsSubmitClicked(true)
             if (tempPhotos.length === 0) return
-
             setIsSaving(true)
             try {
-                const newPhotos = tempPhotos.filter((p) => p.blobFile)
-                console.log('newPhotos:', newPhotos)
-                console.log('tempPhotos:', tempPhotos)
-                if (newPhotos.length > 0) {
-                    const formData = new FormData()
-                    newPhotos.forEach((p) => {
-                        formData.append('images', p.blobFile!)
-                    })
-
-                    const {data: cloudinaryUrls} = await axios.post<string[]>(
-                        `${process.env.REACT_APP_API_BASE_URL}/api/photos/upload`,
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                                Authorization: `Bearer ${token}`,
-                            },
-                        }
-                    )
-                    console.log('Cloudinary URLs:', cloudinaryUrls)
-                    for (const photoUrl of cloudinaryUrls) {
-                        await axios.post(
-                            `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
-                            {photoUrl},
-                            {
-                                headers: {Authorization: `Bearer ${token}`},
-                            }
-                        )
-                    }
-                }
-
+                await uploadNewPhotos(token!)
+                await getProfile(token!)
                 handleClose()
             } catch (error) {
                 console.error('Photo update error:', error)
