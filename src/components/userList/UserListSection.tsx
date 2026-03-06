@@ -7,17 +7,18 @@ import { useUsersData } from 'hooks/useUsersData'
 interface UserListSectionProps {
   endpoint: string
   emptyContent: ReactNode
+  onUserSelect: (id: string) => void
 }
 
 export function UserListSection({
   endpoint,
   emptyContent,
+  onUserSelect,
 }: UserListSectionProps) {
   const { data, isLoading, error } = useUsersData(endpoint)
 
-  //TODO: implement onCardClick
   const onCardClick = (userId: string) => {
-    console.log('Card clicked with userId:', userId)
+    onUserSelect(userId)
   }
 
   if (error) {
