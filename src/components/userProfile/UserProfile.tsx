@@ -53,7 +53,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
         </Box>
 
         <div className={classes.carousel}>
-          <PhotoCarousel items={user.photos} />
+          <PhotoCarousel
+            items={
+              user.photos && user.photos.length > 0
+                ? user.photos
+                : [{ src: '/img/placeholders/girl-big.svg' }]
+            }
+          />
           <Box className={classes.gradientOverlay} />
         </div>
 
@@ -186,7 +192,7 @@ const useStyles = makeStyles()(() => {
     },
 
     name: {
-      color: '#F46B5D',
+      color: theme.palette.primary.main,
       fontSize: 40,
       fontWeight: 600,
       lineHeight: '40px',
@@ -214,7 +220,7 @@ const useStyles = makeStyles()(() => {
       },
     },
     title: {
-      color: '#F1562A',
+      color: theme.palette.primary.dark,
       fontSize: 16,
       fontWeight: 500,
       lineHeight: '20px',
@@ -227,7 +233,7 @@ const useStyles = makeStyles()(() => {
     text: {
       fontSize: 14,
       lineHeight: '22px',
-      background: '#FEDED2',
+      background: theme.customPalette.colorPeach,
       borderRadius: 20,
       padding: '7px 15px',
     },
@@ -237,8 +243,7 @@ const useStyles = makeStyles()(() => {
       left: 0,
       width: '100%',
       height: '79px',
-      background:
-        'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)',
+      background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, ${theme.palette.common.white} 100%)`,
       zIndex: 5,
       pointerEvents: 'none',
     },
@@ -288,7 +293,7 @@ const useStyles = makeStyles()(() => {
     interest: {
       fontSize: 14,
       lineHeight: '22px',
-      background: '#FEDED2',
+      background: theme.customPalette.colorPeach,
       borderRadius: 20,
       padding: '7px 15px',
       marginRight: 10,
@@ -315,7 +320,7 @@ const useStyles = makeStyles()(() => {
     },
     textAbout: {
       fontSize: 14,
-      color: ' #000000',
+      color: theme.palette.common.black,
     },
     tagsList: {
       display: 'flex',
@@ -325,7 +330,7 @@ const useStyles = makeStyles()(() => {
       paddingTop: 0,
     },
     tag: {
-      backgroundColor: ' #EEEEEE',
+      backgroundColor: '#EEEEEE',
       padding: 8,
       borderRadius: 8,
       width: 'auto',
