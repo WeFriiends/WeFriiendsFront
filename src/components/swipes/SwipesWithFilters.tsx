@@ -1,11 +1,10 @@
+import { useRef } from 'react'
 import { Link } from '@mui/material'
+import { makeStyles } from 'tss-react/mui'
 import Swipes from './Swipes'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
-import { makeStyles } from 'tss-react/mui'
-import { useRef } from 'react'
-import theme from '../../styles/createTheme'
 
-const SwipesWithFilters = () => {
+export function SwipesWithFilters() {
   const { classes } = useStyles()
 
   const FiltersDialogRef = useRef<{
@@ -27,9 +26,7 @@ const SwipesWithFilters = () => {
   )
 }
 
-export default SwipesWithFilters
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   filters: {
     fontSize: 24,
     lineHeight: 1.5,
@@ -52,4 +49,4 @@ const useStyles = makeStyles()({
       color: '#F1562A',
     },
   },
-})
+}))

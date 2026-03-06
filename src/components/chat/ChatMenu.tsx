@@ -1,19 +1,21 @@
-import React from 'react'
-import { makeStyles } from 'tss-react/mui'
+import { MouseEvent, useState } from 'react'
 import { Button, Menu, MenuItem } from '@mui/material'
+import { makeStyles } from 'tss-react/mui'
 
 interface ChatMenuProps {
   icon?: string
 }
 
-const ChatMenu = ({ icon = '/img/messages/menu.svg' }: ChatMenuProps) => {
+export function ChatMenu({ icon = '/img/messages/menu.svg' }: ChatMenuProps) {
   const { classes } = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+
+  function handleClose() {
     setAnchorEl(null)
   }
 
@@ -47,8 +49,6 @@ const ChatMenu = ({ icon = '/img/messages/menu.svg' }: ChatMenuProps) => {
     </div>
   )
 }
-
-export default ChatMenu
 
 const useStyles = makeStyles()({
   chatMenu: {

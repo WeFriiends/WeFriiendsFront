@@ -76,11 +76,6 @@ const routes: RouteObject[] = [
         // element: <AuthGuard component={Messages} />,
       },
       {
-        path: 'messages/:userId',
-        element: <Messages />,
-        // element: <AuthGuard component={Messages} />,
-      },
-      {
         path: 'who-liked-you',
         element: <WhoLikedMePage />,
         // element: <AuthGuard component={WhoLikedMePage} />,
