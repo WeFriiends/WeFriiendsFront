@@ -10,6 +10,8 @@ import UserProfile from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
 import { ReactNode } from 'react'
+import { makeStyles } from 'tss-react/mui'
+import ArrowBackButton from 'common/components/ArrowBackButton'
 import { CollapsePanelButton } from './CollapsePanelButton'
 import Loader from 'common/svg/Loader'
 
@@ -25,12 +27,17 @@ export function UserProfilePanel({
   actions,
 }: UserProfilePanelProps) {
   const theme = useTheme()
+  const { classes } = useStyles()
   const { data, isLoading, error } = useGetUserById(selectedUserId)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const renderContent = () => {
     if (isLoading) {
-      return <Loader />
+      return (
+        <Box className={classes.loaderWrapper}>
+          <Loader />
+        </Box>
+      )
     }
 
     if (error) {
@@ -40,8 +47,8 @@ export function UserProfilePanel({
     if (!data) return null
 
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+      <Box className={classes.contentWrapper}>
+        <Box className={classes.scrollableContent}>
           <UserProfile user={data} />
         </Box>
         {actions && <Box>{actions}</Box>}
@@ -51,13 +58,26 @@ export function UserProfilePanel({
 
   if (isMobile) {
     return (
-      <Drawer anchor="right" open={!!selectedUserId} onClose={onClose}>
-        <Box
-          sx={{
-            width: { xs: 320, sm: 340 },
-          }}
-        >
-          {renderContent()}
+      <Drawer
+        anchor="right"
+        open={!!selectedUserId}
+        onClose={onClose}
+        PaperProps={{
+          className: classes.drawerPaper,
+        }}
+      >
+        <Box className={classes.mobileContainer}>
+          <Box className={classes.mobileHeader}>
+            <ArrowBackButton
+              stepBackHandler={onClose}
+              className={classes.backButton}
+            />
+            <Typography variant="body1" className={classes.backText}>
+              Back to Near by
+            </Typography>
+          </Box>
+
+          <Box className={classes.mobileContentArea}>{renderContent()}</Box>
         </Box>
       </Drawer>
     )
@@ -70,16 +90,88 @@ export function UserProfilePanel({
       timeout={{ enter: 500, exit: 400 }}
       unmountOnExit
     >
-      <Box
-        sx={{
-          width: { md: 340, lg: 450 },
-          position: 'sticky',
-          top: 0,
-        }}
-      >
-        <CollapsePanelButton onClick={onClose} />
+      <Box className={classes.desktopContainer}>
+        <Box className={classes.closeProfileHeader} onClick={onClose}>
+          <CollapsePanelButton />
+          <Typography variant="body1" className={classes.closeProfileText}>
+            Close profile
+          </Typography>
+        </Box>
         {renderContent()}
       </Box>
     </Slide>
   )
 }
+
+const useStyles = makeStyles()((theme) => ({
+  contentWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
+  loaderWrapper: {
+    position: 'relative',
+    height: 100,
+  },
+  scrollableContent: {
+    flexGrow: 1,
+    overflowY: 'auto',
+  },
+  drawerPaper: {
+    width: '100vw',
+  },
+  mobileContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  mobileHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '24px 20px 16px',
+    gap: 10,
+  },
+  backButton: {
+    margin: 0,
+  },
+  backText: {
+    color: theme.palette.common.black,
+    fontSize: 18,
+  },
+  mobileContentArea: {
+    flexGrow: 1,
+    width: '100%',
+    maxWidth: 490,
+    paddingLeft: 20,
+    paddingRight: 20,
+    margin: '0 auto',
+    overflowY: 'auto',
+    boxSizing: 'border-box',
+  },
+  desktopContainer: {
+    position: 'sticky',
+    top: 0,
+    width: 340,
+    [theme.breakpoints.up('lg')]: {
+      width: 450,
+    },
+  },
+  closeProfileHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    color: theme.palette.text.primary,
+    backgroundColor: theme.customPalette.authBtnBg,
+    transition: 'color 0.3s',
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+    '& .MuiIconButton-root': {
+      color: 'inherit',
+    },
+  },
+  closeProfileText: {
+    fontSize: 18,
+    color: 'inherit',
+  },
+}))

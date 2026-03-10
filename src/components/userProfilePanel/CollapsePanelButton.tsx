@@ -1,10 +1,10 @@
 import { IconButton, IconButtonProps } from '@mui/material'
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
 
 export function CollapsePanelButton(props: IconButtonProps) {
   return (
     <IconButton {...props}>
-      <KeyboardDoubleArrowRightIcon />
+      <KeyboardDoubleArrowLeftIcon />
     </IconButton>
   )
 }
