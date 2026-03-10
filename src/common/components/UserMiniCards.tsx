@@ -7,12 +7,14 @@ interface UserMiniCardsProps {
   users: UserMiniProfile[]
   onCardClick: (userId: string) => void
   alwaysShowLightning?: boolean
+  selectedUserId?: string | null
 }
 
 export function UserMiniCards({
   users,
   onCardClick,
   alwaysShowLightning = false,
+  selectedUserId = null,
 }: UserMiniCardsProps) {
   const { classes } = useStyles()
   return (
@@ -26,6 +28,7 @@ export function UserMiniCards({
             <UserMiniCard
               user={user}
               alwaysShowLightning={alwaysShowLightning}
+              isActive={selectedUserId !== null && selectedUserId === user.id}
             />
           </button>
         </ImageListItem>

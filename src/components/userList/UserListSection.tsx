@@ -8,12 +8,14 @@ interface UserListSectionProps {
   endpoint: string
   emptyContent: ReactNode
   onUserSelect: (id: string) => void
+  selectedUserId?: string | null
 }
 
 export function UserListSection({
   endpoint,
   emptyContent,
   onUserSelect,
+  selectedUserId = null,
 }: UserListSectionProps) {
   const { data, isLoading, error } = useUsersData(endpoint)
 
@@ -36,5 +38,11 @@ export function UserListSection({
   if (data.length === 0) {
     return <>{emptyContent}</>
   }
-  return <UserMiniCards users={data} onCardClick={onCardClick} />
+  return (
+    <UserMiniCards
+      users={data}
+      onCardClick={onCardClick}
+      selectedUserId={selectedUserId}
+    />
+  )
 }

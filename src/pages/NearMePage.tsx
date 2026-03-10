@@ -58,6 +58,7 @@ export default function NearMePage() {
             endpoint="profile/nearest"
             emptyContent={<NoticeNoUsers />}
             onUserSelect={setSelectedUserId}
+            selectedUserId={selectedUserId}
           />
         </Box>
         <UserProfilePanel

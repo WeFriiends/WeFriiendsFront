@@ -6,7 +6,7 @@ import { useWhoLikedMeContext } from 'hooks/useWhoLikedMeContext'
 
 export function MiniCardsSection() {
   const { data, isLoading, error } = useGetUsersWhoLikedMe()
-  const { setSelectedUserId } = useWhoLikedMeContext()
+  const { selectedUserId, setSelectedUserId } = useWhoLikedMeContext()
 
   function handleCardClick(userId: string) {
     setSelectedUserId((id) => (id === userId ? null : userId))
@@ -37,6 +37,7 @@ export function MiniCardsSection() {
       users={data}
       onCardClick={handleCardClick}
       alwaysShowLightning={true}
+      selectedUserId={selectedUserId}
     />
   )
 }
