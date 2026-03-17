@@ -29,7 +29,7 @@ export function UserProfilePanel({
   const theme = useTheme()
   const { classes } = useStyles()
   const { data, isLoading, error } = useGetUserById(selectedUserId)
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const renderContent = () => {
     if (isLoading) {
@@ -93,9 +93,7 @@ export function UserProfilePanel({
       <Box className={classes.desktopContainer}>
         <Box className={classes.closeProfileHeader} onClick={onClose}>
           <CollapsePanelButton />
-          <Typography variant="body1" className={classes.closeProfileText}>
-            Close profile
-          </Typography>
+          <Typography variant="body2">Close profile</Typography>
         </Box>
         {renderContent()}
       </Box>
@@ -129,10 +127,10 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '24px 20px 16px',
-    gap: 10,
   },
   backButton: {
     margin: 0,
+    backgroundColor: 'transparent',
   },
   backText: {
     color: theme.palette.common.black,
@@ -159,6 +157,8 @@ const useStyles = makeStyles()((theme) => ({
   closeProfileHeader: {
     display: 'flex',
     alignItems: 'center',
+    paddingBlock: 3,
+    marginBottom: 12,
     cursor: 'pointer',
     color: theme.palette.text.primary,
     backgroundColor: theme.customPalette.authBtnBg,
@@ -169,9 +169,5 @@ const useStyles = makeStyles()((theme) => ({
     '& .MuiIconButton-root': {
       color: 'inherit',
     },
-  },
-  closeProfileText: {
-    fontSize: 18,
-    color: 'inherit',
   },
 }))
