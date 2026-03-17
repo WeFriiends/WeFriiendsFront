@@ -27,11 +27,14 @@ interface FirestoreMessage {
 
 interface ChatState {
   currentChat: Chat | null
-  messagesCache: Record<string, Chat>
+  // messagesCache: Record<string, Chat>
+  messagesCache: Record<string, Chat | undefined>
   loading: boolean
   error: Error | null
   // Map of conversation IDs to unsubscribe functions
   subscriptions: Record<string, () => void>
+  // store document subscriptions separately
+  conversationSubscriptions: Record<string, () => void>
   // Selected chat ID for decoupled components
   selectedChatId: string | null
   setSelectedChatId: (chatId: string | null) => void
@@ -52,6 +55,7 @@ export const useChatStore = create<ChatState>()(
       loading: false,
       error: null,
       subscriptions: {},
+      conversationSubscriptions: {},
       selectedChatId: null,
 
       setSelectedChatId: (chatId) => {
@@ -164,11 +168,6 @@ export const useChatStore = create<ChatState>()(
             },
             loading: false,
           }))
-
-          // console.log(
-          //   'Successfully refreshed messages for conversation:',
-          //   conversationId
-          // )
         } catch (error) {
           console.error('Error refreshing messages:', error)
           set({
@@ -180,7 +179,71 @@ export const useChatStore = create<ChatState>()(
 
       subscribeToMessages: (conversationId) => {
         // Check if we're already subscribed to this conversation
-        const { subscriptions, messagesCache } = get()
+        const { subscriptions, messagesCache, conversationSubscriptions } =
+          get()
+
+        //если уже подписаны на документ, не подписываемся снова
+        if (conversationSubscriptions[conversationId]) {
+          console.log('Already subscribed to conversation document')
+        } else {
+          // подписываемся на сам документ чата
+          const conversationRef = doc(db, 'conversations', conversationId)
+          const unsubscribeConversation = onSnapshot(
+            conversationRef,
+            (docSnapshot) => {
+              console.log('🔥 Conversation document updated:', {
+                id: docSnapshot.id,
+                exists: docSnapshot.exists(),
+              })
+
+              if (!docSnapshot.exists()) {
+                // Документ удален! Очищаем все связанное с этим чатом
+                console.log(
+                  '🗑️ Conversation deleted, cleaning up:',
+                  conversationId
+                )
+
+                const state = get()
+
+                // Отписываемся от сообщений этого чата
+                if (state.subscriptions[conversationId]) {
+                  state.subscriptions[conversationId]()
+                }
+
+                set((state) => {
+                  const newSubscriptions = { ...state.subscriptions }
+                  delete newSubscriptions[conversationId]
+
+                  const newConversationSubscriptions = {
+                    ...state.conversationSubscriptions,
+                  }
+                  delete newConversationSubscriptions[conversationId]
+
+                  const newMessagesCache = { ...state.messagesCache }
+                  delete newMessagesCache[conversationId]
+
+                  return {
+                    subscriptions: newSubscriptions,
+                    conversationSubscriptions: newConversationSubscriptions,
+                    messagesCache: newMessagesCache,
+                    currentChat:
+                      state.currentChat?.chatId === conversationId
+                        ? null
+                        : state.currentChat,
+                  }
+                })
+              }
+            }
+          )
+
+          set((state) => ({
+            conversationSubscriptions: {
+              ...state.conversationSubscriptions,
+              [conversationId]: unsubscribeConversation,
+            },
+          }))
+        }
+
         if (subscriptions[conversationId]) {
           console.log(
             'Already subscribed to this conversation, keeping subscription'
@@ -268,7 +331,6 @@ export const useChatStore = create<ChatState>()(
                 }
               }) as Message[]
 
-              // Получаем участников один раз
               let participants: string[] = []
               const conversationDoc = await getDoc(
                 doc(db, 'conversations', conversationId)
@@ -286,12 +348,12 @@ export const useChatStore = create<ChatState>()(
               set((state) => ({
                 messagesCache: {
                   ...state.messagesCache,
-                  [conversationId]: chat, // всегда обновляем кеш
+                  [conversationId]: chat,
                 },
                 currentChat:
                   state.currentChat?.chatId === conversationId
                     ? chat
-                    : state.currentChat, // обновляем только если открыт
+                    : state.currentChat,
                 loading: false,
               }))
             } catch (error) {
@@ -323,36 +385,37 @@ export const useChatStore = create<ChatState>()(
       },
 
       unsubscribeFromMessages: () => {
-        const { subscriptions, currentChat } = get()
-        const subscriptionKeys = Object.keys(subscriptions)
+        const { subscriptions, conversationSubscriptions, currentChat } = get()
 
-        if (subscriptionKeys.length > 0) {
+        // Отписываемся от всех подписок на сообщения
+        Object.values(subscriptions).forEach((unsubscribe) => {
+          if (unsubscribe) unsubscribe()
+        })
+
+        // отписываемся от всех подписок на документы чатов
+        Object.values(conversationSubscriptions).forEach((unsubscribe) => {
+          if (unsubscribe) unsubscribe()
+        })
+
+        // Store current chat in cache if it exists
+        if (currentChat) {
           console.log(
-            `Unsubscribing from ${subscriptionKeys.length} conversations`
+            'Storing messages in cache for conversation:',
+            currentChat.chatId
           )
-
-          // Store current chat in cache if it exists
-          if (currentChat) {
-            console.log(
-              'Storing messages in cache for conversation:',
-              currentChat.chatId
-            )
-            set((state) => ({
-              messagesCache: {
-                ...state.messagesCache,
-                [currentChat.chatId]: currentChat,
-              },
-            }))
-          }
-
-          // Unsubscribe from all conversations
-          subscriptionKeys.forEach((conversationId) => {
-            subscriptions[conversationId]()
-            console.log(`Unsubscribed from conversation: ${conversationId}`)
-          })
-
-          set({ subscriptions: {}, currentChat: null })
+          set((state) => ({
+            messagesCache: {
+              ...state.messagesCache,
+              [currentChat.chatId]: currentChat,
+            },
+          }))
         }
+
+        set({
+          subscriptions: {},
+          conversationSubscriptions: {},
+          currentChat: null,
+        })
       },
 
       sendMessage: async (conversationId, message) => {
