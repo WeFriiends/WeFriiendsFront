@@ -1,21 +1,17 @@
 import React from 'react'
 import { makeStyles } from 'tss-react/mui'
-import { Button, Menu, MenuItem, Box, Typography } from '@mui/material'
+import { Button, Menu, MenuItem } from '@mui/material'
 import { useMatchesStore } from 'zustand/friendsStore'
-import { CommonModal } from 'common/components/CommonModal'
-import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
 import { db } from 'services/firebase'
 import { deleteDoc, doc, getDoc } from 'firebase/firestore'
+import { DeleteContactModal } from './DeleteContactModal'
+
 interface ChatMenuProps {
-  icon?: string
-  id?: string
+  id: string
 }
 
-export const ChatMenu = ({
-  icon = '/img/messages/menu.svg',
-  id,
-}: ChatMenuProps) => {
+export const ChatMenu = ({ id }: ChatMenuProps) => {
   const { classes } = useStyles()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -25,13 +21,15 @@ export const ChatMenu = ({
   const currentUserId = user?.sub
 
   const removeFriend = useMatchesStore((state) => state.removeFriend)
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
-  function handleClose() {
+  const handleClose = () => {
     setAnchorEl(null)
   }
+
   const handleDeleteContact = async () => {
     setAnchorEl(null)
     setIsModalOpen(true)
@@ -42,44 +40,37 @@ export const ChatMenu = ({
   }
 
   const handleConfirmDelete = async () => {
-    try {
-      console.log('⚠️ Начинаем удаление контакта:', { id, currentUserId })
+    if (id && currentUserId) {
+      // удаляем из Firebase
+      try {
+        const conversationId = `${currentUserId}_${id}`
+        const conversationRef = doc(db, 'conversations', conversationId)
+        const docSnap = await getDoc(conversationRef)
 
-      //  удаляем из Firebase
-      if (id && currentUserId) {
-        try {
-          const conversationId = `${currentUserId}_${id}`
-          const conversationRef = doc(db, 'conversations', conversationId)
-          const docSnap = await getDoc(conversationRef)
+        if (docSnap.exists()) {
+          await deleteDoc(conversationRef)
+        } else {
+          // пробуем другой порядок (на случай если чат создавался с другой стороны)
+          const altConversationId = `${id}_${currentUserId}`
+          const altRef = doc(db, 'conversations', altConversationId)
+          const altDocSnap = await getDoc(altRef)
 
-          if (docSnap.exists()) {
-            await deleteDoc(conversationRef)
-          } else {
-            // Пробуем другой порядок
-            const altConversationId = `${id}_${currentUserId}`
-            const altRef = doc(db, 'conversations', altConversationId)
-            const altDocSnap = await getDoc(altRef)
-
-            if (altDocSnap.exists()) {
-              await deleteDoc(altRef)
-            }
+          if (altDocSnap.exists()) {
+            await deleteDoc(altRef)
           }
-        } catch (firebaseError) {
-          console.error('❌ Ошибка при удалении из Firebase:', firebaseError)
         }
+      } catch (firebaseError) {
+        console.error('❌ Ошибка при удалении из Firebase:', firebaseError)
       }
 
-      // пробуем удалить матч
-      if (removeFriend && id && currentUserId) {
-        try {
-          await removeFriend(id, currentUserId)
-        } catch (removeError) {
-          console.error('❌ Ошибка удаления матча:', removeError)
-        }
+      // удаляем матч
+      try {
+        await removeFriend(id, currentUserId)
+      } catch (removeError) {
+        console.error('❌ Ошибка удаления матча:', removeError)
       }
-    } catch (error) {
-      console.error('❌ Общая ошибка:', error)
     }
+
     setIsModalOpen(false)
   }
 
@@ -93,7 +84,7 @@ export const ChatMenu = ({
         onClick={handleClick}
         sx={{ minWidth: 'fit-content', padding: '0' }}
       >
-        <img src={icon} alt="menu" />
+        <img src="/img/messages/menu.svg" alt="menu" />
       </Button>
       <Menu
         id="basic-menu"
@@ -110,47 +101,12 @@ export const ChatMenu = ({
         <MenuItem onClick={handleDeleteContact}>delete contact</MenuItem>
         <MenuItem onClick={handleClose}>report and block</MenuItem>
       </Menu>
-      <CommonModal
-        isOpened={isModalOpen}
+
+      <DeleteContactModal
+        isOpen={isModalOpen}
         onClose={handleCloseModal}
-        modalTitle={'modal-modal-title'}
-        modalDescription={'modal-modal-description'}
-        height={320}
-      >
-        <Box className={classes.modalContainer}>
-          <img
-            src="/img/report/icon-alert.svg"
-            alt="Alert circle"
-            className={classes.imgAlert}
-          />
-
-          <Box className={classes.info}>
-            <Typography variant="h1" className={classes.title}>
-              Delete User
-            </Typography>
-          </Box>
-
-          <Box className={classes.buttonsContainer}>
-            <Button
-              className={`${classes.button} ${classes.cancelButton}`}
-              onClick={handleCloseModal}
-              disableFocusRipple
-              disableRipple
-            >
-              Cancel
-            </Button>
-
-            <Button
-              className={`${classes.button} ${classes.deleteButton}`}
-              onClick={handleConfirmDelete}
-              disableFocusRipple
-              disableRipple
-            >
-              Delete
-            </Button>
-          </Box>
-        </Box>
-      </CommonModal>
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }
@@ -166,72 +122,5 @@ const useStyles = makeStyles()({
     '& .MuiPaper-root': {
       borderRadius: 10,
     },
-  },
-  modalContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    gap: '32px',
-    boxSizing: 'border-box',
-  },
-  info: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 600,
-    lineHeight: '32px',
-    textAlign: 'center',
-    color: theme.palette.text.primary,
-    margin: 0,
-  },
-  buttonsContainer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '12px',
-  },
-  button: {
-    height: '48px',
-    minWidth: '120px',
-    borderRadius: '8px',
-    fontSize: '16px',
-    textTransform: 'none',
-    fontWeight: 500,
-  },
-  cancelButton: {
-    color: theme.palette.primary.dark,
-    fontWeight: 600,
-    textDecoration: 'none',
-    border: `1px solid ${theme.palette.primary.dark}`,
-    boxShadow: '0 0 7px 1px rgba(179, 179, 179, 0.14)',
-    '&:hover': {
-      background: theme.palette.common.white,
-      borderColor: theme.palette.primary.main,
-    },
-  },
-  deleteButton: {
-    fontWeight: 700,
-    color: theme.palette.common.white,
-    backgroundColor: theme.palette.primary.light,
-    textDecoration: 'none',
-    '&:hover': {
-      background: theme.palette.primary.main,
-    },
-  },
-  imgAlert: {
-    margin: '0 auto',
-    width: '31px',
-    height: '31px',
-    objectFit: 'contain',
   },
 })
