@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import theme from '../../styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
-import PhotoCarousel from './PhotoCarousel'
+import { PhotoCarousel } from './PhotoCarousel'
 import { UserProfileData } from '../../types/UserProfileData'
 import LikeDispay from './LikedDisplay'
 import ReportDialog from 'components/report/ReportDialog'

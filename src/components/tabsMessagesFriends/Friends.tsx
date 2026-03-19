@@ -6,6 +6,7 @@ import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import { NoNewMatchesOrMessages } from './NoNewMatchesOrMessages'
 import { useMatchesStore } from 'zustand/friendsStore'
+import { useUserProfileStore } from 'zustand/userProfileStore'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
@@ -14,21 +15,60 @@ interface FriendsProps {
 export function Friends({ onClick }: FriendsProps) {
   const { classes } = useStyles()
   const { matches: userFriends } = useMatchesStore()
+  const { fetchUserProfile } = useUserProfileStore()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
+  const [loading, setLoading] = useState<string | null>(null)
 
-  const handleClick = (friend: FriendsMatch) => {
+  const defaultPhoto = '/img/placeholders/girl-big.svg'
+
+  const handleClick = async (friend: FriendsMatch) => {
     setSelectedFriendId(friend.id)
-    onClick({
-      id: friend.id,
-      name: friend.name,
-      age: friend.age.toString(),
-      photos: [{ src: friend.photo }],
-      city: '',
-      distance: '',
-      likedMe: false,
-      reasons: [],
-      preferences: {},
-    })
+    setLoading(friend.id)
+
+    try {
+      const fullProfile = await fetchUserProfile(friend.id)
+
+      if (fullProfile) {
+        onClick({
+          id: fullProfile._id,
+          name: fullProfile.name,
+          age: fullProfile.age.toString(),
+          photos: fullProfile.photos,
+          city: fullProfile.city || '',
+          distance: fullProfile.distance?.toString() || '',
+          likedMe: fullProfile.likedMe || false,
+          reasons: fullProfile.reasons || [],
+          preferences: fullProfile.preferences || {},
+        })
+      } else {
+        onClick({
+          id: friend.id,
+          name: friend.name,
+          age: friend.age.toString(),
+          photos: [{ src: friend.photo || defaultPhoto }],
+          city: '',
+          distance: '',
+          likedMe: false,
+          reasons: [],
+          preferences: {},
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching full profile:', error)
+      onClick({
+        id: friend.id,
+        name: friend.name,
+        age: friend.age.toString(),
+        photos: [{ src: friend.photo || defaultPhoto }],
+        city: '',
+        distance: '',
+        likedMe: false,
+        reasons: [],
+        preferences: {},
+      })
+    } finally {
+      setLoading(null)
+    }
   }
 
   if (userFriends?.length === 0) {
@@ -46,10 +86,16 @@ export function Friends({ onClick }: FriendsProps) {
             { [classes.fotoBorder]: element.id === selectedFriendId },
           ])}
           onClick={() => handleClick(element)}
+          sx={{ opacity: loading === element.id ? 0.7 : 1 }}
         >
-          <img src={element.photo} alt="photo" className={classes.smallPhoto} />
+          <img
+            src={element.photo || defaultPhoto}
+            alt="photo"
+            className={classes.smallPhoto}
+          />
           <Typography className={classes.textOnPhoto}>
             {element.name}, {element.age}
+            {loading === element.id && '...'}
           </Typography>
         </Box>
       ))}
