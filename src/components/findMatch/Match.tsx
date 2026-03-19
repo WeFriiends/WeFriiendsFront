@@ -9,10 +9,15 @@ interface MatchProps {
     id: string
     avatar: string
   } | null
+  currentUserAvatar?: string
   onClose: () => void
 }
 
-export function Match({ onClose, matchedUser }: MatchProps) {
+export function Match({
+  onClose,
+  matchedUser,
+  currentUserAvatar = '/img/firstProfile/female.svg',
+}: MatchProps) {
   const { classes } = useStyles()
   const startChatWith = useStartChatWith()
 
@@ -32,10 +37,7 @@ export function Match({ onClose, matchedUser }: MatchProps) {
     >
       <Box className={classes.matchContainer}>
         <Box className={classes.matchedAvatarsContainer}>
-          <Avatar
-            className={classes.matchedAvatar}
-            src="/img/avatar_elena_musk.jpg"
-          />
+          <Avatar className={classes.matchedAvatar} src={currentUserAvatar} />
           <Avatar
             className={`${classes.matchedAvatar} ${classes.newMatchAvatar}`}
             src={matchedUser?.avatar ?? ''}

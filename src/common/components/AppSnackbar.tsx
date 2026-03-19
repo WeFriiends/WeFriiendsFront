@@ -1,4 +1,5 @@
 import { Snackbar, Alert, AlertColor } from '@mui/material'
+import { useState, useEffect } from 'react'
 
 interface AppSnackbarProps {
   open: boolean
@@ -7,8 +8,6 @@ interface AppSnackbarProps {
   severity?: AlertColor
   autoHideDuration?: number
 }
-
-import { useState, useEffect } from 'react'
 
 export function AppSnackbar({
   open,

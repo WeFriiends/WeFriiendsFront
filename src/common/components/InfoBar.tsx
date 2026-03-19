@@ -6,7 +6,7 @@ interface InfoBarProps {
   subTitle: string
 }
 
-export function InfoBar({ title, subTitle: subTitle }: InfoBarProps) {
+export function InfoBar({ title, subTitle }: InfoBarProps) {
   const { classes } = useStyles()
   return (
     <Box className={classes.container}>

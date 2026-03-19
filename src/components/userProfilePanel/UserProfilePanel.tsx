@@ -19,12 +19,14 @@ export interface UserProfilePanelProps {
   selectedUserId: string | null
   onClose: () => void
   actions?: ReactNode
+  backLabel?: string
 }
 
 export function UserProfilePanel({
   selectedUserId,
   onClose,
   actions,
+  backLabel = 'Back',
 }: UserProfilePanelProps) {
   const theme = useTheme()
   const { classes } = useStyles()
@@ -73,7 +75,7 @@ export function UserProfilePanel({
               className={classes.backButton}
             />
             <Typography variant="body1" className={classes.backText}>
-              Back to Near by
+              {backLabel}
             </Typography>
           </Box>
 
@@ -92,7 +94,7 @@ export function UserProfilePanel({
     >
       <Box className={classes.desktopContainer}>
         <Box className={classes.closeProfileHeader} onClick={onClose}>
-          <CollapsePanelButton />
+          <CollapsePanelButton sx={{ padding: 0 }} />
           <Typography variant="body2">Close profile</Typography>
         </Box>
         {renderContent()}

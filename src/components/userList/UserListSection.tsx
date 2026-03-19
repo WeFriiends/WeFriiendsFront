@@ -2,27 +2,25 @@ import { ReactNode } from 'react'
 import { Box } from '@mui/material'
 import Loader from 'common/svg/Loader'
 import { UserMiniCards } from 'common/components/UserMiniCards'
-import { useUsersData } from 'hooks/useUsersData'
+import { UserMiniProfile } from 'common/types/userTypes'
 
 interface UserListSectionProps {
-  endpoint: string
+  users?: UserMiniProfile[]
+  isLoading: boolean
+  error?: Error
   emptyContent: ReactNode
-  onUserSelect: (id: string) => void
+  onUserSelect: (user: UserMiniProfile) => void
   selectedUserId?: string | null
 }
 
 export function UserListSection({
-  endpoint,
+  users,
+  isLoading,
+  error,
   emptyContent,
   onUserSelect,
   selectedUserId = null,
 }: UserListSectionProps) {
-  const { data, isLoading, error } = useUsersData(endpoint)
-
-  const onCardClick = (userId: string) => {
-    onUserSelect(userId)
-  }
-
   if (error) {
     return (
       <Box display="flex" justifyContent="center">
@@ -31,17 +29,17 @@ export function UserListSection({
     )
   }
 
-  if (isLoading || !data) {
+  if (isLoading || !users) {
     return <Loader />
   }
 
-  if (data.length === 0) {
+  if (users.length === 0) {
     return <>{emptyContent}</>
   }
   return (
     <UserMiniCards
-      users={data}
-      onCardClick={onCardClick}
+      users={users}
+      onCardClick={onUserSelect}
       selectedUserId={selectedUserId}
     />
   )
