@@ -42,7 +42,7 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
       {/*<Box className={classes.friendsSince}>Your friend from 03.01.2023</Box>*/}
 
       <Box className={classes.chatMenuDesktop}>
-        <ChatMenu icon="/img/messages/menu.svg" />
+        <ChatMenu id={chat.id} />
       </Box>
 
       <IconButton
@@ -55,7 +55,7 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
         <img src="/img/messages/x.svg" alt="Close" />
       </IconButton>
       <Box className={classes.chatMenuMobile}>
-        <ChatMenu icon="/img/messages/menu-dots.svg" />
+        <ChatMenu id={chat.id} />
       </Box>
     </Box>
   )
