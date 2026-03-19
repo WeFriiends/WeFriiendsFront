@@ -113,10 +113,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
               </div>
             ))
           ) : (
-            <div
-              onClick={() => handleImageClick(defaultPhoto)}
-              style={{ cursor: 'pointer' }}
-            >
+            <div style={{ cursor: 'default' }}>
               <UserPic src={defaultPhoto} />
             </div>
           )}
