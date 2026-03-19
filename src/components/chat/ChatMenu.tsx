@@ -7,8 +7,6 @@ import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
 import { db } from 'services/firebase'
 import { deleteDoc, doc, getDoc } from 'firebase/firestore'
-
-// import { deleteDoc, doc } from 'firebase/firestore'
 interface ChatMenuProps {
   icon?: string
   id?: string
@@ -84,14 +82,6 @@ export const ChatMenu = ({
     }
     setIsModalOpen(false)
   }
-
-  useEffect(() => {
-    const getCollections = async () => {
-      const collections = await (db as any).listCollections?.()
-      console.log(collections?.map((c: { id: string }) => c.id))
-    }
-    getCollections()
-  }, [])
 
   return (
     <div>
