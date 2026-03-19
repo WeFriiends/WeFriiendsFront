@@ -4,7 +4,7 @@ import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
 import { FriendsMatch } from 'types/Matches'
 import { db } from 'services/firebase'
-import { doc, deleteDoc } from 'firebase/firestore'
+import { doc, deleteDoc, collection, getDocs } from 'firebase/firestore'
 
 export const getFriends = async (
   url: string
@@ -105,17 +105,17 @@ export const deleteConversation = async (
   currentUserId: string,
   friendId: string
 ): Promise<void> => {
-  console.log('🔥🔥🔥 deleteConversation ВЫЗВАНА!', { currentUserId, friendId })
+  const chatId = [currentUserId, friendId].sort().join('_')
+  const conversationRef = doc(db, 'conversations', chatId)
 
-  try {
-    const sortedIds = [currentUserId, friendId].sort()
-    const chatId = sortedIds.join('_')
+  // 1. Get all the messages
+  const messagesRef = collection(db, 'conversations', chatId, 'messages')
+  const messagesSnap = await getDocs(messagesRef)
 
-    console.log('🔥🔥🔥 Удаляем чат с ID:', chatId)
+  // 2. Delete each one
+  const deletePromises = messagesSnap.docs.map((doc) => deleteDoc(doc.ref))
+  await Promise.all(deletePromises)
 
-    const response = await axiosInstance.delete(`/chats/${chatId}`)
-    console.log('🔥🔥🔥 Ответ:', response.status)
-  } catch (error) {
-    console.log('🔥🔥🔥 Ошибка:', error)
-  }
+  // 3. Delete the document itself
+  await deleteDoc(conversationRef)
 }
