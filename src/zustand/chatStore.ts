@@ -178,34 +178,19 @@ export const useChatStore = create<ChatState>()(
       },
 
       subscribeToMessages: (conversationId) => {
-        // Check if we're already subscribed to this conversation
         const { subscriptions, messagesCache, conversationSubscriptions } =
           get()
 
-        //если уже подписаны на документ, не подписываемся снова
         if (conversationSubscriptions[conversationId]) {
-          console.log('Already subscribed to conversation document')
+          return
         } else {
-          // подписываемся на сам документ чата
           const conversationRef = doc(db, 'conversations', conversationId)
           const unsubscribeConversation = onSnapshot(
             conversationRef,
             (docSnapshot) => {
-              console.log('🔥 Conversation document updated:', {
-                id: docSnapshot.id,
-                exists: docSnapshot.exists(),
-              })
-
               if (!docSnapshot.exists()) {
-                // Документ удален! Очищаем все связанное с этим чатом
-                console.log(
-                  '🗑️ Conversation deleted, cleaning up:',
-                  conversationId
-                )
-
                 const state = get()
 
-                // Отписываемся от сообщений этого чата
                 if (state.subscriptions[conversationId]) {
                   state.subscriptions[conversationId]()
                 }
@@ -245,15 +230,7 @@ export const useChatStore = create<ChatState>()(
         }
 
         if (subscriptions[conversationId]) {
-          console.log(
-            'Already subscribed to this conversation, keeping subscription'
-          )
-          // Update currentChat with cached messages for this conversation
           if (messagesCache[conversationId]) {
-            console.log(
-              'Using cached messages for conversation:',
-              conversationId
-            )
             set({
               currentChat: messagesCache[conversationId],
               loading: false,
@@ -262,34 +239,19 @@ export const useChatStore = create<ChatState>()(
           return
         }
 
-        // We don't unsubscribe from previous conversations as per requirements
-        if (Object.keys(subscriptions).length > 0) {
-          console.log(
-            'Already subscribed to other conversation(s), keeping all subscriptions'
-          )
-          // No unsubscription here - we keep all subscriptions active
-        }
-
         if (!conversationId) {
           console.error('No conversation ID provided for subscription')
           return
         }
 
-        // Check if we have this conversation in the cache
         const cachedChat = get().messagesCache[conversationId]
         if (cachedChat) {
-          console.log('Using cached messages for conversation:', conversationId)
-          // Set currentChat from cache for immediate display
           set({
             currentChat: cachedChat,
             loading: false,
           })
-          // Continue to set up the listener to receive updates
         }
 
-        console.log('Subscribing to messages for conversation:', conversationId)
-
-        // Create a query for messages in this conversation
         const messagesRef = collection(
           db,
           'conversations',
@@ -298,7 +260,6 @@ export const useChatStore = create<ChatState>()(
         )
         const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
 
-        // Set up the listener
         set({ loading: true, error: null })
 
         const unsubscribeSnapshot = onSnapshot(
@@ -308,15 +269,6 @@ export const useChatStore = create<ChatState>()(
             try {
               if (querySnapshot.metadata.hasPendingWrites) return
 
-              console.log('🔥 Firebase Messages Snapshot Update:', {
-                totalDocuments: querySnapshot.size,
-                documents: querySnapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  data: doc.data(),
-                })),
-              })
-
-              // Convert the messages to the format expected by the Chat interface
               const messages = querySnapshot.docs.map((doc) => {
                 const data = doc.data()
                 return {
@@ -371,17 +323,12 @@ export const useChatStore = create<ChatState>()(
           }
         )
 
-        // Store the unsubscribe function in the subscriptions map
         set((state) => ({
           subscriptions: {
             ...state.subscriptions,
             [conversationId]: unsubscribeSnapshot,
           },
         }))
-        console.log(
-          'Successfully subscribed to messages for conversation:',
-          conversationId
-        )
       },
 
       unsubscribeFromMessages: () => {
