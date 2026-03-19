@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { Button, Menu, MenuItem, Box, Typography } from '@mui/material'
 import { useMatchesStore } from 'zustand/friendsStore'
