@@ -103,7 +103,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
         >
           {items.length > 0 ? (
-            items.map((item: UserPhoto, i: number) => (
+            items.map((item: UserPhoto) => (
               <div
                 key={item.src}
                 onClick={() => handleImageClick(item.src)}
