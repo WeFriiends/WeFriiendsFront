@@ -7,6 +7,7 @@ import {
   addLike,
   addDislike,
   addNewFriend,
+  removeFriend,
 } from 'actions/friendsServices'
 import { FriendsMatch } from 'types/Matches'
 
@@ -27,6 +28,7 @@ interface MatchesActions {
   startPeriodicFetching: () => void
   stopPeriodicFetching: () => void
   addFriend: (idFriend: string) => Promise<number | undefined>
+  removeFriend: (idFriend: string, currentUserId?: string) => Promise<void>
 }
 
 type MatchesStore = MatchesState & MatchesActions
@@ -104,6 +106,24 @@ export const useMatchesStore = create<MatchesStore>()(
           console.error('Error adding friend:', error)
           set({ error: handleError(error) })
           return undefined
+        }
+      },
+
+      removeFriend: async (idFriend: string, currentUserId?: string) => {
+        try {
+          await removeFriend(idFriend, currentUserId)
+
+          set((state) => {
+            const newMatches = state.matches?.filter(
+              (match) => match.id !== idFriend
+            )
+            return { matches: newMatches }
+          })
+        } catch (error) {
+          set({
+            error: handleError(error),
+          })
+          throw error
         }
       },
     }),

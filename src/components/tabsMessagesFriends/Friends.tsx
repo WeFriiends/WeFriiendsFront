@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import classnames from 'classnames'
 import { UserProfileData } from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
-import NoNewMatchesOrMessages from './NoNewMatchesOrMessages'
+import { NoNewMatchesOrMessages } from './NoNewMatchesOrMessages'
 import { useMatchesStore } from 'zustand/friendsStore'
-import theme from 'styles/createTheme'
-import classnames from 'classnames'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
 }
 
-const Friends: React.FC<FriendsProps> = ({ onClick }) => {
+export function Friends({ onClick }: FriendsProps) {
   const { classes } = useStyles()
   const { matches: userFriends } = useMatchesStore()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
@@ -57,9 +56,8 @@ const Friends: React.FC<FriendsProps> = ({ onClick }) => {
     </Box>
   )
 }
-export default Friends
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   friendsBlock: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -104,4 +102,4 @@ const useStyles = makeStyles()({
     borderColor: theme.palette.primary.light,
     overflow: 'hidden',
   },
-})
+}))

@@ -1,5 +1,4 @@
 import { Typography, Box } from '@mui/material'
-import theme from 'styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 
 interface NoNewMatchesOrMessagesProps {
@@ -7,12 +6,11 @@ interface NoNewMatchesOrMessagesProps {
   callToAction?: string
 }
 
-const NoNewMatchesOrMessages: React.FC<NoNewMatchesOrMessagesProps> = ({
+export function NoNewMatchesOrMessages({
   text,
   callToAction = 'Start searching!',
-}) => {
+}: NoNewMatchesOrMessagesProps) {
   const { classes } = useStyles()
-
   return (
     <Box className={classes.container}>
       <Typography className={classes.textOnEmptyTabs}>
@@ -25,9 +23,7 @@ const NoNewMatchesOrMessages: React.FC<NoNewMatchesOrMessagesProps> = ({
   )
 }
 
-export default NoNewMatchesOrMessages
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -76,4 +72,4 @@ const useStyles = makeStyles()({
       height: 'auto',
     },
   },
-})
+}))

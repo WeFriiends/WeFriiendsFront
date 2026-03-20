@@ -309,7 +309,9 @@ const useStyles = makeStyles()(() => {
     sendReport: {
       fontWeight: 500,
       lineHeight: '20px',
+      transition: 'color 0.3s ease',
       '&:hover': {
+        cursor: 'pointer',
         color: theme.palette.primary.main,
       },
     },
