@@ -29,7 +29,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     setModalOpen(false)
   }
 
-  const hasMultiplePhotos = items?.length > 1
+  const hasMultiplePhotos = items.length > 1
 
   return (
     <>
@@ -102,10 +102,10 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
             height: { xs: 420, sm: 535 },
           }}
         >
-          {items?.length > 0 ? (
+          {items.length > 0 ? (
             items.map((item: UserPhoto, i: number) => (
               <div
-                key={i}
+                key={item.src}
                 onClick={() => handleImageClick(item.src)}
                 style={{ cursor: 'pointer' }}
               >

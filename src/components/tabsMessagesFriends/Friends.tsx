@@ -25,6 +25,18 @@ export function Friends({ onClick }: FriendsProps) {
     setSelectedFriendId(friend.id)
     setLoading(friend.id)
 
+    onClick({
+      id: friend.id,
+      name: friend.name,
+      age: friend.age.toString(),
+      photos: [{ src: friend.photo || defaultPhoto }],
+      city: '',
+      distance: '',
+      likedMe: false,
+      reasons: [],
+      preferences: {},
+    })
+
     try {
       const fullProfile = await fetchUserProfile(friend.id)
 
@@ -40,32 +52,9 @@ export function Friends({ onClick }: FriendsProps) {
           reasons: fullProfile.reasons || [],
           preferences: fullProfile.preferences || {},
         })
-      } else {
-        onClick({
-          id: friend.id,
-          name: friend.name,
-          age: friend.age.toString(),
-          photos: [{ src: friend.photo || defaultPhoto }],
-          city: '',
-          distance: '',
-          likedMe: false,
-          reasons: [],
-          preferences: {},
-        })
       }
     } catch (error) {
       console.error('Error fetching full profile:', error)
-      onClick({
-        id: friend.id,
-        name: friend.name,
-        age: friend.age.toString(),
-        photos: [{ src: friend.photo || defaultPhoto }],
-        city: '',
-        distance: '',
-        likedMe: false,
-        reasons: [],
-        preferences: {},
-      })
     } finally {
       setLoading(null)
     }
