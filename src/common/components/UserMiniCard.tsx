@@ -7,14 +7,12 @@ type Size = 'sm' | 'md' | 'lg'
 interface UserMiniCardProps {
   user: UserMiniProfile
   size?: Size
-  alwaysShowLightning?: boolean
   isActive?: boolean
 }
 
 export function UserMiniCard({
   user,
   size = 'lg',
-  alwaysShowLightning = false,
   isActive = false,
 }: UserMiniCardProps) {
   const { classes } = useStyles({ size, isActive })
@@ -31,7 +29,7 @@ export function UserMiniCard({
             }
             alt="Profile photo"
           />
-          {(alwaysShowLightning || user.likedUsers) && (
+          {user.likedUsers && (
             <Box className={classes.iconContainer}>
               <IconLightning />
             </Box>

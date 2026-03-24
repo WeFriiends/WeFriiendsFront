@@ -33,11 +33,12 @@ export function MiniCardsSection() {
     return <NoticeNoLikes />
   }
 
+  const likedMeUsers = data.map((user) => ({ ...user, likedUsers: true }))
+
   return (
     <UserMiniCards
-      users={data}
+      users={likedMeUsers}
       onCardClick={handleCardClick}
-      alwaysShowLightning={true}
       selectedUserId={selectedUserId}
     />
   )
