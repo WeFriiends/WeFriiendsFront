@@ -3,5 +3,5 @@ export interface UserMiniProfile {
   name: string
   distance: number
   picture: string | null
-  likedUsers?: boolean
+  likedMe?: boolean
 }

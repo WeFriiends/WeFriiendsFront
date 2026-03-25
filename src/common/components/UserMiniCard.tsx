@@ -29,7 +29,7 @@ export function UserMiniCard({
             }
             alt="Profile photo"
           />
-          {user.likedUsers && (
+          {user.likedMe && (
             <Box className={classes.iconContainer}>
               <IconLightning />
             </Box>

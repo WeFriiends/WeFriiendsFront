@@ -75,7 +75,7 @@ export function useUserListActions(swrKey: string) {
   const handleBeFriend = async () => {
     if (!selectedUser) return
     try {
-      if (selectedUser.likedUsers) {
+      if (selectedUser.likedMe) {
         const status = await addFriend(selectedUser.id)
 
         if (!status) {

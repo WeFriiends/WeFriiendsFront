@@ -33,7 +33,7 @@ export function MiniCardsSection() {
     return <NoticeNoLikes />
   }
 
-  const likedMeUsers = data.map((user) => ({ ...user, likedUsers: true }))
+  const likedMeUsers = data.map((user) => ({ ...user, likedMe: true }))
 
   return (
     <UserMiniCards
