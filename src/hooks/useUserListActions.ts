@@ -3,22 +3,9 @@ import { AlertColor } from '@mui/material'
 import { mutate } from 'swr'
 import { addDislike, addLike } from 'actions/friendsServices'
 import { UserMiniProfile } from 'common/types/userTypes'
-import { useMatchesStore } from 'zustand/friendsStore'
+import { getNextSelectedUser } from 'helpers/getNextSelectedUser'
 import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
-
-const getNextSelectedUser = (
-  users: UserMiniProfile[],
-  removedUserIndex: number
-): UserMiniProfile | null => {
-  if (users.length === 0) {
-    return null
-  }
-
-  const nextIndex =
-    removedUserIndex >= users.length ? users.length - 1 : removedUserIndex
-
-  return users[nextIndex] ?? null
-}
+import { useMatchesStore } from 'zustand/friendsStore'
 
 export function useUserListActions(swrKey: string) {
   const [selectedUser, setSelectedUser] = useState<UserMiniProfile | null>(null)
