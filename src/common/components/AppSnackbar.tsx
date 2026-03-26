@@ -1,5 +1,5 @@
-import { Snackbar, Alert, AlertColor } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { Snackbar, Alert } from '@mui/material'
+import type { AlertColor } from '@mui/material'
 
 interface AppSnackbarProps {
   open: boolean
@@ -16,16 +16,6 @@ export function AppSnackbar({
   severity = 'error',
   autoHideDuration = 4000,
 }: AppSnackbarProps) {
-  const [persistedMessage, setPersistedMessage] = useState(message)
-  const [persistedSeverity, setPersistedSeverity] = useState(severity)
-
-  useEffect(() => {
-    if (open) {
-      setPersistedMessage(message)
-      setPersistedSeverity(severity)
-    }
-  }, [open, message, severity])
-
   return (
     <Snackbar
       open={open}
@@ -33,12 +23,8 @@ export function AppSnackbar({
       onClose={onClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
     >
-      <Alert
-        onClose={onClose}
-        severity={persistedSeverity}
-        sx={{ width: '100%' }}
-      >
-        {persistedMessage}
+      <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
+        {message}
       </Alert>
     </Snackbar>
   )

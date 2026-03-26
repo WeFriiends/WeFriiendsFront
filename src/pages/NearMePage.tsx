@@ -18,7 +18,8 @@ export default function NearMePage() {
       ? currentUserAvatar
       : currentUserAvatar?.url ?? ''
 
-  const { snackbarInfo, showSnackbar, handleCloseSnackbar } = useSnackbar()
+  const { isOpen, snackbarInfo, showSnackbar, handleCloseSnackbar } =
+    useSnackbar()
 
   const {
     selectedUser,
@@ -58,7 +59,7 @@ export default function NearMePage() {
       />
 
       <AppSnackbar
-        open={snackbarInfo !== null}
+        open={isOpen}
         message={snackbarInfo?.message ?? null}
         severity={snackbarInfo?.severity}
         onClose={handleCloseSnackbar}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertColor } from '@mui/material'
+import type { AlertColor } from '@mui/material'
 
 interface SnackbarInfo {
   message: string
@@ -7,12 +7,15 @@ interface SnackbarInfo {
 }
 
 export function useSnackbar() {
+  const [isOpen, setIsOpen] = useState(false)
   const [snackbarInfo, setSnackbarInfo] = useState<SnackbarInfo | null>(null)
 
-  const showSnackbar = (message: string, severity: AlertColor) =>
+  const showSnackbar = (message: string, severity: AlertColor) => {
     setSnackbarInfo({ message, severity })
+    setIsOpen(true)
+  }
 
-  const handleCloseSnackbar = () => setSnackbarInfo(null)
+  const handleCloseSnackbar = () => setIsOpen(false)
 
-  return { snackbarInfo, showSnackbar, handleCloseSnackbar }
+  return { isOpen, snackbarInfo, showSnackbar, handleCloseSnackbar }
 }
