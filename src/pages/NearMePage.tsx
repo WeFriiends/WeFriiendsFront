@@ -1,24 +1,16 @@
 import { Box, Grid } from '@mui/material'
 import { InfoBar } from 'common/components/InfoBar'
-import { UserListSection } from 'components/userList/UserListSection'
-import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
+import { UserListSection } from 'components/nearMe/UserListSection'
 import { UserProfilePanel } from 'components/userProfilePanel/UserProfilePanel'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { Match } from 'components/findMatch/Match'
 import { PROFILE_ENDPOINTS } from 'actions/endpoints'
 import { AppSnackbar } from 'common/components/AppSnackbar'
-import { useUsersData } from 'hooks/useUsersData'
 import { useUserListActions } from 'hooks/useUserListActions'
 import { useSnackbar } from 'hooks/useSnackbar'
 import { useProfileStore } from 'zustand/store'
 
 export default function NearMePage() {
-  const {
-    data: users,
-    isLoading,
-    error,
-  } = useUsersData(PROFILE_ENDPOINTS.nearest)
-
   const { data: profile } = useProfileStore()
   const currentUserAvatar = profile?.photos?.[0]
   const currentUserAvatarSrc =
@@ -46,10 +38,6 @@ export default function NearMePage() {
       <Grid container alignItems="flex-start" gap={16}>
         <Box sx={{ containerType: 'inline-size', flex: 1 }}>
           <UserListSection
-            users={users}
-            isLoading={isLoading}
-            error={error}
-            emptyContent={<NoticeNoUsers />}
             onUserSelect={setSelectedUser}
             selectedUserId={selectedUser?.id ?? null}
           />

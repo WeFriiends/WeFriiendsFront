@@ -1,26 +1,26 @@
-import { ReactNode } from 'react'
 import { Box } from '@mui/material'
+import { PROFILE_ENDPOINTS } from 'actions/endpoints'
+import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
+import { useUsersData } from 'hooks/useUsersData'
 import Loader from 'common/svg/Loader'
 import { UserMiniCards } from 'common/components/UserMiniCards'
 import { UserMiniProfile } from 'common/types/userTypes'
 
 interface UserListSectionProps {
-  users?: UserMiniProfile[]
-  isLoading: boolean
-  error?: Error
-  emptyContent: ReactNode
   onUserSelect: (user: UserMiniProfile) => void
   selectedUserId?: string | null
 }
 
 export function UserListSection({
-  users,
-  isLoading,
-  error,
-  emptyContent,
   onUserSelect,
   selectedUserId = null,
 }: UserListSectionProps) {
+  const {
+    data: users,
+    isLoading,
+    error,
+  } = useUsersData(PROFILE_ENDPOINTS.nearest)
+
   if (error) {
     return (
       <Box display="flex" justifyContent="center">
@@ -34,8 +34,9 @@ export function UserListSection({
   }
 
   if (users.length === 0) {
-    return <>{emptyContent}</>
+    return <NoticeNoUsers />
   }
+
   return (
     <UserMiniCards
       users={users}
