@@ -58,9 +58,9 @@ export default function NearMePage() {
       />
 
       <AppSnackbar
-        open={!!snackbarInfo}
-        message={snackbarInfo?.message || null}
-        severity={snackbarInfo?.severity || 'error'}
+        open={snackbarInfo !== null}
+        message={snackbarInfo?.message ?? null}
+        severity={snackbarInfo?.severity}
         onClose={handleCloseSnackbar}
       />
     </>
