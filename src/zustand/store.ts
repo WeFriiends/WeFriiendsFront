@@ -72,6 +72,8 @@ interface ProfileActions {
   removePhoto: (photoId: string) => void
   uploadNewPhotos: (token: string) => Promise<void>
   deletePhoto: (id: string, token: string) => Promise<void>
+  addPhotoToData: (photoUrl: string) => void
+  removePhotoFromData: (photoUrl: string) => void
 }
 
 const initialState: ProfileState & {
@@ -252,8 +254,32 @@ export const useProfileStore = create<ProfileStore>()(
           })
         },
 
+        addPhotoToData: (photoUrl: string) => {
+          set((state) => {
+            if (!state.data) return state
+            return {
+              data: {
+                ...state.data,
+                photos: [...state.data.photos, photoUrl],
+              },
+            }
+          })
+        },
+
+        removePhotoFromData: (photoUrl: string) => {
+          set((state) => {
+            if (!state.data) return state
+            return {
+              data: {
+                ...state.data,
+                photos: state.data.photos.filter((p) => p !== photoUrl),
+              },
+            }
+          })
+        },
+
         uploadNewPhotos: async (token: string) => {
-          const { tempPhotos } = get()
+          const { tempPhotos, addPhotoToData } = get()
           const newPhotos = tempPhotos.filter((p) => p.blobFile)
           if (newPhotos.length === 0) return
 
@@ -277,11 +303,13 @@ export const useProfileStore = create<ProfileStore>()(
               { photoUrl },
               { headers: { Authorization: `Bearer ${token}` } }
             )
+            addPhotoToData(photoUrl)
           }
+          set({ tempPhotos: [] })
         },
 
         deletePhoto: async (id: string, token: string) => {
-          const { tempPhotos } = get()
+          const { tempPhotos, removePhotoFromData } = get()
           const photo = tempPhotos.find((p) => p.id === id)
           if (!photo) return
 
@@ -293,6 +321,7 @@ export const useProfileStore = create<ProfileStore>()(
                 headers: { Authorization: `Bearer ${token}` },
               }
             )
+            removePhotoFromData(photo.url)
           }
 
           set((s) => ({
