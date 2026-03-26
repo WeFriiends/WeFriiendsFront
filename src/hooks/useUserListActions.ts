@@ -7,20 +7,18 @@ import { getNextSelectedUser } from 'helpers/getNextSelectedUser'
 import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 import { useMatchesStore } from 'zustand/friendsStore'
 
-export function useUserListActions(swrKey: string) {
+export function useUserListActions(
+  swrKey: string,
+  showSnackbar: (message: string, severity: AlertColor) => void
+) {
   const [selectedUser, setSelectedUser] = useState<UserMiniProfile | null>(null)
   const [matchedUser, setMatchedUser] = useState<{
     id: string
     avatar: string
   } | null>(null)
-  const [snackbarInfo, setSnackbarInfo] = useState<{
-    message: string
-    severity: AlertColor
-  } | null>(null)
 
   const { addFriend } = useMatchesStore()
 
-  const handleCloseSnackbar = () => setSnackbarInfo(null)
   const handleCloseMatch = () => setMatchedUser(null)
 
   const removeUserAndSelectNext = async (userId: string) => {
@@ -52,10 +50,7 @@ export function useUserListActions(swrKey: string) {
       await addDislike(selectedUser.id)
       await removeUserAndSelectNext(selectedUser.id)
     } catch (e: unknown) {
-      setSnackbarInfo({
-        message: getApiErrorMessage(e) || 'Failed to skip user',
-        severity: 'error',
-      })
+      showSnackbar(getApiErrorMessage(e) || 'Failed to skip user', 'error')
     }
   }
 
@@ -75,15 +70,12 @@ export function useUserListActions(swrKey: string) {
         })
       } else {
         await addLike(selectedUser.id)
-        setSnackbarInfo({ message: 'Friend request sent', severity: 'success' })
+        showSnackbar('Friend request sent', 'success')
       }
 
       await removeUserAndSelectNext(selectedUser.id)
     } catch (e: unknown) {
-      setSnackbarInfo({
-        message: getApiErrorMessage(e) || 'Failed to add friend',
-        severity: 'error',
-      })
+      showSnackbar(getApiErrorMessage(e) || 'Failed to add friend', 'error')
     }
   }
 
@@ -92,8 +84,6 @@ export function useUserListActions(swrKey: string) {
     setSelectedUser,
     matchedUser,
     handleCloseMatch,
-    snackbarInfo,
-    handleCloseSnackbar,
     handleSkip,
     handleBeFriend,
   }

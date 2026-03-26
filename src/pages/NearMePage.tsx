@@ -9,6 +9,7 @@ import { PROFILE_ENDPOINTS } from 'actions/endpoints'
 import { AppSnackbar } from 'common/components/AppSnackbar'
 import { useUsersData } from 'hooks/useUsersData'
 import { useUserListActions } from 'hooks/useUserListActions'
+import { useSnackbar } from 'hooks/useSnackbar'
 import { useProfileStore } from 'zustand/store'
 
 export default function NearMePage() {
@@ -25,16 +26,16 @@ export default function NearMePage() {
       ? currentUserAvatar
       : currentUserAvatar?.url ?? ''
 
+  const { snackbarInfo, showSnackbar, handleCloseSnackbar } = useSnackbar()
+
   const {
     selectedUser,
     setSelectedUser,
     matchedUser,
     handleCloseMatch,
-    snackbarInfo,
-    handleCloseSnackbar,
     handleSkip,
     handleBeFriend,
-  } = useUserListActions(PROFILE_ENDPOINTS.nearest)
+  } = useUserListActions(PROFILE_ENDPOINTS.nearest, showSnackbar)
 
   return (
     <>
