@@ -63,6 +63,7 @@ const theme = {
     colorActiveGrey: '#262626',
     authBtnBg: '#FFF1EC',
     authBtnBgHover: '#FECAB7',
+    colorPeach: '#FEDED2',
   },
   components: {
     MuiBackdrop: {

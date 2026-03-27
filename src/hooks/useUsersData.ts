@@ -1,13 +1,13 @@
 import useSWR from 'swr'
 import { getUsersData as fetcher } from 'actions/userServices'
+import { UserMiniProfile } from 'common/types/userTypes'
 
-const useUsersData = () => {
-  const { data, error } = useSWR('/users.json', fetcher)
+export const useUsersData = (url: string) => {
+  const { data, error, isLoading } = useSWR(url, fetcher<UserMiniProfile[]>)
 
   return {
     data,
     error,
-    isLoading: !data && !error,
+    isLoading,
   }
 }
-export default useUsersData

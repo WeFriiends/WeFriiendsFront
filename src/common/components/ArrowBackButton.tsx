@@ -3,15 +3,16 @@ import { makeStyles } from 'tss-react/mui'
 
 type PreviousStepButtonProps = {
   stepBackHandler: () => void
+  className?: string
 }
 
 const ArrowBackButton = (props: PreviousStepButtonProps) => {
-  const { stepBackHandler } = props
+  const { stepBackHandler, className } = props
   const { classes } = useStyles()
 
   return (
     <Button
-      className={classes.prevPageButton}
+      className={`${classes.prevPageButton} ${className || ''}`}
       startIcon={
         <img
           alt="previous page"

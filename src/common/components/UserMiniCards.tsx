@@ -5,20 +5,25 @@ import { UserMiniProfile } from 'common/types/userTypes'
 
 interface UserMiniCardsProps {
   users: UserMiniProfile[]
-  onCardClick: (userId: string) => void
+  onCardClick: (user: UserMiniProfile) => void
+  selectedUserId?: string | null
 }
 
-export function UserMiniCards({ users, onCardClick }: UserMiniCardsProps) {
+export function UserMiniCards({
+  users,
+  onCardClick,
+  selectedUserId = null,
+}: UserMiniCardsProps) {
   const { classes } = useStyles()
   return (
     <ImageList cols={6} gap={0} className={classes.list}>
       {users.map((user) => (
         <ImageListItem key={user.id} className={classes.item}>
-          <button
-            onClick={() => onCardClick(user.id)}
-            className={classes.button}
-          >
-            <UserMiniCard user={user} />
+          <button onClick={() => onCardClick(user)} className={classes.button}>
+            <UserMiniCard
+              user={user}
+              isActive={selectedUserId !== null && selectedUserId === user.id}
+            />
           </button>
         </ImageListItem>
       ))}
