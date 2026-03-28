@@ -41,14 +41,14 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           navButtonsProps={{
             style: hasMultiplePhotos
               ? {
-                padding: '12px',
-                color: '#444444',
-                background: 'white',
-                opacity: '0.5',
-              }
+                  padding: '12px',
+                  color: '#444444',
+                  background: 'white',
+                  opacity: '0.5',
+                }
               : {
-                display: 'none',
-              },
+                  display: 'none',
+                },
           }}
           NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
           PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
@@ -67,36 +67,36 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           activeIndicatorIconButtonProps={{
             style: hasMultiplePhotos
               ? {
-                backgroundColor: 'white',
-                borderRadius: 0,
-              }
+                  backgroundColor: 'white',
+                  borderRadius: 0,
+                }
               : {
-                display: 'none',
-              },
+                  display: 'none',
+                },
           }}
           indicatorIconButtonProps={{
             style: hasMultiplePhotos
               ? {
-                marginRight: '3px',
-              }
+                  marginRight: '3px',
+                }
               : {
-                display: 'none',
-              },
+                  display: 'none',
+                },
           }}
           indicatorContainerProps={{
             style: hasMultiplePhotos
               ? {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 200,
-                display: 'flex',
-                justifyContent: 'center',
-              }
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 200,
+                  display: 'flex',
+                  justifyContent: 'center',
+                }
               : {
-                display: 'none',
-              },
+                  display: 'none',
+                },
           }}
           sx={{
             height: { xs: 420, sm: 535 },
