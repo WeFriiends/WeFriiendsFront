@@ -7,6 +7,7 @@ import {
   addLike,
   addDislike,
   addNewFriend,
+  removeFriend,
 } from 'actions/friendsServices'
 import { FriendsMatch } from 'types/Matches'
 
@@ -27,6 +28,7 @@ interface MatchesActions {
   startPeriodicFetching: () => void
   stopPeriodicFetching: () => void
   addFriend: (idFriend: string) => Promise<number | undefined>
+  removeFriend: (idFriend: string, currentUserId?: string) => Promise<void>
 }
 
 type MatchesStore = MatchesState & MatchesActions
@@ -98,12 +100,30 @@ export const useMatchesStore = create<MatchesStore>()(
         try {
           const status = await addNewFriend(idFriend)
           // Refresh matches data after adding a friend
-          get().fetchMatches()
+          await get().fetchMatches()
           return status
         } catch (error) {
           console.error('Error adding friend:', error)
           set({ error: handleError(error) })
           return undefined
+        }
+      },
+
+      removeFriend: async (idFriend: string, currentUserId?: string) => {
+        try {
+          await removeFriend(idFriend, currentUserId)
+
+          set((state) => {
+            const newMatches = state.matches?.filter(
+              (match) => match.id !== idFriend
+            )
+            return { matches: newMatches }
+          })
+        } catch (error) {
+          set({
+            error: handleError(error),
+          })
+          throw error
         }
       },
     }),
@@ -163,7 +183,9 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
         await get().fetchPotentialFriends()
         // todo: when we have a queue with potential friends and then change the filters, for example ageRange set to very narrow, one of potential friends is still remaining in queue and nothing happens when I push "skip" (dislike), it should disappear from the queue and the queue should become empty
       },
-
+      //TODO: why we have handleLike and handleDislike in the store?
+      // They don't change the state of the store, they just call the API and return status.
+      // Maybe we should remove them, because they are in src/actions/friendsServices.ts
       handleLike: async (idPotentialFriend: string) => {
         try {
           return await addLike(idPotentialFriend)

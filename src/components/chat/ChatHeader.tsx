@@ -1,36 +1,40 @@
-import React from 'react'
 import { Box, Typography, Avatar, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
-import ChatMenu from './ChatMenu'
+import { ChatMenu } from './ChatMenu'
 import { UserChatProfile } from 'types/UserProfileData'
+import { useChatStore } from 'zustand/chatStore'
 
 interface ChatHeaderProps {
-  selectedChat: UserChatProfile
-  onClose: () => void
+  chat: UserChatProfile
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onClose }) => {
+export function ChatHeader({ chat }: ChatHeaderProps) {
   const { classes } = useStyles()
+  const { setSelectedChatId } = useChatStore()
+
+  function handleCloseChat() {
+    setSelectedChatId(null)
+    // We don't unsubscribe when closing chat, only when tab/app is closed
+  }
 
   return (
     <Box className={classes.chatHeader}>
       <IconButton
-        disableRipple={true}
-        disableFocusRipple={true}
+        disableRipple
+        disableFocusRipple
         aria-label="Close chat"
         className={classes.closeChatBack}
-        onClick={onClose}
+        onClick={handleCloseChat}
       >
         <img src="/img/messages/arrow-back.svg" alt="Back" />
       </IconButton>
 
       <Box className={classes.userInHeader}>
-        <Avatar className={classes.userAvatar} src={selectedChat.avatar} />
+        <Avatar className={classes.userAvatar} src={chat.avatar} />
         <Typography className={classes.userName}>
-          {selectedChat.name}
+          {chat.name}
           <Box className={classes.userAge} component="span">
-            , {selectedChat.age}
+            , {chat.age}
           </Box>
         </Typography>
       </Box>
@@ -38,26 +42,26 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onClose }) => {
       {/*<Box className={classes.friendsSince}>Your friend from 03.01.2023</Box>*/}
 
       <Box className={classes.chatMenuDesktop}>
-        <ChatMenu icon="/img/messages/menu.svg" />
+        <ChatMenu id={chat.id} />
       </Box>
 
       <IconButton
-        disableRipple={true}
-        disableFocusRipple={true}
+        disableRipple
+        disableFocusRipple
         className={classes.closeChatCross}
         aria-label="Close chat"
-        onClick={onClose}
+        onClick={handleCloseChat}
       >
         <img src="/img/messages/x.svg" alt="Close" />
       </IconButton>
       <Box className={classes.chatMenuMobile}>
-        <ChatMenu icon="/img/messages/menu-dots.svg" />
+        <ChatMenu id={chat.id} />
       </Box>
     </Box>
   )
 }
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   chatHeader: {
     backgroundColor: theme.palette.primary.light,
     height: 64,
@@ -147,6 +151,4 @@ const useStyles = makeStyles()({
       display: 'none',
     },
   },
-})
-
-export default ChatHeader
+}))

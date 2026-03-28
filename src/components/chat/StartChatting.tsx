@@ -1,27 +1,17 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from './../../styles/createTheme'
 
-const StartChatting = () => {
+export function StartChatting() {
   const { classes } = useStyles()
   return (
     <Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          paddingTop: '44px',
-        }}
-      >
-        <Typography className={classes.startChattingText}>
+      <Box className={classes.container}>
+        <Typography className={classes.text}>
           Connect with others by sharing your thoughts or experiences.
         </Typography>
-        <Typography className={classes.startChattingText}>
-          Start chatting now!
-        </Typography>
+        <Typography className={classes.text}>Start chatting now!</Typography>
       </Box>
-      <Box className={classes.iconsSection}>
+      <Box className={classes.icons}>
         <img src="/img/messages/friendly.svg" alt="friendly" />
         <img src="/img/messages/hospitable.svg" alt="hospitable" />
         <img src="/img/messages/happy.svg" alt="happy" />
@@ -31,10 +21,14 @@ const StartChatting = () => {
   )
 }
 
-export default StartChatting
-
-const useStyles = makeStyles()({
-  startChattingText: {
+const useStyles = makeStyles()((theme) => ({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+    paddingTop: '44px',
+  },
+  text: {
     maxWidth: '315px',
     margin: '0 auto',
     color: theme.palette.primary.light,
@@ -43,10 +37,10 @@ const useStyles = makeStyles()({
     fontWeight: 600,
     lineHeight: '22px',
   },
-  iconsSection: {
+  icons: {
     display: 'flex',
     gap: 16,
     justifyContent: 'center',
     paddingTop: 35,
   },
-})
+}))

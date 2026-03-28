@@ -1,16 +1,14 @@
-import * as React from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { Link, useLocation } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 import { useMatchesStore } from 'zustand/friendsStore'
 
-const TabsMessagesFriends: React.FC = () => {
+export function TabsMessagesFriends() {
   const { classes } = useStyles()
   const location = useLocation()
   const { pathname } = location
   const { matches: friendsList } = useMatchesStore()
-
   return (
     <>
       <Box className={classes.tabsBlock}>
@@ -42,8 +40,6 @@ const TabsMessagesFriends: React.FC = () => {
     </>
   )
 }
-
-export default TabsMessagesFriends
 
 const useStyles = makeStyles()({
   labelStyle: {

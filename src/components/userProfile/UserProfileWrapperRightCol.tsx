@@ -1,17 +1,16 @@
 import { ReactNode } from 'react'
 import { Box, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 
 interface UserProfileWrapperRightColProps {
   children: ReactNode
   handleCloseFriendProfile?: () => void
 }
 
-const UserProfileWrapperRightCol = ({
+export function UserProfileWrapperRightCol({
   children,
   handleCloseFriendProfile,
-}: UserProfileWrapperRightColProps) => {
+}: UserProfileWrapperRightColProps) {
   const { classes } = useStyles()
   return (
     <Box className={classes.wrapperUserProfile}>
@@ -25,9 +24,8 @@ const UserProfileWrapperRightCol = ({
     </Box>
   )
 }
-export default UserProfileWrapperRightCol
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   wrapperUserProfile: {
     maxWidth: 450,
     margin: '0 auto',
@@ -52,4 +50,4 @@ const useStyles = makeStyles()({
       display: 'none',
     },
   },
-})
+}))

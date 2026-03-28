@@ -3,7 +3,6 @@ import { ComponentType, Suspense, lazy } from 'react'
 import AuthGuard from 'components/userAuth/AuthGuard'
 import LoadingScreen from 'common/svg/Loader'
 import WhoLikedMePage from 'pages/WhoLikedMePage'
-import NearMe from 'pages/NearMe'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
 import Friends from 'pages/FriendsPage'
@@ -26,6 +25,7 @@ import Logout from '../pages/Logout'
 import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
 import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
 import Layout from 'components/layout/Layout'
+import NearMePage from 'pages/NearMePage'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -76,18 +76,13 @@ const routes: RouteObject[] = [
         // element: <AuthGuard component={Messages} />,
       },
       {
-        path: 'messages/:userId',
-        element: <Messages />,
-        // element: <AuthGuard component={Messages} />,
-      },
-      {
         path: 'who-liked-you',
         element: <WhoLikedMePage />,
         // element: <AuthGuard component={WhoLikedMePage} />,
       },
       {
         path: 'near-me',
-        element: <NearMe />,
+        element: <NearMePage />,
       },
       {
         path: 'my-account',
