@@ -10,6 +10,7 @@ import {
 import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
+import axios from 'axios'
 
 interface AuthState {
   token: string | null
@@ -69,6 +70,10 @@ interface ProfileActions {
   deleteProfile: (token: string | null) => Promise<void>
   addPhoto: (photo: string) => void
   removePhoto: (photoId: string) => void
+  uploadNewPhotos: (token: string) => Promise<void>
+  deletePhoto: (id: string, token: string) => Promise<void>
+  addPhotoToData: (photoUrl: string) => void
+  removePhotoFromData: (photoUrl: string) => void
 }
 
 const initialState: ProfileState & {
@@ -156,21 +161,14 @@ export const useProfileStore = create<ProfileStore>()(
 
         createProfile: async (profileData, token) => {
           set({ loading: true, error: false, success: false })
-
           try {
             const { tempPhotos } = get()
-
             await apiCreateProfile(
-              {
-                ...profileData,
-                photos: tempPhotos,
-              },
+              { ...profileData, photos: tempPhotos },
               token || ''
             )
-
             set({ tempPhotos: [], cloudUrls: [] })
             clearLocalStorage(['userPreferences'])
-
             set({
               loading: false,
               success: true,
@@ -211,8 +209,6 @@ export const useProfileStore = create<ProfileStore>()(
             () => updateProfile(profileData, token),
             'updateProfile'
           )
-
-          // If the update was successful and it's a distance or age range update, refresh potential friends
           if (
             response &&
             response.status === 200 &&
@@ -220,11 +216,9 @@ export const useProfileStore = create<ProfileStore>()(
               profileData.friendsAgeMin !== undefined ||
               profileData.friendsAgeMax !== undefined)
           ) {
-            // Get the potential friends store and refresh the list
             const potentialFriendsStore = usePotentialFriendsStore.getState()
             potentialFriendsStore.refreshPotentialFriends()
           }
-
           return response
         },
 
@@ -233,9 +227,7 @@ export const useProfileStore = create<ProfileStore>()(
 
         addPhoto: (photo: string) => {
           set((state) => {
-            if (!state.data) {
-              return state
-            }
+            if (!state.data) return state
             return {
               data: {
                 ...state.data,
@@ -250,9 +242,7 @@ export const useProfileStore = create<ProfileStore>()(
 
         removePhoto: (photoUrl: string) => {
           set((state) => {
-            if (!state.data) {
-              return state
-            }
+            if (!state.data) return state
             return {
               data: {
                 ...state.data,
@@ -262,6 +252,81 @@ export const useProfileStore = create<ProfileStore>()(
               },
             }
           })
+        },
+
+        addPhotoToData: (photoUrl: string) => {
+          set((state) => {
+            if (!state.data) return state
+            return {
+              data: {
+                ...state.data,
+                photos: [...state.data.photos, photoUrl],
+              },
+            }
+          })
+        },
+
+        removePhotoFromData: (photoUrl: string) => {
+          set((state) => {
+            if (!state.data) return state
+            return {
+              data: {
+                ...state.data,
+                photos: state.data.photos.filter((p) => p !== photoUrl),
+              },
+            }
+          })
+        },
+
+        uploadNewPhotos: async (token: string) => {
+          const { tempPhotos, addPhotoToData } = get()
+          const newPhotos = tempPhotos.filter((p) => p.blobFile)
+          if (newPhotos.length === 0) return
+
+          const formData = new FormData()
+          newPhotos.forEach((p) => formData.append('images', p.blobFile!))
+
+          const { data: cloudinaryUrls } = await axios.post<string[]>(
+            `${process.env.REACT_APP_API_BASE_URL}/api/photos/upload`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          for (const photoUrl of cloudinaryUrls) {
+            await axios.post(
+              `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+              { photoUrl },
+              { headers: { Authorization: `Bearer ${token}` } }
+            )
+            addPhotoToData(photoUrl)
+          }
+          set({ tempPhotos: [] })
+        },
+
+        deletePhoto: async (id: string, token: string) => {
+          const { tempPhotos, removePhotoFromData } = get()
+          const photo = tempPhotos.find((p) => p.id === id)
+          if (!photo) return
+
+          if (!photo.blobFile && photo.url) {
+            await axios.delete(
+              `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+              {
+                data: { photoUrl: photo.url },
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            )
+            removePhotoFromData(photo.url)
+          }
+
+          set((s) => ({
+            tempPhotos: s.tempPhotos.filter((p) => p.id !== id),
+          }))
         },
       }
     },

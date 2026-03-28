@@ -102,7 +102,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
             height: { xs: 420, sm: 535 },
           }}
         >
-          {items.length > 0 ? (
+          {items.length > 0 && items[0].src !== defaultPhoto ? (
             items.map((item: UserPhoto) => (
               <div
                 key={item.src}

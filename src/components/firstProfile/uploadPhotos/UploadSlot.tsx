@@ -22,7 +22,7 @@ const UploadSlot: React.FC<SlotProps> = ({
   setIsPicHuge,
   resetSubmitClicked,
 }) => {
-  const { addTempPhoto, removeTempPhoto } = useProfileStore()
+  const { addTempPhoto } = useProfileStore()
 
   const { classes } = useStyles()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -60,7 +60,6 @@ const UploadSlot: React.FC<SlotProps> = ({
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    removeTempPhoto(id)
     openDeleteModal(id)
   }
 

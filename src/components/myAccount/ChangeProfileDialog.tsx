@@ -1,12 +1,13 @@
 import React, { useState, forwardRef, Ref, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
-// import { UserPicsType } from 'types/FirstProfile'
 import { Box, Typography } from '@mui/material'
-import PrimaryButton from '../../common/components/PrimaryButton'
 import Status from 'components/firstProfile/Status'
-import Interests from '../firstProfile/interests/Interests'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
+import { useAuthStore, useProfileStore } from 'zustand/store'
+import Interests from 'components/firstProfile/interests/Interests'
+import PrimaryButton from 'common/components/PrimaryButton'
+import theme from 'styles/createTheme'
+import UploadPhotos from 'components/firstProfile/uploadPhotos/UploadPhotos'
 
 interface ChangeProfileDialogProps {
   ref: Ref<{ handleOpenChangeProfileDialog: () => void }>
@@ -15,10 +16,16 @@ interface ChangeProfileDialogProps {
 const ChangeProfileDialog = forwardRef(
   (props: ChangeProfileDialogProps, ref) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
+    const [isPicHuge, setIsPicHuge] = useState(false)
+    const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    //const [, setPhotos] = useState<UserPicsType[]>([])
+    const { tempPhotos, uploadNewPhotos, getProfile } = useProfileStore()
+    const { token } = useAuthStore()
 
     const handleOpenChangeProfileDialog = () => {
+      setIsSubmitClicked(false)
+      setIsPicHuge(false)
       setIsModalVisible(true)
     }
 
@@ -30,23 +37,39 @@ const ChangeProfileDialog = forwardRef(
       handleOpenChangeProfileDialog,
     }))
 
-    // const handlePicChange = (photos: UserPicsType[]) => {
-    //   setPhotos(photos)
-    // }
-
-    const handleSaveClick = () => {
-      console.error('save')
+    const handleSaveClick = async () => {
+      setIsSubmitClicked(true)
+      if (tempPhotos.length === 0) return
+      setIsSaving(true)
+      try {
+        await uploadNewPhotos(token!)
+        await getProfile(token!)
+        handleClose()
+      } catch (error) {
+        console.error('Photo update error:', error)
+      } finally {
+        setIsSaving(false)
+      }
     }
 
     return (
       <CommonModal
         isOpened={isModalVisible}
-        modalTitle={'Delete User'}
-        modalDescription={'Confirm to delete user.'}
+        modalTitle={'Edit Profile'}
+        modalDescription={'Update your profile photos and preferences.'}
         onClose={handleClose}
         width={600}
       >
-        {/* <UploadPhotos onPicChange={handlePicChange} /> */}
+        {isPicHuge && (
+          <Typography className={classes.picError}>
+            Please note: you can&apos;t upload photo more than 5 MB
+          </Typography>
+        )}
+        <UploadPhotos
+          isSubmitClicked={isSubmitClicked}
+          resetSubmitClicked={() => setIsSubmitClicked(false)}
+          setIsPicHuge={setIsPicHuge}
+        />
         <Box className={classes.titleContainer}>
           <Typography className={classes.titleStatus}>
             I&apos;m Here For
@@ -61,7 +84,10 @@ const ChangeProfileDialog = forwardRef(
           <Interests isAboutMeShown={true} />
         </Box>
         <Box className={classes.buttonContainer}>
-          <PrimaryButton label="Save" onClickHandler={handleSaveClick} />
+          <PrimaryButton
+            label={isSaving ? 'Saving...' : 'Save'}
+            onClickHandler={handleSaveClick}
+          />
         </Box>
       </CommonModal>
     )
@@ -71,19 +97,12 @@ const ChangeProfileDialog = forwardRef(
 export default ChangeProfileDialog
 
 const useStyles = makeStyles()({
-  title: {
-    paddingTop: 60,
-    paddingBottom: 10,
+  picError: {
+    fontFamily: 'Inter',
+    fontSize: 13,
     textAlign: 'center',
-    fontSize: 32,
-    fontWeight: 600,
-    [theme.breakpoints.up('lg')]: {
-      paddingTop: 0,
-      paddingBottom: 20,
-      textAlign: 'left',
-      fontSize: 24,
-      fontWeight: 500,
-    },
+    color: theme.palette.primary.dark,
+    marginBottom: 4,
   },
   titleContainer: {
     position: 'relative',
@@ -116,11 +135,5 @@ const useStyles = makeStyles()({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'center',
-  },
-  carouselWrapper: {
-    paddingTop: 30,
-    '&>div>div>div>div': {
-      transform: 'none !important',
-    },
   },
 })
