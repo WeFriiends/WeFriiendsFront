@@ -36,6 +36,6 @@ RUN npm run build
 
 # Nginx
 FROM alpine
-WORKDIR /app
-COPY --from=builder /app/build ./static
-CMD ["sh", "-c", "mkdir -p /var/www/frontend && cp -rp ./static/. /var/www/frontend/ && echo 'Build copied' && tail -f /dev/null"]
+WORKDIR /var/www/frontend
+COPY --from=builder /app/build .
+CMD ["sh", "-c", "echo 'Static files are ready in volume'"]
