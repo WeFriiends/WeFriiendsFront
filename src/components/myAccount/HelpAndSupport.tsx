@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Typography, Link, Button } from '@mui/material'
 import IconNewTab from '../../common/svg/IconNewTab'
 import { makeStyles } from 'tss-react/mui'
@@ -6,12 +6,14 @@ import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../../zustand/store'
 import { handleLogout as logoutUtil } from '../../utils/logoutUtils'
+import { InviteFriendModal } from './InviteFriendModal'
 
 const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
   const { logout } = useAuth0()
   const { deleteProfile } = useProfileStore()
   const token = useAuthStore((state) => state.token)
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 
   const handleLogout = () => {
     logoutUtil(logout)
@@ -99,14 +101,14 @@ const HelpAndSupport: React.FC = () => {
         ))}
       </Typography>
       <hr className={classes.separator} />
-      <Link
+      <Button
+        variant="text"
+        onClick={() => setIsInviteModalOpen(true)}
         className={classes.linkOrange}
-        href="https://wefriiends.com/documents/privacy.html"
-        target="_blank"
-        rel="noopener"
+        disableRipple
       >
         Share WeFriiends
-      </Link>
+      </Button>
       <hr className={classes.separator} />
       <Button
         variant="text"
@@ -123,6 +125,10 @@ const HelpAndSupport: React.FC = () => {
       <Typography variant="body2" className={classes.version}>
         version 2.33
       </Typography>
+      <InviteFriendModal
+        isOpened={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+      />
     </>
   )
 }
