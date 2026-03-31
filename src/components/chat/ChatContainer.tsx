@@ -5,10 +5,10 @@ import { ChatHeader } from './ChatHeader'
 import { useChatStore } from '../../zustand/chatStore'
 import { StartChatting } from './StartChatting'
 import { ChatInput } from './ChatInput'
-import { Conversation } from 'types/Conversation'
+import { Conversation, ConversationUserData } from 'types/Conversation'
 
 interface ChatContainer {
-  chat: Conversation
+  chat: Conversation & ConversationUserData
 }
 
 export function ChatContainer({ chat }: ChatContainer) {
@@ -24,7 +24,7 @@ export function ChatContainer({ chat }: ChatContainer) {
           <>
             {chatData.messages.length === 0 && <StartChatting />}
             <MessagesBox messages={chatData.messages} />
-            <ChatInput chat={chat} chatData={chatData} />
+            <ChatInput chatId={chat.id} />
           </>
         )}
       </Box>

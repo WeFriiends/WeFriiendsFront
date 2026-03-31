@@ -1,42 +1,42 @@
 import { Avatar, Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { Conversation } from 'types/Conversation'
+import { Conversation, ConversationUserData } from 'types/Conversation'
 import { useChatStore } from 'zustand/chatStore'
 import { UnreadMessageIndicator } from './UnreadMessageIndicator'
 
 interface ConversationItemProps {
-  conversation: Conversation
+  data: Conversation & Partial<ConversationUserData>
 }
 
-export function ConversationItem({ conversation }: ConversationItemProps) {
+export function ConversationItem({ data }: ConversationItemProps) {
   const { classes } = useStyles()
   const { selectedChatId, setSelectedChatId } = useChatStore()
 
+  const avatar = data.avatar ?? '/img/placeholders/girl-big.svg'
+  const name = data.name ?? 'Friend'
+  const age = data.age ?? null
+
   function handleClick() {
-    setSelectedChatId(conversation.id)
+    setSelectedChatId(data.id)
   }
 
   return (
-    <button
-      key={conversation.id}
-      onClick={handleClick}
-      className={classes.button}
-    >
+    <button key={data.id} onClick={handleClick} className={classes.button}>
       <Box
         className={`${classes.conversationBlock} ${
-          selectedChatId === conversation.id ? classes.selected : ''
+          selectedChatId === data.id ? classes.selected : ''
         }`}
       >
-        <Avatar src={conversation.avatar} sx={{ width: 66, height: 66 }} />
+        <Avatar src={avatar} className={classes.avatar} />
         <Box className={classes.conversationContent}>
           <Typography className={classes.name}>
-            {conversation.name}, {conversation.age}
+            {name}, {age}
           </Typography>
           <Typography className={classes.conversationText}>
-            {conversation.lastMessage}
+            {data.lastMessage}
           </Typography>
         </Box>
-        {conversation.messageCount === '1' && <UnreadMessageIndicator />}
+        {!data.lastMessageSeen && <UnreadMessageIndicator />}
       </Box>
     </button>
   )
@@ -61,6 +61,10 @@ const useStyles = makeStyles()((theme) => ({
     '&:hover': {
       backgroundColor: theme.customPalette.authBtnBg,
     },
+  },
+  avatar: {
+    width: 66,
+    height: 66,
   },
   conversationContent: {
     paddingLeft: 15,

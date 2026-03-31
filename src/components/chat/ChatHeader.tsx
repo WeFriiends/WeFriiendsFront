@@ -1,11 +1,11 @@
 import { Box, Typography, Avatar, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { ChatMenu } from './ChatMenu'
-import { UserChatProfile } from 'types/UserProfileData'
 import { useChatStore } from 'zustand/chatStore'
+import { ConversationUserData } from 'types/Conversation'
 
 interface ChatHeaderProps {
-  chat: UserChatProfile
+  chat: ConversationUserData
 }
 
 export function ChatHeader({ chat }: ChatHeaderProps) {

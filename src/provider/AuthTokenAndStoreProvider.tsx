@@ -2,16 +2,15 @@ import { ReactNode, useEffect, useRef } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
 import { useMatchesStore } from '../zustand/friendsStore'
-import { useConversationsStore } from '../zustand/conversationsStore'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
 }
 
-const AuthTokenAndStoreProvider = ({
+export const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
-  const { isAuthenticated, getAccessTokenSilently, user } = useAuth0()
+  const { getAccessTokenSilently } = useAuth0()
   const { token, setToken } = useAuthStore()
   const {
     data: profile,
@@ -22,9 +21,6 @@ const AuthTokenAndStoreProvider = ({
 
   const { fetchMatches, startPeriodicFetching, stopPeriodicFetching } =
     useMatchesStore()
-
-  const { subscribeToConversations, fetchConversations } =
-    useConversationsStore()
 
   // Флаги, предотвращающие повторные запросы
   const hasFetchedProfile = useRef(false)
@@ -71,7 +67,6 @@ const AuthTokenAndStoreProvider = ({
 
     fetchAuthData()
   }, [
-    isAuthenticated,
     getAccessTokenSilently,
     token,
     setToken,
@@ -89,26 +84,9 @@ const AuthTokenAndStoreProvider = ({
       // Start periodic fetching every 2 minutes
       startPeriodicFetching()
     }
-
     // Cleanup function to stop periodic fetching when component unmounts
-    return () => {
-      stopPeriodicFetching()
-    }
+    return () => stopPeriodicFetching()
   }, [hasProfile, fetchMatches, startPeriodicFetching, stopPeriodicFetching])
 
-  // Effect for fetching and subscribing to conversations
-  useEffect(() => {
-    if (hasProfile && user?.sub) {
-      // Initial fetch - no need
-      // fetchConversations(user.sub)
-      // Subscribe to real-time updates for conversations
-      subscribeToConversations(user.sub)
-    }
-    // No cleanup function here - unsubscription happens only when browser is closed
-    // via the beforeunload event listener in conversationsStore.ts
-  }, [hasProfile, user, fetchConversations, subscribeToConversations])
-
-  return <>{children}</>
+  return children
 }
-
-export default AuthTokenAndStoreProvider

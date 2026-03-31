@@ -1,7 +1,7 @@
 import { AppState, Auth0Provider } from '@auth0/auth0-react'
 import { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AuthTokenAndStoreProvider from './AuthTokenAndStoreProvider'
+import { AuthTokenAndStoreProvider } from './AuthTokenAndStoreProvider'
 
 interface Auth0ProviderWithNavigateProps {
   children: ReactNode

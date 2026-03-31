@@ -15,4 +15,18 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config
 })
+
+axiosInstance.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    const error = {
+      message:
+        err.response?.data?.message || err.message || 'Something went wrong',
+      status: err.response?.status || 0,
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 export default axiosInstance

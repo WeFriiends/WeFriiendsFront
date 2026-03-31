@@ -1,52 +1,38 @@
-import { useState } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
+import { KeyboardEvent, useState } from 'react'
 import { Box, Button, TextareaAutosize } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { Conversation } from 'types/Conversation'
-import { useChatStore } from 'zustand/chatStore'
-import { useConversationsStore } from 'zustand/conversationsStore'
-import { Chat } from 'types/Chat'
+import { useSendMessage } from 'zustand/useSendMessage'
 
 interface ChatInputProps {
-  chat: Conversation
-  chatData: Chat
+  chatId: string
 }
 
-export function ChatInput({ chat, chatData }: ChatInputProps) {
+export function ChatInput({ chatId }: ChatInputProps) {
   const { classes } = useStyles()
-  const { user } = useAuth0()
-  const userId = user?.sub || ''
   const [messageText, setMessageText] = useState('')
-  const { conversations } = useConversationsStore()
-  const { sendMessage, loading } = useChatStore()
+  const { sendMessage, isLoading } = useSendMessage(chatId)
 
   async function handleSendMessage() {
-    // Find the conversation with the matching ID to get the conversationRef
-    const conversation = conversations.find((conv) => conv.id === chat.id)
-    const conversationRef = conversation?.conversationRef
-    // Determine chatId - use conversationRef if available, otherwise fall back to chatData.chatId
-    const chatId = conversationRef || chatData.chatId
-
     if (!messageText.trim()) {
       return
     }
 
-    if (!chatId) {
-      console.error('No conversation reference found')
-      return
-    }
-
     try {
-      await sendMessage(chatId, {
-        senderId: userId,
-        receiverId: chat.id,
+      await sendMessage({
+        receiverId: chatId,
         text: messageText,
-        seen: false,
       })
 
       setMessageText('')
     } catch (error) {
       console.error('Failed to send message:', error)
+    }
+  }
+
+  function handleEnterPress(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
     }
   }
 
@@ -59,19 +45,14 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
         className={classes.textArea}
         value={messageText}
         onChange={(e) => setMessageText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault()
-            handleSendMessage()
-          }
-        }}
+        onKeyDown={handleEnterPress}
       />
       <Button
         onClick={handleSendMessage}
         className={classes.sendBtn}
-        disabled={loading || !messageText.trim()}
+        disabled={isLoading || !messageText.trim()}
       >
-        {loading ? 'Sending...' : 'Send'}
+        {isLoading ? 'Sending...' : 'Send'}
       </Button>
     </Box>
   )
