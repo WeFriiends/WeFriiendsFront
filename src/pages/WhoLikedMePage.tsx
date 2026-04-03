@@ -32,13 +32,12 @@ export default function WhoLikedMePage() {
 
   return (
     <>
-      <InfoBar
-        title="Your likes list"
-        subTitle="These people have already liked you – just like them back and it's a match!"
-      />
-
       <Grid container alignItems="flex-start" gap={16}>
         <Box sx={{ containerType: 'inline-size', flex: 1 }}>
+          <InfoBar
+            title="Your likes list"
+            subTitle="These people have already liked you – just like them back and it's a match!"
+          />
           <UserListSection
             onUserSelect={setSelectedUser}
             selectedUserId={selectedUser?.id ?? null}

@@ -152,8 +152,10 @@ const useStyles = makeStyles()((theme) => ({
     position: 'sticky',
     top: 0,
     width: 340,
+    paddingTop: 70,
     [theme.breakpoints.up('lg')]: {
       width: 450,
+      paddingTop: 24,
     },
   },
   closeProfileHeader: {
