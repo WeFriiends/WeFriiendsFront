@@ -1,23 +1,13 @@
-import React, { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Box, Modal, Icon, IconButton, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 
 interface InviteFriendModalProps {
   isOpened: boolean
   onClose: () => void
 }
 
-const INVITE_URL = 'wefriiends.com'
-
-const fallbackCopyToClipboard = (text: string) => {
-  const textarea = document.createElement('textarea')
-  textarea.value = text
-  document.body.appendChild(textarea)
-  textarea.select()
-  document.execCommand('copy')
-  document.body.removeChild(textarea)
-}
+const INVITE_URL = 'https://wefriiends.com'
 
 export const InviteFriendModal = ({
   isOpened,
@@ -25,19 +15,26 @@ export const InviteFriendModal = ({
 }: InviteFriendModalProps) => {
   const { classes } = useStyles()
   const [isCopied, setIsCopied] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleCopyLink = async () => {
-    const copySuccess = () => {
-      setIsCopied(true)
-      setTimeout(() => setIsCopied(false), 2000)
-    }
-
     try {
       await navigator.clipboard.writeText(INVITE_URL)
-      copySuccess()
+      setIsCopied(true)
+
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => {
+        setIsCopied(false)
+        timerRef.current = null
+      }, 2000)
     } catch (err) {
-      fallbackCopyToClipboard(INVITE_URL)
-      copySuccess()
+      console.error('Failed to copy link:', err)
     }
   }
 
@@ -91,7 +88,7 @@ export const InviteFriendModal = ({
   )
 }
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   modal: {
     height: '100vh',
     width: '100vw',
