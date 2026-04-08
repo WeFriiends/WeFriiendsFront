@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material'
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { Conversations } from 'components/tabsMessagesFriends/Conversations'
 import { SwipesWithFilters } from 'components/swipes/SwipesWithFilters'
@@ -10,7 +10,9 @@ import { useConversationsStore } from 'zustand/conversationsStore'
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
 // Note: unsubscription on tab/app close is handled globally in chatStore.ts
 export default function MessagesPage() {
+  const theme = useTheme()
   const { classes } = useStyles()
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
   const { selectedChatId } = useChatStore()
   const { conversations } = useConversationsStore()
   const selectedChat = selectedChatId
@@ -29,8 +31,8 @@ export default function MessagesPage() {
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
           {selectedChat && <ChatContainer chat={selectedChat} />}
-          {!selectedChat && (
-            <Box className={classes.wrapperSwipes}>
+          {!selectedChat && isMdUp && (
+            <Box>
               <SwipesWithFilters />
             </Box>
           )}
@@ -73,11 +75,5 @@ const useStyles = makeStyles()((theme) => ({
   stickyRightCol: {
     position: 'sticky',
     top: 0,
-  },
-  wrapperSwipes: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'block',
-    },
   },
 }))

@@ -1,19 +1,12 @@
-import {
-  Box,
-  Drawer,
-  Slide,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Slide, Typography, useMediaQuery, useTheme } from '@mui/material'
 import UserProfile from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
 import { ReactNode } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import ArrowBackButton from 'common/components/ArrowBackButton'
 import { CollapsePanelButton } from './CollapsePanelButton'
 import Loader from 'common/svg/Loader'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 
 export interface UserProfilePanelProps {
   selectedUserId: string | null
@@ -60,28 +53,13 @@ export function UserProfilePanel({
 
   if (isMobile) {
     return (
-      <Drawer
-        anchor="right"
+      <MobileProfileDrawer
         open={!!selectedUserId}
         onClose={onClose}
-        PaperProps={{
-          className: classes.drawerPaper,
-        }}
+        backLabel={backLabel}
       >
-        <Box className={classes.mobileContainer}>
-          <Box className={classes.mobileHeader}>
-            <ArrowBackButton
-              stepBackHandler={onClose}
-              className={classes.backButton}
-            />
-            <Typography variant="body1" className={classes.backText}>
-              {backLabel}
-            </Typography>
-          </Box>
-
-          <Box className={classes.mobileContentArea}>{renderContent()}</Box>
-        </Box>
-      </Drawer>
+        {renderContent()}
+      </MobileProfileDrawer>
     )
   }
 
@@ -116,37 +94,6 @@ const useStyles = makeStyles()((theme) => ({
   scrollableContent: {
     flexGrow: 1,
     overflowY: 'auto',
-  },
-  drawerPaper: {
-    width: '100vw',
-  },
-  mobileContainer: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  mobileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '24px 20px 16px',
-  },
-  backButton: {
-    margin: 0,
-    backgroundColor: 'transparent',
-  },
-  backText: {
-    color: theme.palette.common.black,
-    fontSize: 18,
-  },
-  mobileContentArea: {
-    flexGrow: 1,
-    width: '100%',
-    maxWidth: 490,
-    paddingLeft: 20,
-    paddingRight: 20,
-    margin: '0 auto',
-    overflowY: 'auto',
-    boxSizing: 'border-box',
   },
   desktopContainer: {
     position: 'sticky',

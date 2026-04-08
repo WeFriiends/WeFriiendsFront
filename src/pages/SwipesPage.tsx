@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Grid } from '@mui/material'
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
@@ -7,10 +7,12 @@ import { UserProfileData } from 'types/UserProfileData'
 import { Friends } from 'components/tabsMessagesFriends/Friends'
 import { SwipesWithFilters } from 'components/swipes/SwipesWithFilters'
 import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessagesFriends'
-import { UserProfileWrapperRightCol } from '../components/userProfile/UserProfileWrapperRightCol'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 
 export default function SwipesPage() {
+  const theme = useTheme()
   const { classes } = useStyles()
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
   const selectFriend = (user: UserProfileData) => {
@@ -29,16 +31,27 @@ export default function SwipesPage() {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {friendsData ? (
-            <UserProfileWrapperRightCol
-              handleCloseFriendProfile={handleCloseFriendProfile}
-            >
+          {isMdUp && friendsData && (
+            <Box className={classes.wrapperFriendDesktop}>
               <UserProfile user={friendsData} />
               <UserProfileButton chatId={friendsData.id} />
-            </UserProfileWrapperRightCol>
-          ) : (
-            <SwipesWithFilters />
+            </Box>
           )}
+
+          {!isMdUp && (
+            <MobileProfileDrawer
+              open={!!friendsData}
+              onClose={handleCloseFriendProfile}
+            >
+              {friendsData && (
+                <>
+                  <UserProfile user={friendsData} />
+                  <UserProfileButton chatId={friendsData.id} />
+                </>
+              )}
+            </MobileProfileDrawer>
+          )}
+          {!friendsData && <SwipesWithFilters />}
         </Box>
       </Box>
     </Grid>
@@ -95,5 +108,10 @@ const useStyles = makeStyles()((theme) => ({
   stickyRightCol: {
     position: 'sticky',
     top: 0,
+  },
+  wrapperFriendDesktop: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
   },
 }))
