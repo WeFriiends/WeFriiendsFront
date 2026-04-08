@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { Box, Drawer, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import ArrowBackButton from 'common/components/ArrowBackButton'
@@ -18,20 +18,19 @@ export function MobileProfileDrawer({
 }: MobileProfileDrawerProps) {
   const { classes } = useStyles()
 
-  const handleClose = () => {
-    if (document.activeElement instanceof HTMLElement) {
-      // fix Warning: Blocked aria-hidden on an element
-      // because its descendant retained focus...
+  // Workaround for Chrome 119+ WAI-ARIA "Blocked aria-hidden" warning.
+  // Force-removes focus when the drawer starts closing to prevent MUI transition conflicts.
+  useEffect(() => {
+    if (!open && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
-    onClose()
-  }
+  }, [open])
 
   return (
     <Drawer
       anchor="right"
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       PaperProps={{
         className: classes.drawerPaper,
       }}
@@ -39,7 +38,7 @@ export function MobileProfileDrawer({
       <Box className={classes.mobileContainer}>
         <Box className={classes.mobileHeader}>
           <ArrowBackButton
-            stepBackHandler={handleClose}
+            stepBackHandler={onClose}
             className={classes.backButton}
           />
           <Typography variant="body1" className={classes.backText}>

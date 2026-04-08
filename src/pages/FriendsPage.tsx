@@ -74,27 +74,21 @@ const useStyles = makeStyles()((theme) => ({
   },
   twoColumnLayoutWrapper: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    flexDirection: 'column',
+    gap: 24,
     paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
       alignItems: 'stretch',
-      justifyContent: 'space-between',
       flexDirection: 'row',
-    },
-    [theme.breakpoints.up('lg')]: {
       paddingBottom: 0,
     },
   },
   twoColumnLayoutColLeft: {
-    width: '100%',
-    marginBottom: 50,
     maxWidth: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: 400,
-    },
+    width: '100%',
+    flex: 1,
     '&.stopScrollHideOnMobile': {
       display: 'none',
       [theme.breakpoints.up('md')]: {
@@ -103,13 +97,14 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   twoColumnLayoutColRight: {
-    width: 350,
     maxWidth: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 450,
-    },
+    width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 450,
+      width: theme.customDimensions.sidebarWidth.md,
+      flexShrink: 0,
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: theme.customDimensions.sidebarWidth.lg,
     },
   },
   stickyRightCol: {

@@ -98,10 +98,10 @@ const useStyles = makeStyles()((theme) => ({
   desktopContainer: {
     position: 'sticky',
     top: 0,
-    width: 340,
+    width: theme.customDimensions.sidebarWidth.md,
     paddingTop: 70,
     [theme.breakpoints.up('lg')]: {
-      width: 450,
+      width: theme.customDimensions.sidebarWidth.lg,
       paddingTop: 24,
     },
   },

@@ -56,12 +56,11 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.up('lg')]: {
       paddingBottom: 0,
     },
-    '& > *': {
-      flex: 1,
-    },
   },
   twoColumnLayoutColLeft: {
     maxWidth: '100%',
+    width: '100%',
+    flex: 1,
     '&.stopScrollHideOnMobile': {
       display: 'none',
       [theme.breakpoints.up('md')]: {
@@ -71,6 +70,14 @@ const useStyles = makeStyles()((theme) => ({
   },
   twoColumnLayoutColRight: {
     maxWidth: '100%',
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: theme.customDimensions.sidebarWidth.md,
+      flexShrink: 0,
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: theme.customDimensions.sidebarWidth.lg,
+    },
   },
   stickyRightCol: {
     position: 'sticky',
