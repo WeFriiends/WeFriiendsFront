@@ -193,7 +193,12 @@ export const useProfileStore = create<ProfileStore>()(
           try {
             const response = await checkProfile(token)
             if (response.status >= 200 && response.status < 300) {
-              set({ loading: false, success: true, hasProfile: response.data })
+              const isProfileComplete = response.status === 200
+              set({
+                loading: false,
+                success: true,
+                hasProfile: isProfileComplete,
+              })
               return response
             } else {
               console.error(`Unexpected status: ${response.status}`)
