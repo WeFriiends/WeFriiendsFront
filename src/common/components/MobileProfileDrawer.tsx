@@ -1,7 +1,8 @@
 import { ReactNode, useEffect } from 'react'
-import { Box, Drawer, Typography } from '@mui/material'
+import { Box, Drawer, IconButton } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { makeStyles } from 'tss-react/mui'
-import ArrowBackButton from 'common/components/ArrowBackButton'
+import { ProfilePanelHeader } from 'common/components/ProfilePanelHeader'
 
 interface MobileProfileDrawerProps {
   open: boolean
@@ -36,15 +37,15 @@ export function MobileProfileDrawer({
       }}
     >
       <Box className={classes.mobileContainer}>
-        <Box className={classes.mobileHeader}>
-          <ArrowBackButton
-            stepBackHandler={onClose}
-            className={classes.backButton}
-          />
-          <Typography variant="body1" className={classes.backText}>
-            {backLabel}
-          </Typography>
-        </Box>
+        <ProfilePanelHeader
+          icon={
+            <IconButton sx={{ padding: 0 }}>
+              <ArrowBackIcon />
+            </IconButton>
+          }
+          label={backLabel}
+          onClick={onClose}
+        />
 
         <Box className={classes.mobileContentArea}>{children}</Box>
       </Box>
@@ -52,35 +53,22 @@ export function MobileProfileDrawer({
   )
 }
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   drawerPaper: {
     width: '100vw',
   },
   mobileContainer: {
-    width: '100%',
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
     height: '100%',
-  },
-  mobileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '24px 20px 16px',
-  },
-  backButton: {
-    margin: 0,
-    backgroundColor: 'transparent',
-  },
-  backText: {
-    color: theme.palette.common.black,
-    fontSize: 18,
+    paddingInline: 20,
+    marginTop: 20,
   },
   mobileContentArea: {
     flexGrow: 1,
     width: '100%',
     maxWidth: 490,
-    paddingLeft: 20,
-    paddingRight: 20,
     margin: '0 auto',
     overflowY: 'auto',
     boxSizing: 'border-box',

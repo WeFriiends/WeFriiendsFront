@@ -5,6 +5,7 @@ import { useGetUserById } from 'hooks/useGetUserById'
 import { ReactNode } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { CollapsePanelButton } from './CollapsePanelButton'
+import { ProfilePanelHeader } from 'common/components/ProfilePanelHeader'
 import Loader from 'common/svg/Loader'
 import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 
@@ -71,10 +72,11 @@ export function UserProfilePanel({
       unmountOnExit
     >
       <Box className={classes.desktopContainer}>
-        <Box className={classes.closeProfileHeader} onClick={onClose}>
-          <CollapsePanelButton sx={{ padding: 0 }} />
-          <Typography variant="body2">Close profile</Typography>
-        </Box>
+        <ProfilePanelHeader
+          icon={<CollapsePanelButton sx={{ padding: 0 }} />}
+          label="Close profile"
+          onClick={onClose}
+        />
         {renderContent()}
       </Box>
     </Slide>
@@ -103,22 +105,6 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.up('lg')]: {
       width: theme.customDimensions.sidebarWidth.lg,
       paddingTop: 24,
-    },
-  },
-  closeProfileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingBlock: 3,
-    marginBottom: 12,
-    cursor: 'pointer',
-    color: theme.palette.text.primary,
-    backgroundColor: theme.customPalette.authBtnBg,
-    transition: 'color 0.3s',
-    '&:hover': {
-      color: theme.palette.primary.main,
-    },
-    '& .MuiIconButton-root': {
-      color: 'inherit',
     },
   },
 }))
