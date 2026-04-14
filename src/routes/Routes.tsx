@@ -7,23 +7,22 @@ import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
 import Friends from 'pages/FriendsPage'
 import Swipes from 'pages/SwipesPage'
-import Invitation from '../components/invitation/Invitation'
+import Invitation from 'components/invitation/Invitation'
 import ErrorMensSearch from 'pages/ErrorMensSearch'
 import ErrorPage from 'pages/ErrorPage'
-import { Match } from '../components/findMatch/Match'
 import Messages from 'pages/MessagesPage'
 import UserAccount from 'pages/UserAccount'
-import ReportDialogExamplePage from '../components/report/ReportDialogExamplePage'
-import DeleteUserDialogExamplePage from '../components/deleteUser/DeleteUserDialogExamplePage'
-import MyAccount from '../components/myAccount/MyAccount'
+import ReportDialogExamplePage from 'components/report/ReportDialogExamplePage'
+import DeleteUserDialogExamplePage from 'components/deleteUser/DeleteUserDialogExamplePage'
+import MyAccount from 'components/myAccount/MyAccount'
 import Dashboard from 'pages/Dashboard'
 import EmailVerifiedMessage from 'pages/EmailVerifiedMessage'
 import AccountConfirmationMessage from 'pages/AccountConfirmationMessage'
 import EmailAlreadyConfirmed from 'pages/EmailAlreadyConfirmed'
-import SecurityDialogExamplePage from '../components/securityDialog/SecurityDialogExamplePage'
-import Logout from '../pages/Logout'
-import NoticeNoLikes from '../components/noticeNoData/NoticeNoLikes'
-import NoticeNoUsers from '../components/noticeNoData/NoticeNoUsers'
+import SecurityDialogExamplePage from 'components/securityDialog/SecurityDialogExamplePage'
+import Logout from 'pages/Logout'
+import NoticeNoLikes from 'components/noticeNoData/NoticeNoLikes'
+import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
 import Layout from 'components/layout/Layout'
 import NearMePage from 'pages/NearMePage'
 
@@ -53,32 +52,27 @@ const routes: RouteObject[] = [
     element: <AuthGuard component={FirstProfile} />,
   },
   {
-    element: <Layout />,
+    element: <AuthGuard component={Layout} />,
     children: [
       {
         path: 'account',
         element: <UserAccount />,
-        // element: <AuthGuard component={YourLikesList} />,
       },
       {
         path: 'friends',
         element: <Friends />,
-        // element: <AuthGuard component={Friends} />,
       },
       {
         path: 'swipes',
         element: <Swipes />,
-        // element: <AuthGuard component={Friends} />,
       },
       {
         path: 'messages',
         element: <Messages />,
-        // element: <AuthGuard component={Messages} />,
       },
       {
         path: 'who-liked-you',
         element: <WhoLikedMePage />,
-        // element: <AuthGuard component={WhoLikedMePage} />,
       },
       {
         path: 'near-me',
@@ -92,20 +86,9 @@ const routes: RouteObject[] = [
         path: 'logout',
         element: <Logout />,
       },
-      {
-        path: 'new-match',
-        element: (
-          <>
-            Hello World!
-            <Match
-              matchedUser={{ id: '-1', avatar: 'test.jpg' }}
-              onClose={() => void {}}
-            />
-          </>
-        ),
-      },
     ],
   },
+  // Routes for demonstration
   {
     path: 'dashboard',
     element: <Dashboard />,
@@ -126,9 +109,9 @@ const routes: RouteObject[] = [
   { path: 'notice-no-users', element: <NoticeNoUsers /> },
   { path: 'no-friends-in-your-area', element: <ErrorMensSearch /> },
   { path: 'invite', element: <Invitation /> },
-  { path: 'error-400', element: <ErrorPage code={400} /> }, // Route is working for demonstration
-  { path: 'error-500', element: <ErrorPage code={500} /> }, // Route is working for demonstration
-  { path: '*', element: <ErrorPage /> }, // Route is working for demonstration
+  { path: 'error-400', element: <ErrorPage code={400} /> },
+  { path: 'error-500', element: <ErrorPage code={500} /> },
+  { path: '*', element: <ErrorPage /> },
 ]
 
 export default routes
