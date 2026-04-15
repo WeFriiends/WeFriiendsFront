@@ -1,5 +1,6 @@
 import { RouteObject } from 'react-router'
 import { ComponentType, Suspense, lazy } from 'react'
+import { APP_ROUTES } from './appRoutes'
 import AuthGuard from 'components/userAuth/AuthGuard'
 import LoadingScreen from 'common/svg/Loader'
 import WhoLikedMePage from 'pages/WhoLikedMePage'
@@ -9,7 +10,6 @@ import Friends from 'pages/FriendsPage'
 import Swipes from 'pages/SwipesPage'
 import Invitation from 'components/invitation/Invitation'
 import ErrorMensSearch from 'pages/ErrorMensSearch'
-import ErrorPage from 'pages/ErrorPage'
 import Messages from 'pages/MessagesPage'
 import UserAccount from 'pages/UserAccount'
 import ReportDialogExamplePage from 'components/report/ReportDialogExamplePage'
@@ -25,6 +25,7 @@ import NoticeNoLikes from 'components/noticeNoData/NoticeNoLikes'
 import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
 import Layout from 'components/layout/Layout'
 import NearMePage from 'pages/NearMePage'
+import { NotFoundPage } from 'pages/NotFoundPage'
 
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
@@ -39,51 +40,54 @@ const Register = Loadable(
 )
 
 const routes: RouteObject[] = [
-  { path: '/', element: <Register /> },
+  { path: APP_ROUTES.home, element: <Register /> },
   {
-    path: 'callback',
+    path: APP_ROUTES.callback,
     element: <AuthCallbackPage />,
   },
-  { path: 'email-confirmed', element: <EmailVerifiedMessage /> },
-  { path: 'account-created', element: <AccountConfirmationMessage /> },
-  { path: 'email-already-confirmed', element: <EmailAlreadyConfirmed /> },
+  { path: APP_ROUTES.emailConfirmed, element: <EmailVerifiedMessage /> },
+  { path: APP_ROUTES.accountCreated, element: <AccountConfirmationMessage /> },
   {
-    path: 'fill-profile',
+    path: APP_ROUTES.emailAlreadyConfirmed,
+    element: <EmailAlreadyConfirmed />,
+  },
+  {
+    path: APP_ROUTES.fillProfile,
     element: <AuthGuard component={FirstProfile} />,
   },
   {
     element: <AuthGuard component={Layout} />,
     children: [
       {
-        path: 'account',
+        path: APP_ROUTES.account,
         element: <UserAccount />,
       },
       {
-        path: 'friends',
+        path: APP_ROUTES.friends,
         element: <Friends />,
       },
       {
-        path: 'swipes',
+        path: APP_ROUTES.swipes,
         element: <Swipes />,
       },
       {
-        path: 'messages',
+        path: APP_ROUTES.messages,
         element: <Messages />,
       },
       {
-        path: 'who-liked-you',
+        path: APP_ROUTES.whoLikedYou,
         element: <WhoLikedMePage />,
       },
       {
-        path: 'near-me',
+        path: APP_ROUTES.nearMe,
         element: <NearMePage />,
       },
       {
-        path: 'my-account',
+        path: APP_ROUTES.myAccount,
         element: <MyAccount />,
       },
       {
-        path: 'logout',
+        path: APP_ROUTES.logout,
         element: <Logout />,
       },
     ],
@@ -109,9 +113,10 @@ const routes: RouteObject[] = [
   { path: 'notice-no-users', element: <NoticeNoUsers /> },
   { path: 'no-friends-in-your-area', element: <ErrorMensSearch /> },
   { path: 'invite', element: <Invitation /> },
-  { path: 'error-400', element: <ErrorPage code={400} /> },
-  { path: 'error-500', element: <ErrorPage code={500} /> },
-  { path: '*', element: <ErrorPage /> },
+  {
+    path: APP_ROUTES.notFound,
+    element: <NotFoundPage />,
+  },
 ]
 
 export default routes

@@ -1,5 +1,6 @@
 import { Component, ReactNode, ErrorInfo } from 'react'
 import ErrorPage from 'pages/ErrorPage'
+import { APP_ROUTES } from 'routes/appRoutes'
 
 interface Props {
   children?: ReactNode
@@ -19,12 +20,17 @@ class AppErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error in React render:', error, errorInfo)
+    console.error('Error in React render:', error, errorInfo)
   }
 
   public render() {
     if (this.state.hasError) {
-      return <ErrorPage code={500} />
+      return (
+        <ErrorPage
+          code={500}
+          onRetry={() => (window.location.href = APP_ROUTES.home)}
+        />
+      )
     }
 
     return this.props.children
