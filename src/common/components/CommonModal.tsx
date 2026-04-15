@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Box, Modal, Icon } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { makeStyles } from 'tss-react/mui'
@@ -10,7 +10,7 @@ type CommonModalProps = {
   modalTitle: string
   modalDescription: string
   onClose: () => void
-  height?: 240 | 320 | 370 | 470 | 605
+  height?: 240 | 320 | 370 | 470 | 605 | 'auto'
   width?: 600
   contentOverflow?: 'auto' | 'visible' | 'hidden'
 }
@@ -37,7 +37,11 @@ export const CommonModal = ({
     >
       <Box
         className={classes.wrapper}
-        sx={{ height: height ? height : 655, width: width ? width : 370 }}
+        sx={{
+          height: height ? height : 'auto',
+          width: width ? width : 370,
+          maxHeight: '90vh',
+        }}
       >
         <IconButton
           disableRipple={true}

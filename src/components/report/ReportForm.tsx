@@ -5,7 +5,6 @@ import {
   FormControl,
   FormControlLabel,
   RadioGroup,
-  TextareaAutosize,
   Button,
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
@@ -24,6 +23,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
   }
 
   const [comment, setComment] = useState('')
+  const MAX_SYMBOLS = 500
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target
+    setComment(value.length > MAX_SYMBOLS ? value.slice(0, MAX_SYMBOLS) : value)
+  }
 
   const handleSendReport = () => {
     // TODO: Add API and code for sending a report
@@ -77,11 +82,15 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
         Also you can leave a comment. <br />
         We will better understand what has happened.
       </Typography>
-      <TextareaAutosize
+      <textarea
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
+        onChange={handleCommentChange}
         className={classes.textarea}
+        placeholder={`Max ${MAX_SYMBOLS} characters...`}
       />
+      <Typography className={classes.counter}>
+        {comment.length}/{MAX_SYMBOLS}
+      </Typography>
       <Box className={classes.groupBtn}>
         <Button
           className={classes.button}
@@ -132,17 +141,46 @@ const useStyles = makeStyles()({
     width: '100%',
     height: '100%',
     minHeight: '115px',
+    maxHeight: '200px',
+    fontWeight: 400,
+    fontSize: '14px',
+    lineHeight: 1.2,
+    letterSpacing: '0%',
+    color: theme.palette.common.black,
+    verticalAlign: 'middle',
     flexShrink: 0,
     borderRadius: '10px',
     background: theme.palette.common.white,
     boxShadow: '0px 0px 7px 1px rgba(179, 179, 179, 0.14)',
     border: '1px solid #eee',
     fontFamily: 'inherit',
-    fontSize: 14,
     padding: 10,
+    resize: 'vertical',
+    overflowY: 'auto' as any,
     '&:focus': {
       outline: 'none',
     },
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#f1f1f1',
+      borderRadius: '10px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: theme.palette.primary.main,
+      borderRadius: '10px',
+    },
+    '&::-webkit-scrollbar-thumb:hover': {
+      background: theme.palette.primary.dark,
+    },
+  },
+  counter: {
+    fontSize: '12px',
+    textAlign: 'right',
+    color: theme.palette.text.primary,
+    marginTop: '5px',
+    opacity: 0.7,
   },
   comment: {
     fontSize: 14,
