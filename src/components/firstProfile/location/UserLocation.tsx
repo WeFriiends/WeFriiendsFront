@@ -6,7 +6,7 @@ import {
   setItemToLocalStorage,
 } from 'utils/localStorage'
 import { Box, FormHelperText, Icon, Typography } from '@mui/material'
-import Loader from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 import { makeStyles } from 'tss-react/mui'
 import { validateLocation } from '../utils/validateLocation'
 import LocationInputAutocomplete from './LocationAutocomplete'

@@ -36,7 +36,13 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code, message, onRetry }) => {
           {content.subtitle}
         </Typography>
 
-        <img src={content.img} alt={`Error ${code || ''}`} />
+        <img
+          src={content.img}
+          alt={`Error ${code || ''}`}
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+          }}
+        />
 
         {content.footer && (
           <Typography variant="h3" className={classes.footer}>

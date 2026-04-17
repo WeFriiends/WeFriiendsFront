@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router'
 import { ComponentType, Suspense, lazy } from 'react'
 import { APP_ROUTES } from './appRoutes'
 import AuthGuard from 'components/userAuth/AuthGuard'
-import LoadingScreen from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 import WhoLikedMePage from 'pages/WhoLikedMePage'
 import AuthCallbackPage from 'pages/AuthCallbackPage'
 import FirstProfile from 'pages/FirstProfile'
@@ -30,7 +30,7 @@ import { NotFoundPage } from 'pages/NotFoundPage'
 const Loadable =
   (Component: ComponentType) => (props: JSX.IntrinsicAttributes) =>
     (
-      <Suspense fallback={<LoadingScreen />}>
+      <Suspense fallback={<Loader />}>
         <Component {...props} />
       </Suspense>
     )
