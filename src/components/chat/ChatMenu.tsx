@@ -6,7 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { db } from 'services/firebase'
 import { deleteDoc, doc, getDoc } from 'firebase/firestore'
 import { DeleteContactModal } from './DeleteContactModal'
-import ReportDialog from 'components/report/ReportDialog'
+import { ReportDialog } from 'components/report/ReportDialog'
 
 interface ChatMenuProps {
   id: string
@@ -121,7 +121,11 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
       />
-      <ReportDialog ref={reportDialogRef} />
+      <ReportDialog
+        ref={reportDialogRef}
+        reportedUserId={id}
+        reporterUserId={currentUserId || ''}
+      />
     </div>
   )
 }

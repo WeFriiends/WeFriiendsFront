@@ -1,21 +1,19 @@
-import React, {
-  useState,
-  useEffect,
-  forwardRef,
-  Ref,
-  useImperativeHandle,
-} from 'react'
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
-import ReportAction from './ReportAction'
+import { ReportAction } from './ReportAction'
 import UserIsBlocked from './UserIsBlocked'
-import ReportForm from './ReportForm'
+import { ReportForm } from './ReportForm'
 import ReportReceived from './ReportReceived'
 
 interface ReportDialogProps {
-  ref: Ref<{ handleOpenReportDialog: () => void }>
+  reportedUserId?: string
+  reporterUserId?: string
 }
 
-const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
+export const ReportDialog = forwardRef<
+  { handleOpenReportDialog: () => void },
+  ReportDialogProps
+>(({ reportedUserId = '', reporterUserId = '' }, ref) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentView, setCurrentView] = useState('chooseAction')
   const [modalHeight, setModalHeight] = useState<370 | 320 | 605 | undefined>(
@@ -28,7 +26,6 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
 
   const handleClose = () => {
     setIsModalVisible(false)
-
     setCurrentView('chooseAction')
   }
 
@@ -37,7 +34,6 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
   }))
 
   useEffect(() => {
-    // Update modal height based on the current view
     const viewHeights: { [key: string]: 370 | 320 | 605 | undefined } = {
       chooseAction: 320,
       userIsBlocked: 320,
@@ -59,6 +55,8 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
         <ReportAction
           chooseBlock={() => setCurrentView('userIsBlocked')}
           chooseReport={() => setCurrentView('reportForm')}
+          reportedUserId={reportedUserId}
+          reporterUserId={reporterUserId}
         />
       )}
       {currentView === 'userIsBlocked' && (
@@ -66,8 +64,10 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
       )}
       {currentView === 'reportForm' && (
         <ReportForm
-          sendReport={() => setCurrentView('reportReceived')}
+          onSuccess={() => setCurrentView('reportReceived')}
           goBack={() => setCurrentView('chooseAction')}
+          reportedUserId={reportedUserId}
+          reporterUserId={reporterUserId}
         />
       )}
       {currentView === 'reportReceived' && (
@@ -76,5 +76,3 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
     </CommonModal>
   )
 })
-
-export default ReportDialog

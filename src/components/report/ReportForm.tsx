@@ -8,21 +8,29 @@ import {
   Button,
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 import ReportInputRadio from './ReportInputRadio'
+import { sendReport } from '../../actions/reportService'
 
 type ReportFormProps = {
-  sendReport: () => void
+  onSuccess: () => void
   goBack: () => void
+  reportedUserId: string
+  reporterUserId: string
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
+export const ReportForm: React.FC<ReportFormProps> = ({
+  onSuccess,
+  goBack,
+  reportedUserId,
+  reporterUserId,
+}) => {
   const { classes } = useStyles()
-  const handleGoBack = () => {
-    goBack()
-  }
 
   const [comment, setComment] = useState('')
+  const [selectedReason, setSelectedReason] = useState('spam')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
   const MAX_SYMBOLS = 500
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -30,18 +38,30 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
     setComment(value.length > MAX_SYMBOLS ? value.slice(0, MAX_SYMBOLS) : value)
   }
 
-  const handleSendReport = () => {
-    // TODO: Add API and code for sending a report
-    sendReport()
+  const handleSendReport = async () => {
+    setIsLoading(true)
+    setError('')
+
+    try {
+      await sendReport({
+        reportedUserId,
+        reporterUserId,
+        reason: selectedReason,
+        comment,
+      })
+      onSuccess()
+    } catch (err) {
+      setError('Failed to send report. Please try again.')
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const reportReasons = [
     { text: 'Spam', value: 'spam' },
     { text: 'Abuse', value: 'abuse' },
-    {
-      text: 'Inappropriate photos',
-      value: 'inappropriate-photos',
-    },
+    { text: 'Inappropriate photos', value: 'inappropriate-photos' },
     { text: 'Other', value: 'other' },
   ]
 
@@ -61,11 +81,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           action
         </Typography>
       </Box>
+
       <FormControl>
         <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="spam"
-          name="radio-buttons-group"
+          value={selectedReason}
+          onChange={(e) => setSelectedReason(e.target.value)}
         >
           {reportReasons.map((reason) => (
             <FormControlLabel
@@ -78,25 +98,33 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           ))}
         </RadioGroup>
       </FormControl>
+
       <Typography className={classes.comment}>
         Also you can leave a comment. <br />
         We will better understand what has happened.
       </Typography>
+
       <textarea
         value={comment}
         onChange={handleCommentChange}
         className={classes.textarea}
         placeholder={`Max ${MAX_SYMBOLS} characters...`}
+        disabled={isLoading}
       />
+
       <Typography className={classes.counter}>
         {comment.length}/{MAX_SYMBOLS}
       </Typography>
+
+      {error && <Typography className={classes.error}>{error}</Typography>}
+
       <Box className={classes.groupBtn}>
         <Button
           className={classes.button}
           disableFocusRipple
           disableRipple
-          onClick={handleGoBack}
+          onClick={goBack}
+          disabled={isLoading}
         >
           cancel
         </Button>
@@ -105,19 +133,21 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           disableFocusRipple
           disableRipple
           onClick={handleSendReport}
+          disabled={isLoading}
         >
-          send
+          {isLoading ? 'Sending...' : 'send'}
         </Button>
       </Box>
     </Box>
   )
 }
 
-export default ReportForm
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   reportContainer: {
     display: 'grid',
+  },
+  imgAlert: {
+    margin: '0 auto',
   },
   title: {
     textAlign: 'center',
@@ -131,24 +161,23 @@ const useStyles = makeStyles()({
     color: theme.palette.common.black,
     lineHeight: 1.3,
   },
-  imgAlert: {
-    margin: '0 auto',
-  },
   formControlLabel: {
     '& .MuiTypography-root.MuiFormControlLabel-label': { fontSize: 14 },
   },
+  comment: {
+    fontSize: 14,
+    lineHeight: 1.2,
+    textAlign: 'left',
+    margin: '30px 0 10px',
+  },
   textarea: {
     width: '100%',
-    height: '100%',
     minHeight: '115px',
     maxHeight: '200px',
     fontWeight: 400,
     fontSize: '14px',
     lineHeight: 1.2,
-    letterSpacing: '0%',
     color: theme.palette.common.black,
-    verticalAlign: 'middle',
-    flexShrink: 0,
     borderRadius: '10px',
     background: theme.palette.common.white,
     boxShadow: '0px 0px 7px 1px rgba(179, 179, 179, 0.14)',
@@ -171,9 +200,6 @@ const useStyles = makeStyles()({
       background: theme.palette.primary.main,
       borderRadius: '10px',
     },
-    '&::-webkit-scrollbar-thumb:hover': {
-      background: theme.palette.primary.dark,
-    },
   },
   counter: {
     fontSize: '12px',
@@ -181,12 +207,6 @@ const useStyles = makeStyles()({
     color: theme.palette.text.primary,
     marginTop: '5px',
     opacity: 0.7,
-  },
-  comment: {
-    fontSize: 14,
-    lineHeight: 1.2,
-    textAlign: 'left',
-    margin: '30px 0 10px',
   },
   groupBtn: {
     display: 'flex',
@@ -210,4 +230,10 @@ const useStyles = makeStyles()({
       color: theme.palette.common.white,
     },
   },
-})
+  error: {
+    fontSize: '12px',
+    textAlign: 'center',
+    color: theme.palette.primary.main,
+    marginTop: '10px',
+  },
+}))

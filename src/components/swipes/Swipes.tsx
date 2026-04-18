@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material'
 import { Match } from 'components/findMatch/Match'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { useEffect, useState, useRef } from 'react'
 import { makeStyles } from 'tss-react/mui'

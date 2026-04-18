@@ -8,24 +8,27 @@ import {
   List,
   ListItem,
 } from '@mui/material'
-import theme from '../../styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 import { PhotoCarousel } from './PhotoCarousel'
 import { UserProfileData } from '../../types/UserProfileData'
 import LikeDispay from './LikedDisplay'
-import ReportDialog from 'components/report/ReportDialog'
+import { ReportDialog } from 'components/report/ReportDialog'
+import { useAuth0 } from '@auth0/auth0-react'
 
 interface UserProfileProps {
   user: UserProfileData
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const { classes } = useStyles()
   const reportDialogRef = useRef<{ handleOpenReportDialog: () => void }>(null)
 
   const handleOpenReportDialog = () => {
     reportDialogRef.current?.handleOpenReportDialog()
   }
+
+  const { user: auth0User } = useAuth0()
+  const currentUserId = auth0User?.sub
 
   const printInterest = (interest: string | string[]) => {
     if (typeof interest === 'string') {
@@ -155,7 +158,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               >
                 Block a user
               </Typography>
-              <ReportDialog ref={reportDialogRef} />
+              <ReportDialog
+                ref={reportDialogRef}
+                reportedUserId={user?.id || ''}
+                reporterUserId={currentUserId || ''}
+              />
               <Typography className={classes.textReport}>
                 Don’t worry, {user.name} won’t know about it
               </Typography>
@@ -166,178 +173,175 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
     </>
   )
 }
-export default UserProfile
 
-const useStyles = makeStyles()(() => {
-  return {
-    mainGrid: {
-      display: ' grid',
-      position: 'relative',
-      boxShadow: '0px 0px 7px 1px #B3B3B324',
-    },
-    iconsAbove: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      zIndex: 100,
-      padding: '26px 11px 0',
-      gridRow: '1/1',
-      gridColumn: '1/2',
-    },
+const useStyles = makeStyles()((theme) => ({
+  mainGrid: {
+    display: ' grid',
+    position: 'relative',
+    boxShadow: '0px 0px 7px 1px #B3B3B324',
+  },
+  iconsAbove: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    zIndex: 100,
+    padding: '26px 11px 0',
+    gridRow: '1/1',
+    gridColumn: '1/2',
+  },
 
-    carousel: {
-      position: 'relative',
-      gridRow: '1/9',
-      gridColumn: '1/2',
-    },
+  carousel: {
+    position: 'relative',
+    gridRow: '1/9',
+    gridColumn: '1/2',
+  },
 
-    name: {
-      color: theme.palette.primary.main,
-      fontSize: 40,
-      fontWeight: 600,
-      lineHeight: '40px',
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 32,
-      },
+  name: {
+    color: theme.palette.primary.main,
+    fontSize: 40,
+    fontWeight: 600,
+    lineHeight: '40px',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 32,
     },
-    roundIcon: {
-      fill: '#77BD65',
-      width: 15,
-      height: 15,
-      marginLeft: 5,
-    },
-    distanceWithIcon: {
-      display: 'flex',
-      alignItems: 'flex-end',
-      padding: '16px 0 6px',
-    },
-    distance: {
-      fontSize: 18,
-      lineHeight: '20px',
-      paddingLeft: 4,
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 14,
-      },
-    },
-    title: {
-      color: theme.palette.primary.dark,
-      fontSize: 16,
-      fontWeight: 500,
-      lineHeight: '20px',
-      paddingBottom: 10,
-      paddingTop: 35,
-      '&::first-letter': {
-        textTransform: 'uppercase',
-      },
-    },
-    text: {
+  },
+  roundIcon: {
+    fill: '#77BD65',
+    width: 15,
+    height: 15,
+    marginLeft: 5,
+  },
+  distanceWithIcon: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    padding: '16px 0 6px',
+  },
+  distance: {
+    fontSize: 18,
+    lineHeight: '20px',
+    paddingLeft: 4,
+    [theme.breakpoints.down('sm')]: {
       fontSize: 14,
-      lineHeight: '22px',
-      background: theme.customPalette.colorPeach,
-      borderRadius: 20,
-      padding: '7px 15px',
     },
-    gradientOverlay: {
-      position: 'absolute',
-      bottom: 106,
-      left: 0,
-      width: '100%',
-      height: '79px',
-      background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, ${theme.palette.common.white} 100%)`,
-      zIndex: 5,
-      pointerEvents: 'none',
+  },
+  title: {
+    color: theme.palette.primary.dark,
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: '20px',
+    paddingBottom: 10,
+    paddingTop: 35,
+    '&::first-letter': {
+      textTransform: 'uppercase',
     },
-    accordion: {
-      boxShadow: 'none',
-      position: 'relative',
-      zIndex: 10,
+  },
+  text: {
+    fontSize: 14,
+    lineHeight: '22px',
+    background: theme.customPalette.colorPeach,
+    borderRadius: 20,
+    padding: '7px 15px',
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    bottom: 106,
+    left: 0,
+    width: '100%',
+    height: '79px',
+    background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, ${theme.palette.common.white} 100%)`,
+    zIndex: 5,
+    pointerEvents: 'none',
+  },
+  accordion: {
+    boxShadow: 'none',
+    position: 'relative',
+    zIndex: 10,
+    marginTop: -106,
+    '&::before': {
+      display: 'none',
+    },
+    '&.Mui-expanded': {
+      margin: 0,
       marginTop: -106,
-      '&::before': {
-        display: 'none',
-      },
-      '&.Mui-expanded': {
-        margin: 0,
-        marginTop: -106,
-      },
     },
-    reasons: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr ',
-      gap: 15,
-      '&MuiList-root': {
-        paddingBottom: 0,
-      },
+  },
+  reasons: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr ',
+    gap: 15,
+    '&MuiList-root': {
+      paddingBottom: 0,
     },
-    reason: {
-      backgroundColor: 'rgba(254, 222, 210, 1)',
-      borderRadius: 10,
+  },
+  reason: {
+    backgroundColor: 'rgba(254, 222, 210, 1)',
+    borderRadius: 10,
 
-      '&.MuiListItem-root': {
-        padding: '10px 20px',
-        fontSize: 14,
-        lineHeight: '16.8px',
-      },
-    },
-    titleAndText: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      padding: 0,
-    },
-    interestsList: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      rowGap: 10,
-      padding: 0,
-    },
-    interest: {
+    '&.MuiListItem-root': {
+      padding: '10px 20px',
       fontSize: 14,
-      lineHeight: '22px',
-      background: theme.customPalette.colorPeach,
-      borderRadius: 20,
-      padding: '7px 15px',
-      marginRight: 10,
-      width: 'auto',
+      lineHeight: '16.8px',
     },
-    reportBlock: {
-      borderTop: '2px solid #E0E0E0',
-      marginTop: 90,
-      paddingTop: 20,
-      paddingBottom: 35,
-      textAlign: 'center',
+  },
+  titleAndText: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 0,
+  },
+  interestsList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    rowGap: 10,
+    padding: 0,
+  },
+  interest: {
+    fontSize: 14,
+    lineHeight: '22px',
+    background: theme.customPalette.colorPeach,
+    borderRadius: 20,
+    padding: '7px 15px',
+    marginRight: 10,
+    width: 'auto',
+  },
+  reportBlock: {
+    borderTop: '2px solid #E0E0E0',
+    marginTop: 90,
+    paddingTop: 20,
+    paddingBottom: 35,
+    textAlign: 'center',
+  },
+  sendReport: {
+    fontWeight: 500,
+    lineHeight: '20px',
+    transition: 'color 0.3s ease',
+    '&:hover': {
+      cursor: 'pointer',
+      color: theme.palette.primary.main,
     },
-    sendReport: {
-      fontWeight: 500,
-      lineHeight: '20px',
-      transition: 'color 0.3s ease',
-      '&:hover': {
-        cursor: 'pointer',
-        color: theme.palette.primary.main,
-      },
-    },
-    textReport: {
-      fontSize: 14,
-      paddingTop: 10,
-      lineHeight: '20px',
-    },
-    textAbout: {
-      fontSize: 14,
-      color: theme.palette.common.black,
-    },
-    tagsList: {
-      display: 'flex',
-      columnGap: 15,
-      rowGap: 10,
-      flexWrap: 'wrap',
-      paddingTop: 0,
-    },
-    tag: {
-      backgroundColor: '#EEEEEE',
-      padding: 8,
-      borderRadius: 8,
-      width: 'auto',
-      fontSize: 12,
-      lineHeight: '20px',
-    },
-  }
-})
+  },
+  textReport: {
+    fontSize: 14,
+    paddingTop: 10,
+    lineHeight: '20px',
+  },
+  textAbout: {
+    fontSize: 14,
+    color: theme.palette.common.black,
+  },
+  tagsList: {
+    display: 'flex',
+    columnGap: 15,
+    rowGap: 10,
+    flexWrap: 'wrap',
+    paddingTop: 0,
+  },
+  tag: {
+    backgroundColor: '#EEEEEE',
+    padding: 8,
+    borderRadius: 8,
+    width: 'auto',
+    fontSize: 12,
+    lineHeight: '20px',
+  },
+}))

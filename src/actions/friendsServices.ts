@@ -78,29 +78,39 @@ export const removeFriend = async (
   friendId: string,
   currentUserId?: string
 ): Promise<void> => {
-  const response = await axiosInstance.delete('matches', {
-    data: {
-      user2_id: friendId,
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  try {
+    const response = await axiosInstance.delete('matches', {
+      data: {
+        user2_id: friendId,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-  mutate('matches')
+    mutate('matches')
 
-  if (currentUserId) {
-    try {
-      await deleteConversation(currentUserId, friendId)
-    } catch {
-      // Игнорируем ошибку удаления диалога
+    if (currentUserId) {
+      try {
+        await deleteConversation(currentUserId, friendId)
+      } catch (error) {
+        // Игнорим ошибку удаления чата (его могло не быть)
+        console.log('ℹ️ Чат не найден или уже удален')
+      }
     }
-  }
 
-  if (response.status >= 200 && response.status < 300) {
-    return
-  } else {
-    throw new Error(`Failed to remove friend. Status: ${response.status}`)
+    if (response.status >= 200 && response.status < 300) {
+      return
+    } else {
+      throw new Error(`Failed to remove friend. Status: ${response.status}`)
+    }
+  } catch (error: any) {
+    // Если матч не найден (404) - не считаем ошибкой
+    if (error.response?.status === 404) {
+      console.log('ℹ️ Матч не найден, пропускаем удаление')
+      return
+    }
+    throw error
   }
 }
 

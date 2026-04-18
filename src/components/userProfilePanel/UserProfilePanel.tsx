@@ -1,5 +1,5 @@
 import { Box, Slide, Typography, useMediaQuery, useTheme } from '@mui/material'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
 import { ReactNode } from 'react'
