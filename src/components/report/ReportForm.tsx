@@ -5,38 +5,63 @@ import {
   FormControl,
   FormControlLabel,
   RadioGroup,
-  TextareaAutosize,
   Button,
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
 import ReportInputRadio from './ReportInputRadio'
+import { sendReport } from '../../actions/reportService'
 
 type ReportFormProps = {
-  sendReport: () => void
+  onSuccess: () => void
   goBack: () => void
+  reportedUserId: string
+  reporterUserId: string
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
+export const ReportForm: React.FC<ReportFormProps> = ({
+  onSuccess,
+  goBack,
+  reportedUserId,
+  reporterUserId,
+}) => {
   const { classes } = useStyles()
-  const handleGoBack = () => {
-    goBack()
-  }
 
   const [comment, setComment] = useState('')
+  const [selectedReason, setSelectedReason] = useState('spam')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSendReport = () => {
-    // TODO: Add API and code for sending a report
-    sendReport()
+  const MAX_SYMBOLS = 500
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target
+    setComment(value.length > MAX_SYMBOLS ? value.slice(0, MAX_SYMBOLS) : value)
+  }
+
+  const handleSendReport = async () => {
+    setIsLoading(true)
+    setError('')
+
+    try {
+      await sendReport({
+        reportedUserId,
+        reporterUserId,
+        reason: selectedReason,
+        comment,
+      })
+      onSuccess()
+    } catch (err) {
+      setError('Failed to send report. Please try again.')
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const reportReasons = [
     { text: 'Spam', value: 'spam' },
     { text: 'Abuse', value: 'abuse' },
-    {
-      text: 'Inappropriate photos',
-      value: 'inappropriate-photos',
-    },
+    { text: 'Inappropriate photos', value: 'inappropriate-photos' },
     { text: 'Other', value: 'other' },
   ]
 
@@ -56,11 +81,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           action
         </Typography>
       </Box>
+
       <FormControl>
         <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="spam"
-          name="radio-buttons-group"
+          value={selectedReason}
+          onChange={(e) => setSelectedReason(e.target.value)}
         >
           {reportReasons.map((reason) => (
             <FormControlLabel
@@ -73,21 +98,33 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           ))}
         </RadioGroup>
       </FormControl>
+
       <Typography className={classes.comment}>
         Also you can leave a comment. <br />
         We will better understand what has happened.
       </Typography>
-      <TextareaAutosize
+
+      <textarea
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
+        onChange={handleCommentChange}
         className={classes.textarea}
+        placeholder={`Max ${MAX_SYMBOLS} characters...`}
+        disabled={isLoading}
       />
+
+      <Typography className={classes.counter}>
+        {comment.length}/{MAX_SYMBOLS}
+      </Typography>
+
+      {error && <Typography className={classes.error}>{error}</Typography>}
+
       <Box className={classes.groupBtn}>
         <Button
           className={classes.button}
           disableFocusRipple
           disableRipple
-          onClick={handleGoBack}
+          onClick={goBack}
+          disabled={isLoading}
         >
           cancel
         </Button>
@@ -96,19 +133,21 @@ const ReportForm: React.FC<ReportFormProps> = ({ sendReport, goBack }) => {
           disableFocusRipple
           disableRipple
           onClick={handleSendReport}
+          disabled={isLoading}
         >
-          send
+          {isLoading ? 'Sending...' : 'send'}
         </Button>
       </Box>
     </Box>
   )
 }
 
-export default ReportForm
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   reportContainer: {
     display: 'grid',
+  },
+  imgAlert: {
+    margin: '0 auto',
   },
   title: {
     textAlign: 'center',
@@ -122,33 +161,52 @@ const useStyles = makeStyles()({
     color: theme.palette.common.black,
     lineHeight: 1.3,
   },
-  imgAlert: {
-    margin: '0 auto',
-  },
   formControlLabel: {
     '& .MuiTypography-root.MuiFormControlLabel-label': { fontSize: 14 },
-  },
-  textarea: {
-    width: '100%',
-    height: '100%',
-    minHeight: '115px',
-    flexShrink: 0,
-    borderRadius: '10px',
-    background: theme.palette.common.white,
-    boxShadow: '0px 0px 7px 1px rgba(179, 179, 179, 0.14)',
-    border: '1px solid #eee',
-    fontFamily: 'inherit',
-    fontSize: 14,
-    padding: 10,
-    '&:focus': {
-      outline: 'none',
-    },
   },
   comment: {
     fontSize: 14,
     lineHeight: 1.2,
     textAlign: 'left',
     margin: '30px 0 10px',
+  },
+  textarea: {
+    width: '100%',
+    minHeight: '115px',
+    maxHeight: '200px',
+    fontWeight: 400,
+    fontSize: '14px',
+    lineHeight: 1.2,
+    color: theme.palette.common.black,
+    borderRadius: '10px',
+    background: theme.palette.common.white,
+    boxShadow: '0px 0px 7px 1px rgba(179, 179, 179, 0.14)',
+    border: '1px solid #eee',
+    fontFamily: 'inherit',
+    padding: 10,
+    resize: 'vertical',
+    overflowY: 'auto' as any,
+    '&:focus': {
+      outline: 'none',
+    },
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#f1f1f1',
+      borderRadius: '10px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: theme.palette.primary.main,
+      borderRadius: '10px',
+    },
+  },
+  counter: {
+    fontSize: '12px',
+    textAlign: 'right',
+    color: theme.palette.text.primary,
+    marginTop: '5px',
+    opacity: 0.7,
   },
   groupBtn: {
     display: 'flex',
@@ -172,4 +230,10 @@ const useStyles = makeStyles()({
       color: theme.palette.common.white,
     },
   },
-})
+  error: {
+    fontSize: '12px',
+    textAlign: 'center',
+    color: theme.palette.primary.main,
+    marginTop: '10px',
+  },
+}))
