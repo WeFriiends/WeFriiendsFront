@@ -14,9 +14,7 @@ const ReportDialogExamplePage = () => {
       <Button onClick={handleOpenReportDialog} variant="text" disableRipple>
         Click to Report User
       </Button>
-      <ReportDialog
-        ref={reportDialogRef}
-      />
+      <ReportDialog ref={reportDialogRef} />
     </>
   )
 }
