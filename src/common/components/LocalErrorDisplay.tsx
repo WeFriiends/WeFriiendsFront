@@ -1,5 +1,6 @@
 import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import { ErrorIcon } from 'common/svg/ErrorIcon'
 
 interface LocalErrorDisplayProps {
   title?: string
@@ -24,6 +25,9 @@ export const LocalErrorDisplay = ({
       <Typography variant="h3" className={classes.message}>
         {message}
       </Typography>
+      <Box className={classes.imageWrapper}>
+        <ErrorIcon />
+      </Box>
       {onRetry && (
         <Button variant="outlined" onClick={onRetry} sx={{ borderRadius: 2 }}>
           Retry
@@ -40,9 +44,21 @@ const useStyles = makeStyles()((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
+    maxWidth: 287,
     padding: theme.spacing(4),
+    marginInline: 'auto',
     gap: theme.spacing(2),
     textAlign: 'center',
+  },
+  imageWrapper: {
+    marginBottom: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+    '& svg': {
+      width: '100%',
+      maxWidth: 240,
+      height: 'auto',
+    },
   },
   title: {
     color: theme.palette.primary.light,

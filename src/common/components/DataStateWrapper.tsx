@@ -37,7 +37,12 @@ export const DataStateWrapper = ({
     )
   }
 
-  // 2. Initial load + Server Error -> Show local server error
+  // 2. Initial load -> Show full screen loader
+  if (isLoading && !hasData) {
+    return <Loader />
+  }
+
+  // 3. Initial load + Server Error -> Show local server error
   if (error && !hasData) {
     const { status, message } = parseApiError(error)
     return (
@@ -47,11 +52,6 @@ export const DataStateWrapper = ({
         onRetry={onRetry}
       />
     )
-  }
-
-  // 3. Initial load -> Show full screen loader
-  if (isLoading && !hasData) {
-    return <Loader />
   }
 
   // Final safety: If no data and no error/loading, but we are supposed to have data,

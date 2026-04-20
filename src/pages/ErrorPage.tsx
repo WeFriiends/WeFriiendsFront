@@ -23,14 +23,19 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code, message, onRetry }) => {
   return (
     <Box className={commonClasses.centeredFullPage}>
       <Box className={classes.wrapper}>
-        <Typography variant="h1" className={classes.title}>
+        <Typography variant="h1" className={classes.label}>
           Error
-          {code && <span className={classes.errorCode}>{code}</span>}
         </Typography>
 
-        <Typography variant="h3" className={classes.errorDescription}>
-          {message || content.title}
-        </Typography>
+        {content.showCode && code && (
+          <Typography className={classes.errorCode}>{code}</Typography>
+        )}
+
+        {content.title && (
+          <Typography variant="h3" className={classes.title}>
+            {message || content.title}
+          </Typography>
+        )}
 
         <Typography variant="h3" className={classes.subtitle}>
           {content.subtitle}
@@ -51,7 +56,11 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code, message, onRetry }) => {
         )}
 
         {onRetry && (
-          <PrimaryButton label={content.buttonText} onClickHandler={onRetry} />
+          <PrimaryButton
+            label={content.buttonText}
+            onClickHandler={onRetry}
+            className={classes.retryBtn}
+          />
         )}
       </Box>
     </Box>
@@ -64,34 +73,37 @@ const useStyles = makeStyles()(() => ({
   wrapper: {
     maxWidth: 287,
     textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
-  title: {
+  label: {
     lineHeight: 1,
-    paddingBottom: 0,
     color: theme.palette.primary.light,
   },
   errorCode: {
-    display: 'block',
-    paddingTop: 10,
     fontSize: 60,
-    color: theme.palette.primary.main,
+    fontWeight: 600,
+    lineHeight: 1,
+    paddingTop: 8,
+    color: theme.palette.primary.dark,
   },
-  errorDescription: {
+  title: {
     lineHeight: '30px',
     marginTop: 6,
-    marginBottom: 64,
     color: theme.palette.primary.light,
   },
   subtitle: {
     maxWidth: 279,
-    marginBottom: 15,
+    marginTop: 64,
+    marginBottom: 30,
   },
   footer: {
     marginTop: 15,
   },
   retryBtn: {
-    marginTop: 80,
     height: 60,
-    width: 250,
+    marginTop: 80,
+    marginInline: 45,
   },
 }))

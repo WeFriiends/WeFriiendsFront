@@ -5,13 +5,15 @@ export const ERROR_CONTENT = {
     footer: 'Take a sip, make fixes, and resend!',
     img: '/img/error/error-400.svg',
     buttonText: 'Refresh',
+    showCode: true,
   },
   404: {
-    title: 'Page Not Found',
+    title: null,
     subtitle: 'It seems you’re lost.',
     footer: null,
     img: '/img/error/error.svg',
     buttonText: 'Back to good stuff',
+    showCode: false,
   },
 
   500: {
@@ -26,12 +28,14 @@ export const ERROR_CONTENT = {
     ),
     img: '/img/error/error-500.svg',
     buttonText: 'Refresh',
+    showCode: true,
   },
   default: {
-    title: 'Unable to access the network',
-    subtitle: 'Please, check internet connection',
+    title: 'It seems like something went wrong',
+    subtitle: 'Please, refresh the page.',
     footer: null,
     img: '/img/error/error.svg',
     buttonText: 'Refresh',
+    showCode: false,
   },
 }
