@@ -24,5 +24,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   circularProgress: {
     color: theme.palette.primary.light,
+    position: 'absolute',
+    top: '50%',
   },
 }))
