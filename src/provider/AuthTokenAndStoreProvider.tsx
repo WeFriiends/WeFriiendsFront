@@ -11,7 +11,8 @@ interface AuthTokenAndStoreProviderProps {
 const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
-  const { isAuthenticated, getAccessTokenSilently, user } = useAuth0()
+  const { isAuthenticated, getAccessTokenSilently, user, isLoading } =
+    useAuth0()
   const { token, setToken } = useAuthStore()
   const {
     data: profile,
@@ -31,6 +32,9 @@ const AuthTokenAndStoreProvider = ({
   const hasCheckedProfile = useRef(false)
 
   useEffect(() => {
+    // Если Auth0 ещё загружается или пользователь не аутентифицирован - выходим
+    if (isLoading || !isAuthenticated) return
+
     const fetchAuthData = async () => {
       try {
         let accessToken = token
@@ -72,6 +76,7 @@ const AuthTokenAndStoreProvider = ({
     fetchAuthData()
   }, [
     isAuthenticated,
+    isLoading,
     getAccessTokenSilently,
     token,
     setToken,
