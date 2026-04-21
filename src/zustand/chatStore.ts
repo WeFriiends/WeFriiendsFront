@@ -14,6 +14,8 @@ import {
   getDoc,
   getDocs,
   Timestamp,
+  limit,
+  startAfter,
 } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
 
@@ -177,7 +179,7 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      subscribeToMessages: (conversationId) => {
+      subscribeToMessages: async (conversationId) => {
         const { subscriptions, messagesCache, conversationSubscriptions } =
           get()
 
@@ -252,13 +254,27 @@ export const useChatStore = create<ChatState>()(
           })
         }
 
+        let participants: string[] = []
+        const conversationDoc = await getDoc(
+          doc(db, 'conversations', conversationId)
+        )
+
+        if (conversationDoc.exists()) {
+          participants = conversationDoc.data().participants || []
+        }
+
         const messagesRef = collection(
           db,
           'conversations',
           conversationId,
           'messages'
         )
-        const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
+
+        const messagesQuery = query(
+          messagesRef,
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        )
 
         set({ loading: true, error: null })
 
@@ -269,10 +285,14 @@ export const useChatStore = create<ChatState>()(
             try {
               if (querySnapshot.metadata.hasPendingWrites) return
 
-              const messages = querySnapshot.docs.map((doc) => {
-                const data = doc.data()
-                return {
-                  messageId: doc.id,
+              const messages: Message[] = []
+
+              querySnapshot.docChanges().forEach((change) => {
+                const data = change.doc.data()
+                const { id } = change.doc
+
+                const messageData: Message = {
+                  messageId: id,
                   senderId: data.senderId,
                   timestamp:
                     data.createdAt instanceof Timestamp
@@ -281,20 +301,23 @@ export const useChatStore = create<ChatState>()(
                   message: data.text,
                   readStatus: !data.seen,
                 }
-              }) as Message[]
 
-              let participants: string[] = []
-              const conversationDoc = await getDoc(
-                doc(db, 'conversations', conversationId)
-              )
-              if (conversationDoc.exists()) {
-                participants = conversationDoc.data().participants || []
-              }
+                if (change.type === 'added' || change.type === 'modified') {
+                  messages.push(messageData)
+                }
+              })
+
+              messages.reverse()
+              const oldMessages = get().messagesCache[conversationId]?.messages
+
+              const newMessages = oldMessages
+                ? [...oldMessages, ...messages]
+                : messages
 
               const chat: Chat = {
                 chatId: conversationId,
                 participants,
-                messages,
+                messages: newMessages,
               }
 
               set((state) => ({
