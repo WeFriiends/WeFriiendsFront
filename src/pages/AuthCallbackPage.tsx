@@ -1,79 +1,73 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import Loader from 'common/svg/Loader'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useProfileStore } from '../zustand/store'
 
 const AuthCallbackPage = () => {
-  const { isLoading, isAuthenticated, error } = useAuth0()
+  const { handleRedirectCallback } = useAuth0()
   const navigate = useNavigate()
   const location = useLocation()
+  const shouldRedirect = useRef(true)
   const gender = useProfileStore((state) => state.data?.gender)
   const { hasProfile, loading } = useProfileStore()
-
-  // Redirect handling based on profile data
   useEffect(() => {
-    if (isLoading || loading) return
-
-    if (isAuthenticated) {
-      if (hasProfile === false) {
-        navigate('/fill-profile')
-      } else if (hasProfile === true) {
-        if (gender === 'male') {
-          navigate('/no-friends-in-your-area')
-        } else {
-          navigate('/friends')
-        }
+    if (hasProfile === false) {
+      navigate('/fill-profile')
+    } else if (hasProfile === true) {
+      if (gender === 'male') {
+        navigate('/no-friends-in-your-area')
+      } else {
+        navigate('/friends')
       }
-    } else if (
-      !isLoading &&
-      !isAuthenticated &&
-      !location.search.includes('code=')
-    ) {
-      // If loading is completed, we are not authenticated
-      // and there is no code in the URL - something went wrong
-      navigate('/')
     }
-  }, [
-    hasProfile,
-    loading,
-    navigate,
-    gender,
-    isLoading,
-    isAuthenticated,
-    location.search,
-  ])
+  }, [hasProfile, loading, navigate, gender])
 
-  // Handling special parameters from Auth0
-  // (email verification and etc.)
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search)
-    const message = searchParams.get('message')
-    const errorDescription = searchParams.get('error_description')
-
-    if (message?.includes('Your email was verified')) {
-      navigate('/email-confirmed')
-    } else if (message?.includes('This URL can be used only once')) {
-      navigate('/email-already-confirmed')
-    } else if (
-      errorDescription?.includes('Please verify your email before logging in')
-    ) {
-      navigate('/account-created')
+    const urlSearchParams = () => {
+      const searchParam = new URLSearchParams(location.search)
+      const message = searchParam.get('message')
+      const errorDescription = searchParam.get('error_description')
+      const code = searchParam.has('code')
+      const state = searchParam.has('state')
+      return { message, errorDescription, code, state }
     }
-  }, [location.search, navigate])
+    const processCallback = async () => {
+      try {
+        const { message, errorDescription, code, state } = urlSearchParams()
 
-  // Auth0 error handling
-  useEffect(() => {
-    if (error) {
-      console.error('Auth0 Callback Error:', error)
-      // In case of any authentication error,
-      // redirect to the main page after a short delay
-      const timer = setTimeout(() => {
-        navigate('/')
-      }, 3000)
-      return () => clearTimeout(timer)
+        if (message?.includes('Your email was verified')) {
+          navigate('/email-confirmed')
+        } else if (message?.includes('This URL can be used only once')) {
+          navigate('/email-already-confirmed')
+        } else if (
+          errorDescription?.includes(
+            'Please verify your email before logging in'
+          )
+        ) {
+          navigate('/account-created')
+        } else if (code && state) {
+          await handleRedirectCallback()
+        } else {
+          console.error('No valid callback parameters found in URL: ', {
+            message,
+            errorDescription,
+            code,
+            state,
+          })
+        }
+      } catch (error) {
+        console.error('Error during callback:', error)
+      }
     }
-  }, [error, navigate])
+
+    // This prevents calling handleRedirectCallback() twice, as useEffect is being called twice.
+    // See https://community.auth0.com/t/error-invalid-state-when-calling-handleredirectcallback-on-react-app/95329 for details
+    if (shouldRedirect.current) {
+      shouldRedirect.current = false
+      processCallback()
+    }
+  }, [handleRedirectCallback, navigate, location.search])
 
   return <Loader />
 }
