@@ -17,7 +17,7 @@ export const Auth0ProviderWithNavigate = ({
   const redirectUri = process.env.REACT_APP_AUTH0_CALLBACK_URL
 
   const onRedirectCallback = (appState?: AppState) => {
-    navigate(appState?.returnTo || window.location.origin)
+    navigate(appState?.returnTo || '/')
   }
 
   if (!(domain && clientId && redirectUri)) {
@@ -36,7 +36,6 @@ export const Auth0ProviderWithNavigate = ({
       onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage"
       useRefreshTokens={true}
-      useCookiesForTransactions={true}
     >
       <AuthTokenAndStoreProvider>{children}</AuthTokenAndStoreProvider>
     </Auth0Provider>
