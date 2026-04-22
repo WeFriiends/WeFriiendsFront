@@ -38,7 +38,7 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   }, [messages, loading])
   return (
     <Box className={classes.messagesArea}>
-      {!loading && <div ref={topRef} />}
+      <div className={classes.observer} ref={topRef} />
       {messages.map((message) => {
         const isMessageMine = message.senderId === userId
         return (
@@ -109,5 +109,9 @@ const useStyles = makeStyles()((theme) => ({
   },
   receivedDate: {
     textAlign: 'left',
+  },
+  observer: {
+    height: '10px',
+    minHeight: '10px',
   },
 }))

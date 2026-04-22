@@ -59,7 +59,7 @@ export const useChatStore = create<ChatState>()(
       messagesCache: {},
       loading: false,
       error: null,
-      paginationCursor: null,
+      paginationCursor: {},
       subscriptions: {},
       conversationSubscriptions: {},
       selectedChatId: null,
@@ -213,10 +213,14 @@ export const useChatStore = create<ChatState>()(
                   const newMessagesCache = { ...state.messagesCache }
                   delete newMessagesCache[conversationId]
 
+                  const newPaginationCursor = { ...state.paginationCursor }
+                  delete newPaginationCursor[conversationId]
+
                   return {
                     subscriptions: newSubscriptions,
                     conversationSubscriptions: newConversationSubscriptions,
                     messagesCache: newMessagesCache,
+                    paginationCursor: newPaginationCursor,
                     currentChat:
                       state.currentChat?.chatId === conversationId
                         ? null
@@ -354,14 +358,17 @@ export const useChatStore = create<ChatState>()(
 
         const cursor = paginationCursor[chatId]
 
+        if (!cursor) {
+          return
+        }
+
         const { lastVisible, snapshot } = await fetchMessagesPage(
           db,
           chatId,
           cursor
         )
 
-        if (!lastVisible) {
-          console.log('No messages to upload')
+        if (snapshot.empty || !lastVisible) {
           return
         }
 
