@@ -17,6 +17,7 @@ import {
   limit,
   startAfter,
 } from 'firebase/firestore'
+import type { DocumentSnapshot } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
 
 interface FirestoreMessage {
@@ -33,7 +34,8 @@ interface ChatState {
   messagesCache: Record<string, Chat | undefined>
   loading: boolean
   error: Error | null
-  // Map of conversation IDs to unsubscribe functions
+  paginationCursor: Record<string, DocumentSnapshot | null>
+  // Map of conversati on IDs to unsubscribe functions
   subscriptions: Record<string, () => void>
   // store document subscriptions separately
   conversationSubscriptions: Record<string, () => void>
@@ -41,6 +43,7 @@ interface ChatState {
   selectedChatId: string | null
   setSelectedChatId: (chatId: string | null) => void
   subscribeToMessages: (conversationId: string) => void
+  loadOlderMessages: () => void
   unsubscribeFromMessages: () => void
   refreshMessages: (conversationId: string) => Promise<void>
   sendMessage: (
@@ -56,6 +59,7 @@ export const useChatStore = create<ChatState>()(
       messagesCache: {},
       loading: false,
       error: null,
+      paginationCursor: null,
       subscriptions: {},
       conversationSubscriptions: {},
       selectedChatId: null,
@@ -276,7 +280,17 @@ export const useChatStore = create<ChatState>()(
           limit(10)
         )
 
-        set({ loading: true, error: null })
+        const snapshot = await getDocs(messagesQuery)
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+
+        set((state) => ({
+          loading: true,
+          error: null,
+          paginationCursor: {
+            ...state.paginationCursor,
+            [conversationId]: lastVisible,
+          },
+        }))
 
         const unsubscribeSnapshot = onSnapshot(
           messagesQuery,
@@ -350,6 +364,76 @@ export const useChatStore = create<ChatState>()(
           subscriptions: {
             ...state.subscriptions,
             [conversationId]: unsubscribeSnapshot,
+          },
+        }))
+      },
+
+      loadOlderMessages: async () => {
+        const chatId = get().currentChat?.chatId
+        const { paginationCursor } = get()
+
+        if (!chatId) {
+          console.error('No active chat')
+          return
+        }
+
+        const messagesRef = collection(db, 'conversations', chatId, 'messages')
+
+        const messagesQuery = query(
+          messagesRef,
+          orderBy('createdAt', 'desc'),
+          startAfter(paginationCursor[chatId]),
+          limit(10)
+        )
+
+        const snapshot = await getDocs(messagesQuery)
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+
+        if (!lastVisible) {
+          return
+        }
+
+        const messages: Message[] = snapshot.docs.map((item) => {
+          const data = item.data()
+          const messageData: Message = {
+            messageId: item.id,
+            senderId: data.senderId,
+            timestamp:
+              data.createdAt instanceof Timestamp
+                ? data.createdAt.toDate().toISOString()
+                : new Date().toISOString(),
+            message: data.text,
+            readStatus: !data.seen,
+          }
+
+          return messageData
+        })
+
+        const messagesCache = get().messagesCache[chatId]?.messages || []
+
+        const newMessages = [...messages.reverse(), ...messagesCache]
+
+        set((state) => ({
+          messagesCache: {
+            ...state.messagesCache,
+            [chatId]: {
+              chatId,
+              participants: state.messagesCache[chatId]?.participants ?? [],
+              messages: newMessages,
+            },
+          },
+          currentChat:
+            state.currentChat?.chatId === chatId
+              ? {
+                  ...state.currentChat,
+                  messages: newMessages,
+                }
+              : state.currentChat,
+
+          loading: false,
+          paginationCursor: {
+            ...state.paginationCursor,
+            [chatId]: lastVisible,
           },
         }))
       },

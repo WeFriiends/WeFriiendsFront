@@ -3,6 +3,8 @@ import { makeStyles } from 'tss-react/mui'
 import { Message } from 'types/Chat'
 import { useAuth0 } from '@auth0/auth0-react'
 import { formatTimestamp } from 'utils/formatTimestamp'
+import { useEffect, useRef } from 'react'
+import { useChatStore } from 'zustand/chatStore'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -12,8 +14,31 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const { classes } = useStyles()
   const { user } = useAuth0()
   const userId = user?.sub || ''
+  const { loading, loadOlderMessages } = useChatStore()
+  const topRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          loadOlderMessages()
+        }
+      },
+      { threshold: 1.0 }
+    )
+
+    if (topRef.current) observer.observe(topRef.current)
+
+    return () => observer.disconnect()
+  })
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView()
+  }, [messages, loading])
   return (
     <Box className={classes.messagesArea}>
+      {!loading && <div ref={topRef} />}
       {messages.map((message) => {
         const isMessageMine = message.senderId === userId
         return (
@@ -33,6 +58,7 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
             >
               {formatTimestamp(message.timestamp)}
             </Typography>
+            <div ref={bottomRef} />
           </Box>
         )
       })}
