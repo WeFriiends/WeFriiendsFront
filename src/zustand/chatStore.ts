@@ -14,11 +14,11 @@ import {
   getDoc,
   getDocs,
   Timestamp,
-  limit,
-  startAfter,
 } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
+import { mapFirestoreDocToMessage } from 'utils/chatMapper'
+import { fetchMessagesPage } from 'utils/fetchMessagesPage'
 
 interface FirestoreMessage {
   senderId: string
@@ -267,21 +267,10 @@ export const useChatStore = create<ChatState>()(
           participants = conversationDoc.data().participants || []
         }
 
-        const messagesRef = collection(
+        const { lastVisible, messagesQuery } = await fetchMessagesPage(
           db,
-          'conversations',
-          conversationId,
-          'messages'
+          conversationId
         )
-
-        const messagesQuery = query(
-          messagesRef,
-          orderBy('createdAt', 'desc'),
-          limit(10)
-        )
-
-        const snapshot = await getDocs(messagesQuery)
-        const lastVisible = snapshot.docs[snapshot.docs.length - 1]
 
         set((state) => ({
           loading: true,
@@ -302,22 +291,8 @@ export const useChatStore = create<ChatState>()(
               const messages: Message[] = []
 
               querySnapshot.docChanges().forEach((change) => {
-                const data = change.doc.data()
-                const { id } = change.doc
-
-                const messageData: Message = {
-                  messageId: id,
-                  senderId: data.senderId,
-                  timestamp:
-                    data.createdAt instanceof Timestamp
-                      ? data.createdAt.toDate().toISOString()
-                      : new Date().toISOString(),
-                  message: data.text,
-                  readStatus: !data.seen,
-                }
-
                 if (change.type === 'added' || change.type === 'modified') {
-                  messages.push(messageData)
+                  messages.push(mapFirestoreDocToMessage(change.doc))
                 }
               })
 
@@ -373,44 +348,28 @@ export const useChatStore = create<ChatState>()(
         const { paginationCursor } = get()
 
         if (!chatId) {
-          console.error('No active chat')
+          console.log('No active chat')
           return
         }
 
-        const messagesRef = collection(db, 'conversations', chatId, 'messages')
+        const cursor = paginationCursor[chatId]
 
-        const messagesQuery = query(
-          messagesRef,
-          orderBy('createdAt', 'desc'),
-          startAfter(paginationCursor[chatId]),
-          limit(10)
+        const { lastVisible, snapshot } = await fetchMessagesPage(
+          db,
+          chatId,
+          cursor
         )
 
-        const snapshot = await getDocs(messagesQuery)
-        const lastVisible = snapshot.docs[snapshot.docs.length - 1]
-
         if (!lastVisible) {
+          console.log('No messages to upload')
           return
         }
 
         const messages: Message[] = snapshot.docs.map((item) => {
-          const data = item.data()
-          const messageData: Message = {
-            messageId: item.id,
-            senderId: data.senderId,
-            timestamp:
-              data.createdAt instanceof Timestamp
-                ? data.createdAt.toDate().toISOString()
-                : new Date().toISOString(),
-            message: data.text,
-            readStatus: !data.seen,
-          }
-
-          return messageData
+          return mapFirestoreDocToMessage(item)
         })
 
         const messagesCache = get().messagesCache[chatId]?.messages || []
-
         const newMessages = [...messages.reverse(), ...messagesCache]
 
         set((state) => ({
