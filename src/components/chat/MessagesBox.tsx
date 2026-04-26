@@ -52,8 +52,9 @@ const useStyles = makeStyles()((theme) => ({
     paddingRight: '5px',
     ...(scrollbarStyles(theme) as any),
     [theme.breakpoints.up('md')]: {
-      maxHeight: 'calc(100vh - 500px)',
-      minHeight: 400,
+      height: '360px',
+      maxHeight: '360px',
+      minHeight: 'auto',
     },
   },
   message: {
