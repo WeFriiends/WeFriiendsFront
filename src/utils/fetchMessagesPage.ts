@@ -12,6 +12,8 @@ import type {
   QueryConstraint,
 } from 'firebase/firestore'
 
+const MESSAGES_PER_PAGE = 10
+
 export async function fetchMessagesPage(
   db: Firestore,
   chatId: string,
@@ -21,7 +23,7 @@ export async function fetchMessagesPage(
 
   const constraints: QueryConstraint[] = [
     orderBy('createdAt', 'desc'),
-    limit(10),
+    limit(MESSAGES_PER_PAGE),
   ]
 
   if (cursor) {

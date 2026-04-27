@@ -5,6 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { formatTimestamp } from 'utils/formatTimestamp'
 import { useEffect, useRef } from 'react'
 import { useChatStore } from 'zustand/chatStore'
+import Loader from 'common/svg/Loader'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -31,13 +32,14 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
     if (topRef.current) observer.observe(topRef.current)
 
     return () => observer.disconnect()
-  })
+  }, [loadOlderMessages])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView()
   }, [messages, loading])
   return (
     <Box className={classes.messagesArea}>
+      {loading && messages.length === 0 && <Loader />}
       <div className={classes.observer} ref={topRef} />
       {messages.map((message) => {
         const isMessageMine = message.senderId === userId
