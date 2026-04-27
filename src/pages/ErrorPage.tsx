@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../styles/createTheme'
 import { commonStyles } from '../styles/commonStyles'
 import { ERROR_CONTENT } from 'data/errorContent'
 import PrimaryButton from 'common/components/PrimaryButton'
+import { ErrorIcon } from 'common/svg/ErrorIcon'
 
 type ErrorPageProps = {
   code?: number
@@ -14,6 +16,7 @@ type ErrorPageProps = {
 const ErrorPage: React.FC<ErrorPageProps> = ({ code, message, onRetry }) => {
   const commonClasses = commonStyles().classes
   const { classes } = useStyles()
+  const [imgError, setImgError] = useState(false)
 
   const content =
     code && code in ERROR_CONTENT
@@ -41,13 +44,15 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code, message, onRetry }) => {
           {content.subtitle}
         </Typography>
 
-        <img
-          src={content.img}
-          alt={`Error ${code || ''}`}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none'
-          }}
-        />
+        {imgError || !content.img ? (
+          <ErrorIcon />
+        ) : (
+          <img
+            src={content.img}
+            alt={`Error ${code || ''}`}
+            onError={() => setImgError(true)}
+          />
+        )}
 
         {content.footer && (
           <Typography variant="h3" className={classes.footer}>
