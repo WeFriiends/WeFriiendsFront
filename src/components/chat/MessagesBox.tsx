@@ -3,6 +3,9 @@ import { makeStyles } from 'tss-react/mui'
 import { Message } from 'types/Chat'
 import { useAuth0 } from '@auth0/auth0-react'
 import { formatTimestamp } from 'utils/formatTimestamp'
+import { useEffect, useRef } from 'react'
+import { useChatStore } from 'zustand/chatStore'
+import Loader from 'common/svg/Loader'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -12,8 +15,32 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const { classes } = useStyles()
   const { user } = useAuth0()
   const userId = user?.sub || ''
+  const { loading, loadOlderMessages } = useChatStore()
+  const topRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          loadOlderMessages()
+        }
+      },
+      { threshold: 1.0 }
+    )
+
+    if (topRef.current) observer.observe(topRef.current)
+
+    return () => observer.disconnect()
+  }, [loadOlderMessages])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView()
+  }, [messages, loading])
   return (
     <Box className={classes.messagesArea}>
+      {loading && messages.length === 0 && <Loader />}
+      <div className={classes.observer} ref={topRef} />
       {messages.map((message) => {
         const isMessageMine = message.senderId === userId
         return (
@@ -33,6 +60,7 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
             >
               {formatTimestamp(message.timestamp)}
             </Typography>
+            <div ref={bottomRef} />
           </Box>
         )
       })}
@@ -83,5 +111,9 @@ const useStyles = makeStyles()((theme) => ({
   },
   receivedDate: {
     textAlign: 'left',
+  },
+  observer: {
+    height: '10px',
+    minHeight: '10px',
   },
 }))
