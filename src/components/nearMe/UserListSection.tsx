@@ -1,8 +1,7 @@
-import { Box } from '@mui/material'
 import { PROFILE_ENDPOINTS } from 'actions/endpoints'
 import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
 import { useUsersData } from 'hooks/useUsersData'
-import Loader from 'common/svg/Loader'
+import { DataStateWrapper } from 'common/components/DataStateWrapper'
 import { UserMiniCards } from 'common/components/UserMiniCards'
 import { UserMiniProfile } from 'common/types/userTypes'
 
@@ -21,27 +20,21 @@ export function UserListSection({
     error,
   } = useUsersData(PROFILE_ENDPOINTS.nearest)
 
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center">
-        {error.message}
-      </Box>
-    )
-  }
-
-  if (isLoading || !users) {
-    return <Loader />
-  }
-
-  if (users.length === 0) {
+  if (users && users.length === 0) {
     return <NoticeNoUsers />
   }
 
   return (
-    <UserMiniCards
-      users={users}
-      onCardClick={onUserSelect}
-      selectedUserId={selectedUserId}
-    />
+    <DataStateWrapper
+      isLoading={isLoading}
+      error={error}
+      hasData={!!users && users.length > 0}
+    >
+      <UserMiniCards
+        users={users || []}
+        onCardClick={onUserSelect}
+        selectedUserId={selectedUserId}
+      />
+    </DataStateWrapper>
   )
 }

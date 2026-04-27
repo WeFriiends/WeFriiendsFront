@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
-import Loader from '../common/svg/Loader'
+import Loader from '../common/components/Loader'
 import { handleLogout as logoutUtil } from '../utils/logoutUtils'
 
 const UserAccount = () => {

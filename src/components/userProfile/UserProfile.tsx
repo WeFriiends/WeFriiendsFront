@@ -97,7 +97,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
           </AccordionSummary>
           <AccordionDetails>
             <List className={classes.reasons}>
-              {user.reasons.map((reason) => (
+              {user.reasons?.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
                   {reason}
                 </ListItem>
@@ -140,7 +140,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                     Interests
                   </Typography>
                   <List className={classes.tagsList}>
-                    {user.preferences.interests.map((interest) => (
+                    {user.preferences.interests?.map((interest) => (
                       <ListItem key={interest} className={classes.tag}>
                         {interest}
                       </ListItem>
