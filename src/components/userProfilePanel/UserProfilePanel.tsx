@@ -1,4 +1,4 @@
-import { Box, Slide, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Slide, useMediaQuery, useTheme } from '@mui/material'
 import UserProfile from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
@@ -6,8 +6,9 @@ import { ReactNode } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { CollapsePanelButton } from './CollapsePanelButton'
 import { ProfilePanelHeader } from 'common/components/ProfilePanelHeader'
-import Loader from 'common/svg/Loader'
 import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
+
+import { DataStateWrapper } from 'common/components/DataStateWrapper'
 
 export interface UserProfilePanelProps {
   selectedUserId: string | null
@@ -24,31 +25,28 @@ export function UserProfilePanel({
 }: UserProfilePanelProps) {
   const theme = useTheme()
   const { classes } = useStyles()
-  const { data, isLoading, error } = useGetUserById(selectedUserId)
+  const { data, isLoading, error, mutate } = useGetUserById(selectedUserId)
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const renderContent = () => {
-    if (isLoading) {
-      return (
-        <Box className={classes.loaderWrapper}>
-          <Loader />
-        </Box>
-      )
-    }
-
-    if (error) {
-      return <Typography>{error.message}</Typography>
-    }
-
-    if (!data) return null
+    if (!selectedUserId) return null
 
     return (
-      <Box className={classes.contentWrapper}>
-        <Box className={classes.scrollableContent}>
-          <UserProfile user={data} />
-        </Box>
-        {actions && <Box>{actions}</Box>}
-      </Box>
+      <DataStateWrapper
+        isLoading={isLoading}
+        error={error}
+        hasData={!!data && Object.keys(data).length > 0}
+        onRetry={mutate}
+      >
+        {data && (
+          <Box className={classes.contentWrapper}>
+            <Box className={classes.scrollableContent}>
+              <UserProfile user={data} />
+            </Box>
+            {actions && <Box>{actions}</Box>}
+          </Box>
+        )}
+      </DataStateWrapper>
     )
   }
 

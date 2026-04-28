@@ -5,7 +5,7 @@ const Loader = () => {
   const { classes } = useStyles()
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+    <Box className={classes.container}>
       <CircularProgress className={classes.circularProgress} />
     </Box>
   )
@@ -13,9 +13,17 @@ const Loader = () => {
 
 export default Loader
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    minHeight: 200,
+  },
   circularProgress: {
-    color: '#FB8F67',
+    color: theme.palette.primary.light,
     position: 'absolute',
     top: '50%',
   },

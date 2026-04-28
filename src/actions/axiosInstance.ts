@@ -15,4 +15,9 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config
 })
+
+axiosInstance.interceptors.response.use(undefined, (error) => {
+  return Promise.reject(error)
+})
+
 export default axiosInstance

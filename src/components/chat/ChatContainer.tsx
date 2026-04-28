@@ -13,7 +13,7 @@ interface ChatContainer {
 
 export function ChatContainer({ chat }: ChatContainer) {
   const { classes } = useStyles()
-  const { currentChat } = useChatStore()
+  const { currentChat, loading } = useChatStore()
   const chatData = currentChat || { chatId: '', participants: [], messages: [] }
   return (
     <Box className={classes.container}>
@@ -21,7 +21,8 @@ export function ChatContainer({ chat }: ChatContainer) {
       <Box className={classes.innerContainer}>
         {chatData && Object.keys(chatData).length !== 0 && (
           <>
-            {chatData.messages.length === 0 && <StartChatting />}
+            {chatData.messages.length === 0 && !loading && <StartChatting />}
+
             <MessagesBox messages={chatData.messages} />
             <ChatInput chat={chat} chatData={chatData} />
           </>
