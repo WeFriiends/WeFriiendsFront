@@ -53,11 +53,13 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: 'space-between',
     gap: '20px',
     flexGrow: 1,
+    padding: '24px 24px',
     marginBottom: '16px',
     minHeight: 0,
     [theme.breakpoints.up('md')]: {
       height: 'calc(100vh - 220px)',
       maxHeight: 'calc(100vh - 240px)',
+      padding: 0,
     },
   },
 }))
