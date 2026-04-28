@@ -72,7 +72,6 @@ const useStyles = makeStyles()((theme) => ({
     color: theme.palette.common.white,
     [theme.breakpoints.up('md')]: {
       height: 'auto',
-      marginTop: 30,
       padding: 0,
       backgroundColor: theme.palette.common.white,
     },

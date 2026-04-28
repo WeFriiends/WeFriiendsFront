@@ -53,7 +53,6 @@ const useStyles = makeStyles()((theme) => ({
     ...(scrollbarStyles(theme) as any),
     [theme.breakpoints.up('md')]: {
       height: '360px',
-      maxHeight: '360px',
       minHeight: 'auto',
     },
   },

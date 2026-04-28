@@ -52,7 +52,6 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: 'space-between',
     gap: '20px',
     flexGrow: 1,
-    padding: '24px 24px',
     marginBottom: '16px',
     minHeight: 0,
     [theme.breakpoints.up('md')]: {
