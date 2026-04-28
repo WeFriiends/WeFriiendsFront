@@ -6,7 +6,7 @@ import { formatTimestamp } from 'utils/formatTimestamp'
 import { scrollbarStyles } from 'styles/globalScrollbar'
 import { useEffect, useRef } from 'react'
 import { useChatStore } from 'zustand/chatStore'
-import Loader from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 
 interface MessagesBoxProps {
   messages: Message[]
