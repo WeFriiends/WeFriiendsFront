@@ -1,7 +1,6 @@
-import React, { useRef } from 'react'
-import { Box, Typography } from '@mui/material'
+import React, { useEffect, useRef } from 'react'
+import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import createTheme from 'styles/createTheme'
 import { useProfileStore } from 'zustand/store'
 import { UserPicsType } from 'types/FirstProfile'
 
@@ -12,6 +11,8 @@ interface SlotProps {
   openPreviewModal: (url: string) => void
   setIsPicHuge?: (flag: boolean) => void
   resetSubmitClicked?: () => void
+  iconSlot?: React.ReactNode
+  disabled?: boolean
 }
 
 const UploadSlot: React.FC<SlotProps> = ({
@@ -21,11 +22,18 @@ const UploadSlot: React.FC<SlotProps> = ({
   openPreviewModal,
   setIsPicHuge,
   resetSubmitClicked,
+  iconSlot,
+  disabled,
 }) => {
+  const { classes, cx } = useStyles()
   const { addTempPhoto } = useProfileStore()
-
-  const { classes } = useStyles()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (bgPic?.startsWith('blob:')) URL.revokeObjectURL(bgPic)
+    }
+  }, [bgPic])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -51,9 +59,11 @@ const UploadSlot: React.FC<SlotProps> = ({
     addTempPhoto(temp)
 
     resetSubmitClicked?.()
+    e.target.value = ''
   }
 
   const handleSlotClick = () => {
+    if (disabled) return
     resetSubmitClicked?.()
     bgPic ? openPreviewModal(bgPic) : fileInputRef.current?.click()
   }
@@ -65,16 +75,11 @@ const UploadSlot: React.FC<SlotProps> = ({
 
   return (
     <Box
-      className={classes.slot}
+      className={cx(classes.slot, disabled && classes.slotDisabled)}
       style={{ backgroundImage: bgPic ? `url(${bgPic})` : undefined }}
       onClick={handleSlotClick}
     >
-      {!bgPic && (
-        <Box className={classes.innerBox}>
-          <img src="/img/add-icon.svg" alt="add" />
-          <Typography className={classes.text}>Upload</Typography>
-        </Box>
-      )}
+      {!bgPic && iconSlot && <Box className={classes.innerBox}>{iconSlot}</Box>}
 
       {bgPic && (
         <img
@@ -85,13 +90,15 @@ const UploadSlot: React.FC<SlotProps> = ({
         />
       )}
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".png,.jpg,.jpeg"
-        className={classes.hiddenInput}
-        onChange={handleChange}
-      />
+      {!disabled && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".png,.jpg,.jpeg"
+          className={classes.hiddenInput}
+          onChange={handleChange}
+        />
+      )}
     </Box>
   )
 }
@@ -101,7 +108,7 @@ export default UploadSlot
 const useStyles = makeStyles()(() => ({
   slot: {
     borderRadius: 10,
-    padding: '47px 29px',
+    display: 'flex',
     width: 103,
     height: 140,
     backgroundColor: '#fff1ec',
@@ -111,19 +118,17 @@ const useStyles = makeStyles()(() => ({
     transition: 'background-color .3s ease',
     '&:hover': { backgroundColor: '#ffe5d1', cursor: 'pointer' },
   },
-  innerBox: {
-    width: 44,
-    height: 45,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+  slotDisabled: {
+    backgroundColor: '#F0F0F0',
+    '&:hover': { backgroundColor: '#F0F0F0', cursor: 'default' },
   },
-  text: {
-    fontWeight: 700,
-    fontSize: 12,
-    lineHeight: '167%',
-    color: createTheme.palette.primary.main,
-    userSelect: 'none',
+  innerBox: {
+    width: 24,
+    height: 24,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 'auto',
   },
   hiddenInput: { display: 'none' },
   closeIcon: {

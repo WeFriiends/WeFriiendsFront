@@ -1,24 +1,27 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Box, Typography, FormHelperText } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import UploadSlot from './UploadSlot'
+import { IconCamera } from 'common/svg/IconCamera'
+import { IconUser } from 'common/svg/IconUser'
 import { PhotoModal } from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
 
-interface Props {
+interface UploadPhotosProps {
   isSubmitClicked?: boolean
   resetSubmitClicked?: () => void
   setIsPicHuge?: (flag: boolean) => void
 }
 
-const UploadPhotos: React.FC<Props> = ({
+export default function UploadPhotos({
   isSubmitClicked,
   resetSubmitClicked,
   setIsPicHuge,
-}) => {
+}: UploadPhotosProps) {
+  const { classes } = useStyles()
   const { tempPhotos, setTempPhotos, data, deletePhoto } = useProfileStore()
   const { token } = useAuthStore()
 
@@ -51,7 +54,12 @@ const UploadPhotos: React.FC<Props> = ({
     return [...tempPhotos, ...empties]
   }, [tempPhotos])
 
-  const { classes } = useStyles()
+  const nextEmpty = tempPhotos.length
+
+  const firstSlotIcon = <IconUser />
+  const otherSlotIcon = (
+    <IconCamera color={createTheme.customPalette.colorPlaceholderText} />
+  )
 
   return (
     <>
@@ -83,7 +91,8 @@ const UploadPhotos: React.FC<Props> = ({
           isOpened
           setIsDeleteModalOpened={() => setDeleteId(null)}
           deleteChosenPic={() => {
-            deletePhoto(deleteId, token!)
+            if (!token) return
+            deletePhoto(deleteId, token)
             setDeleteId(null)
           }}
           setChosenId={() => void 0}
@@ -91,7 +100,7 @@ const UploadPhotos: React.FC<Props> = ({
       )}
 
       <Box className={classes.picContainer}>
-        {slots.map((p) => (
+        {slots.map((p, index) => (
           <UploadSlot
             key={p.id}
             id={p.id}
@@ -100,14 +109,14 @@ const UploadPhotos: React.FC<Props> = ({
             openDeleteModal={(id: string) => setDeleteId(id)}
             setIsPicHuge={setIsPicHuge}
             resetSubmitClicked={resetSubmitClicked}
+            iconSlot={index === 0 ? firstSlotIcon : otherSlotIcon}
+            disabled={!p.url && index !== nextEmpty}
           />
         ))}
       </Box>
     </>
   )
 }
-
-export default UploadPhotos
 
 const useStyles = makeStyles()(() => ({
   picContainer: {
