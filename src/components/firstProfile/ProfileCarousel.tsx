@@ -283,7 +283,11 @@ const ProfileCarousel = () => {
             <PrimaryButton label="Next" onClickHandler={handleNext} />
           )}
           {activeStep === steps.length - 1 && (
-            <PrimaryButton label="Submit" onClickHandler={onSubmit} />
+            <PrimaryButton
+              label="Submit"
+              onClickHandler={onSubmit}
+              disabled={tempPhotos.length === 0}
+            />
           )}
 
           <MobileStepper
