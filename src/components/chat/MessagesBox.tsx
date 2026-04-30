@@ -3,9 +3,10 @@ import { makeStyles } from 'tss-react/mui'
 import { Message } from 'types/Chat'
 import { useAuth0 } from '@auth0/auth0-react'
 import { formatTimestamp } from 'utils/formatTimestamp'
+import { scrollbarStyles } from 'styles/globalScrollbar'
 import { useEffect, useRef } from 'react'
 import { useChatStore } from 'zustand/chatStore'
-import Loader from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -76,9 +77,11 @@ const useStyles = makeStyles()((theme) => ({
     flex: 1,
     overflow: 'auto',
     overscrollBehavior: 'contain',
+    paddingRight: '5px',
+    ...(scrollbarStyles(theme) as any),
     [theme.breakpoints.up('md')]: {
-      maxHeight: 'calc(100vh - 500px)',
-      minHeight: 400,
+      height: '360px',
+      minHeight: 'auto',
     },
   },
   message: {

@@ -67,12 +67,12 @@ const useStyles = makeStyles()((theme) => ({
     height: 64,
     padding: '0 20px',
     display: 'flex',
+    flexShrink: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
     color: theme.palette.common.white,
     [theme.breakpoints.up('md')]: {
       height: 'auto',
-      marginTop: 30,
       padding: 0,
       backgroundColor: theme.palette.common.white,
     },
