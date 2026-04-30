@@ -6,6 +6,28 @@ import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessa
 import { ChatContainer } from 'components/chat/ChatContainer'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
+import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfileData } from 'types/UserProfileData'
+import { useEffect, useState } from 'react'
+import { useUserProfileStore } from 'zustand/userProfileStore'
+
+const mapProfileToData = (profile: any, fallback: any) => {
+  if (!profile && !fallback) return null
+
+  const defaultPhoto = '/img/placeholders/girl-big.svg'
+
+  return {
+    id: profile?._id || fallback?.id || '',
+    name: profile?.name || fallback?.name || '',
+    age: profile?.age?.toString() || fallback?.age?.toString() || '',
+    photos: profile?.photos || [{ src: defaultPhoto }],
+    city: profile?.city || '',
+    distance: profile?.distance?.toString() || '',
+    likedMe: profile?.likedMe || false,
+    reasons: profile?.reasons || [],
+    preferences: profile?.preferences || {},
+  }
+}
 
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
 // Note: unsubscription on tab/app close is handled globally in chatStore.ts
@@ -13,11 +35,37 @@ export default function MessagesPage() {
   const theme = useTheme()
   const { classes } = useStyles()
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
-  const { selectedChatId } = useChatStore()
+  const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
+  const { fetchUserProfile } = useUserProfileStore()
+
+  const { selectedChatId, selectedProfile } = useChatStore()
   const { conversations } = useConversationsStore()
   const selectedChat = selectedChatId
     ? conversations.find((conv) => conv.id === selectedChatId)
     : null
+
+  useEffect(() => {
+    if (!selectedProfile) {
+      return
+    }
+
+    setFriendsData(mapProfileToData(undefined, selectedProfile))
+
+    async function fetchProfile() {
+      const fullProfile = await fetchUserProfile(selectedProfile?.id || '')
+
+      if (fullProfile) {
+        setFriendsData(mapProfileToData(fullProfile, selectedProfile))
+      }
+    }
+
+    fetchProfile()
+  }, [selectedProfile, fetchUserProfile])
+
+  useEffect(() => {
+    setFriendsData(null)
+  }, [selectedChat, selectedProfile])
+
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box
@@ -30,7 +78,12 @@ export default function MessagesPage() {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {selectedChat && <ChatContainer chat={selectedChat} />}
+          {selectedChat && !friendsData && (
+            <ChatContainer chat={selectedChat} />
+          )}
+
+          {friendsData && <UserProfile user={friendsData} />}
+
           {!selectedChat && isMdUp && (
             <Box>
               <SwipesWithFilters />

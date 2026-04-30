@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 import { ChatMenu } from './ChatMenu'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useChatStore } from 'zustand/chatStore'
+import { UserProfileDataShort } from 'types/UserProfileData'
 
 interface ChatHeaderProps {
   chat: UserChatProfile
@@ -10,11 +11,22 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ chat }: ChatHeaderProps) {
   const { classes } = useStyles()
-  const { setSelectedChatId } = useChatStore()
+  const { setSelectedChatId, setSelectedProfile } = useChatStore()
 
   function handleCloseChat() {
     setSelectedChatId(null)
     // We don't unsubscribe when closing chat, only when tab/app is closed
+  }
+
+  function handleOpenProfile() {
+    const profile: UserProfileDataShort = {
+      id: chat.id,
+      name: chat.name,
+      age: chat.age,
+      photos: [{ src: chat.avatar }],
+    }
+
+    setSelectedProfile(profile)
   }
 
   return (
@@ -30,7 +42,11 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
       </IconButton>
 
       <Box className={classes.userInHeader}>
-        <Avatar className={classes.userAvatar} src={chat.avatar} />
+        <Avatar
+          className={classes.userAvatar}
+          src={chat.avatar}
+          onClick={handleOpenProfile}
+        />
         <Typography className={classes.userName}>
           {chat.name}
           <Box className={classes.userAge} component="span">
@@ -83,6 +99,9 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: 50,
       height: 50,
+    },
+    ':hover': {
+      cursor: 'pointer',
     },
   },
   userName: {

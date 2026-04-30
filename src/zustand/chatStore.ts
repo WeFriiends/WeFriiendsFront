@@ -19,6 +19,7 @@ import type { DocumentSnapshot } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
 import { mapFirestoreDocToMessage } from 'utils/chatMapper'
 import { fetchMessagesPage } from 'utils/fetchMessagesPage'
+import { UserProfileDataShort } from 'types/UserProfileData'
 
 interface FirestoreMessage {
   senderId: string
@@ -41,7 +42,9 @@ interface ChatState {
   conversationSubscriptions: Record<string, () => void>
   // Selected chat ID for decoupled components
   selectedChatId: string | null
+  selectedProfile: UserProfileDataShort | null
   setSelectedChatId: (chatId: string | null) => void
+  setSelectedProfile: (profile: UserProfileDataShort) => void
   subscribeToMessages: (conversationId: string) => void
   loadOlderMessages: () => void
   unsubscribeFromMessages: () => void
@@ -63,9 +66,10 @@ export const useChatStore = create<ChatState>()(
       subscriptions: {},
       conversationSubscriptions: {},
       selectedChatId: null,
+      selectedProfile: null,
 
       setSelectedChatId: (chatId) => {
-        set({ selectedChatId: chatId })
+        set({ selectedChatId: chatId, selectedProfile: null })
 
         // If we have a chat ID, update currentChat and subscribe to messages for that conversation
         if (chatId) {
@@ -481,6 +485,10 @@ export const useChatStore = create<ChatState>()(
             loading: false,
           })
         }
+      },
+
+      setSelectedProfile(profile) {
+        set({ selectedProfile: profile })
       },
     }),
     { name: 'chat-store' }
