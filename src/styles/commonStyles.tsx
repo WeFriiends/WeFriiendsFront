@@ -135,5 +135,13 @@ export const commonStyles = makeStyles()((theme) => {
       marginLeft: 'auto',
       marginRight: 'auto',
     },
+    centeredFullPage: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100dvh',
+      padding: '20px',
+    },
   }
 })

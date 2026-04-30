@@ -1,5 +1,5 @@
-import { PROFILE_ENDPOINTS } from 'actions/endpoints'
-import NoticeNoUsers from 'components/noticeNoData/NoticeNoUsers'
+import { LIKE_ENDPOINTS } from 'actions/endpoints'
+import NoticeNoLikes from 'components/noticeNoData/NoticeNoLikes'
 import { useUsersData } from 'hooks/useUsersData'
 import { DataStateWrapper } from 'common/components/DataStateWrapper'
 import { UserMiniCards } from 'common/components/UserMiniCards'
@@ -14,15 +14,15 @@ export function UserListSection({
   onUserSelect,
   selectedUserId = null,
 }: UserListSectionProps) {
-  const {
-    data: users,
-    isLoading,
-    error,
-  } = useUsersData(PROFILE_ENDPOINTS.nearest)
+  const { data: users, isLoading, error } = useUsersData(LIKE_ENDPOINTS.onMe)
 
   if (users && users.length === 0) {
-    return <NoticeNoUsers />
+    return <NoticeNoLikes />
   }
+
+  const likedMeUsers = users
+    ? users.map((user) => ({ ...user, likedMe: true }))
+    : []
 
   return (
     <DataStateWrapper
@@ -31,7 +31,7 @@ export function UserListSection({
       hasData={!!users && users.length > 0}
     >
       <UserMiniCards
-        users={users || []}
+        users={likedMeUsers}
         onCardClick={onUserSelect}
         selectedUserId={selectedUserId}
       />

@@ -13,9 +13,7 @@ export function InfoBar({ title, subTitle }: InfoBarProps) {
       <Typography variant="h1" className={classes.title}>
         {title}
       </Typography>
-      <Typography variant="body2" className={classes.description}>
-        {subTitle}
-      </Typography>
+      <Typography variant="body2">{subTitle}</Typography>
     </Box>
   )
 }
@@ -27,7 +25,6 @@ const useStyles = makeStyles()((theme) => ({
   title: {
     paddingTop: 30,
     paddingBottom: 10,
-    textAlign: 'center',
     fontSize: 32,
     fontWeight: 600,
     [theme.breakpoints.up('sm')]: {
@@ -36,20 +33,8 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.up('md')]: {
       paddingTop: 0,
       paddingBottom: 20,
-      textAlign: 'left',
       fontSize: 24,
       fontWeight: 500,
-    },
-  },
-  description: {
-    textAlign: 'center',
-    [theme.breakpoints.up('md')]: {
-      textAlign: 'left',
-    },
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '320px',
-      marginLeft: 'auto',
-      marginRight: 'auto',
     },
   },
 }))

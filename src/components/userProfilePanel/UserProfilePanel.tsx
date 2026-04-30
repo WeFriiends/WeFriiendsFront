@@ -1,19 +1,14 @@
-import {
-  Box,
-  Drawer,
-  Slide,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Slide, useMediaQuery, useTheme } from '@mui/material'
 import UserProfile from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
 import { ReactNode } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import ArrowBackButton from 'common/components/ArrowBackButton'
 import { CollapsePanelButton } from './CollapsePanelButton'
-import Loader from 'common/svg/Loader'
+import { ProfilePanelHeader } from 'common/components/ProfilePanelHeader'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
+
+import { DataStateWrapper } from 'common/components/DataStateWrapper'
 
 export interface UserProfilePanelProps {
   selectedUserId: string | null
@@ -30,58 +25,40 @@ export function UserProfilePanel({
 }: UserProfilePanelProps) {
   const theme = useTheme()
   const { classes } = useStyles()
-  const { data, isLoading, error } = useGetUserById(selectedUserId)
+  const { data, isLoading, error, mutate } = useGetUserById(selectedUserId)
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const renderContent = () => {
-    if (isLoading) {
-      return (
-        <Box className={classes.loaderWrapper}>
-          <Loader />
-        </Box>
-      )
-    }
-
-    if (error) {
-      return <Typography>{error.message}</Typography>
-    }
-
-    if (!data) return null
+    if (!selectedUserId) return null
 
     return (
-      <Box className={classes.contentWrapper}>
-        <Box className={classes.scrollableContent}>
-          <UserProfile user={data} />
-        </Box>
-        {actions && <Box>{actions}</Box>}
-      </Box>
+      <DataStateWrapper
+        isLoading={isLoading}
+        error={error}
+        hasData={!!data && Object.keys(data).length > 0}
+        onRetry={mutate}
+      >
+        {data && (
+          <Box className={classes.contentWrapper}>
+            <Box className={classes.scrollableContent}>
+              <UserProfile user={data} />
+            </Box>
+            {actions && <Box>{actions}</Box>}
+          </Box>
+        )}
+      </DataStateWrapper>
     )
   }
 
   if (isMobile) {
     return (
-      <Drawer
-        anchor="right"
+      <MobileProfileDrawer
         open={!!selectedUserId}
         onClose={onClose}
-        PaperProps={{
-          className: classes.drawerPaper,
-        }}
+        backLabel={backLabel}
       >
-        <Box className={classes.mobileContainer}>
-          <Box className={classes.mobileHeader}>
-            <ArrowBackButton
-              stepBackHandler={onClose}
-              className={classes.backButton}
-            />
-            <Typography variant="body1" className={classes.backText}>
-              {backLabel}
-            </Typography>
-          </Box>
-
-          <Box className={classes.mobileContentArea}>{renderContent()}</Box>
-        </Box>
-      </Drawer>
+        {renderContent()}
+      </MobileProfileDrawer>
     )
   }
 
@@ -93,10 +70,11 @@ export function UserProfilePanel({
       unmountOnExit
     >
       <Box className={classes.desktopContainer}>
-        <Box className={classes.closeProfileHeader} onClick={onClose}>
-          <CollapsePanelButton sx={{ padding: 0 }} />
-          <Typography variant="body2">Close profile</Typography>
-        </Box>
+        <ProfilePanelHeader
+          icon={<CollapsePanelButton sx={{ padding: 0 }} />}
+          label="Close profile"
+          onClick={onClose}
+        />
         {renderContent()}
       </Box>
     </Slide>
@@ -117,59 +95,14 @@ const useStyles = makeStyles()((theme) => ({
     flexGrow: 1,
     overflowY: 'auto',
   },
-  drawerPaper: {
-    width: '100vw',
-  },
-  mobileContainer: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  mobileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '24px 20px 16px',
-  },
-  backButton: {
-    margin: 0,
-    backgroundColor: 'transparent',
-  },
-  backText: {
-    color: theme.palette.common.black,
-    fontSize: 18,
-  },
-  mobileContentArea: {
-    flexGrow: 1,
-    width: '100%',
-    maxWidth: 490,
-    paddingLeft: 20,
-    paddingRight: 20,
-    margin: '0 auto',
-    overflowY: 'auto',
-    boxSizing: 'border-box',
-  },
   desktopContainer: {
     position: 'sticky',
     top: 0,
-    width: 340,
+    width: theme.customDimensions.sidebarWidth.md,
+    paddingTop: 70,
     [theme.breakpoints.up('lg')]: {
-      width: 450,
-    },
-  },
-  closeProfileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingBlock: 3,
-    marginBottom: 12,
-    cursor: 'pointer',
-    color: theme.palette.text.primary,
-    backgroundColor: theme.customPalette.authBtnBg,
-    transition: 'color 0.3s',
-    '&:hover': {
-      color: theme.palette.primary.main,
-    },
-    '& .MuiIconButton-root': {
-      color: 'inherit',
+      width: theme.customDimensions.sidebarWidth.lg,
+      paddingTop: 24,
     },
   },
 }))

@@ -65,6 +65,12 @@ const theme = {
     authBtnBgHover: '#FECAB7',
     colorPeach: '#FEDED2',
   },
+  customDimensions: {
+    sidebarWidth: {
+      md: 340,
+      lg: 450,
+    },
+  },
   components: {
     MuiBackdrop: {
       styleOverrides: {

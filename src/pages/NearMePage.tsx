@@ -32,12 +32,12 @@ export default function NearMePage() {
 
   return (
     <>
-      <InfoBar
-        title="Near by"
-        subTitle="These people near you – just like them and see if it's a match!"
-      />
       <Grid container alignItems="flex-start" gap={16}>
         <Box sx={{ containerType: 'inline-size', flex: 1 }}>
+          <InfoBar
+            title="Near by"
+            subTitle="These people near you – just like them and see if it's a match!"
+          />
           <UserListSection
             onUserSelect={setSelectedUser}
             selectedUserId={selectedUser?.id ?? null}

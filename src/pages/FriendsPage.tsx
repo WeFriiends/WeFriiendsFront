@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Grid } from '@mui/material'
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import UserProfile from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
@@ -7,10 +7,12 @@ import { UserProfileData } from 'types/UserProfileData'
 import { Friends } from 'components/tabsMessagesFriends/Friends'
 import { SwipesWithFilters } from 'components/swipes/SwipesWithFilters'
 import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessagesFriends'
-import { UserProfileWrapperRightCol } from '../components/userProfile/UserProfileWrapperRightCol'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 
 export default function FriendsPage() {
+  const theme = useTheme()
   const { classes } = useStyles()
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
 
   const selectFriend = (user: UserProfileData) => {
@@ -33,19 +35,28 @@ export default function FriendsPage() {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {friendsData ? (
-            <Box className={classes.wrapperFriend}>
-              <Box className={classes.wrapperFriendMobile}>
-                <UserProfileWrapperRightCol
-                  handleCloseFriendProfile={handleCloseFriendProfile}
-                >
+          {isMdUp && friendsData && (
+            <Box className={classes.wrapperFriendDesktop}>
+              <UserProfile user={friendsData} />
+              <UserProfileButton chatId={friendsData.id} />
+            </Box>
+          )}
+
+          {!isMdUp && (
+            <MobileProfileDrawer
+              open={!!friendsData}
+              onClose={handleCloseFriendProfile}
+            >
+              {friendsData && (
+                <>
                   <UserProfile user={friendsData} />
                   <UserProfileButton chatId={friendsData.id} />
-                </UserProfileWrapperRightCol>
-              </Box>
-            </Box>
-          ) : (
-            <Box className={classes.wrapperSwipes}>
+                </>
+              )}
+            </MobileProfileDrawer>
+          )}
+          {!friendsData && isMdUp && (
+            <Box>
               <SwipesWithFilters />
             </Box>
           )}
@@ -56,64 +67,28 @@ export default function FriendsPage() {
 }
 
 const useStyles = makeStyles()((theme) => ({
-  wrapperFriend: {
+  wrapperFriendDesktop: {
     display: 'flex',
     flexDirection: 'column',
-    top: 0,
-    right: 0,
-    left: 0,
-    bottom: 56,
-    background: theme.palette.common.white,
-    position: 'fixed',
-    overscrollBehavior: 'contain',
-    overflow: 'auto',
-    //maxWidth: 350,
-    [theme.breakpoints.up('sm')]: {
-      //width: 450,
-      //maxWidth: 450,
-    },
-    [theme.breakpoints.up('md')]: {
-      height: '100%',
-      position: 'static',
-    },
-  },
-  wrapperFriendMobile: {
-    width: 350,
-    maxWidth: '100%',
-    margin: '0 auto',
-    [theme.breakpoints.up('sm')]: {
-      width: 450,
-    },
-  },
-  wrapperSwipes: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'block',
-    },
+    height: '100%',
   },
   twoColumnLayoutWrapper: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    flexDirection: 'column',
+    gap: 24,
     paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
       alignItems: 'stretch',
-      justifyContent: 'space-between',
       flexDirection: 'row',
-    },
-    [theme.breakpoints.up('lg')]: {
       paddingBottom: 0,
     },
   },
   twoColumnLayoutColLeft: {
-    width: '100%',
-    marginBottom: 50,
     maxWidth: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: 400,
-    },
+    width: '100%',
+    flex: 1,
     '&.stopScrollHideOnMobile': {
       display: 'none',
       [theme.breakpoints.up('md')]: {
@@ -122,13 +97,14 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   twoColumnLayoutColRight: {
-    width: 350,
     maxWidth: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 450,
-    },
+    width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 450,
+      width: theme.customDimensions.sidebarWidth.md,
+      flexShrink: 0,
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: theme.customDimensions.sidebarWidth.lg,
     },
   },
   stickyRightCol: {

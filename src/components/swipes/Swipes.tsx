@@ -9,7 +9,7 @@ import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import theme from '../../styles/createTheme'
 import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
-import Loader from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 
 const Swipes = () => {
   const { classes } = useStyles()

@@ -13,16 +13,16 @@ interface ChatContainer {
 
 export function ChatContainer({ chat }: ChatContainer) {
   const { classes } = useStyles()
-  const { currentChat } = useChatStore()
+  const { currentChat, loading } = useChatStore()
   const chatData = currentChat || { chatId: '', participants: [], messages: [] }
   return (
     <Box className={classes.container}>
-      <Box className={classes.topSpacePlaceholderProfile} />
       <ChatHeader chat={chat} />
       <Box className={classes.innerContainer}>
         {chatData && Object.keys(chatData).length !== 0 && (
           <>
-            {chatData.messages.length === 0 && <StartChatting />}
+            {chatData.messages.length === 0 && !loading && <StartChatting />}
+
             <MessagesBox messages={chatData.messages} />
             <ChatInput chat={chat} chatData={chatData} />
           </>
@@ -44,6 +44,7 @@ const useStyles = makeStyles()((theme) => ({
     position: 'fixed',
     [theme.breakpoints.up('md')]: {
       position: 'static',
+      height: 'calc(100vh - 170px)',
     },
   },
   innerContainer: {
@@ -53,14 +54,12 @@ const useStyles = makeStyles()((theme) => ({
     gap: '20px',
     flexGrow: 1,
     padding: '24px 24px',
-    height: 'calc(100vh - 500px)',
-  },
-  topSpacePlaceholderProfile: {
+    marginBottom: '16px',
+    minHeight: 0,
     [theme.breakpoints.up('md')]: {
-      height: 127,
-    },
-    [theme.breakpoints.up('lg')]: {
-      height: 67,
+      height: 'calc(100vh - 220px)',
+      maxHeight: 'calc(100vh - 240px)',
+      padding: 0,
     },
   },
 }))
