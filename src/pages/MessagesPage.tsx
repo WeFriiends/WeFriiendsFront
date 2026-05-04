@@ -22,7 +22,7 @@ export default function MessagesPage() {
   const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
   const { fetchUserProfile } = useUserProfileStore()
 
-  const { selectedChatId, selectedProfile } = useChatStore()
+  const { selectedChatId, selectedProfile, setSelectedProfile } = useChatStore()
   const { conversations } = useConversationsStore()
   const selectedChat = selectedChatId
     ? conversations.find((conv) => conv.id === selectedChatId)
@@ -36,7 +36,6 @@ export default function MessagesPage() {
     let isCurrent = true
 
     setFriendsData(mapProfileToData(null, selectedProfile))
-
     async function fetchProfile() {
       const fullProfile = await fetchUserProfile(selectedProfile?.id || '')
 
@@ -52,12 +51,9 @@ export default function MessagesPage() {
     }
   }, [selectedProfile, fetchUserProfile])
 
-  useEffect(() => {
-    setFriendsData(null)
-  }, [selectedChat, selectedProfile])
-
   const handleCloseFriendProfile = () => {
     setFriendsData(null)
+    setSelectedProfile(null)
   }
 
   return (
@@ -75,11 +71,13 @@ export default function MessagesPage() {
           {isMdUp ? (
             // DESKTOP
             <>
-              {selectedChat && !friendsData && (
+              {selectedChat && !selectedProfile && (
                 <ChatContainer chat={selectedChat} />
               )}
 
-              {friendsData && <UserProfile user={friendsData} />}
+              {selectedProfile && friendsData && (
+                <UserProfile user={friendsData} />
+              )}
             </>
           ) : (
             // MOBILE
@@ -87,10 +85,12 @@ export default function MessagesPage() {
               {selectedChat && <ChatContainer chat={selectedChat} />}
 
               <MobileProfileDrawer
-                open={!!friendsData}
+                open={!!selectedProfile}
                 onClose={handleCloseFriendProfile}
               >
-                {friendsData && <UserProfile user={friendsData} />}
+                {selectedProfile && friendsData && (
+                  <UserProfile user={friendsData} />
+                )}
               </MobileProfileDrawer>
             </>
           )}

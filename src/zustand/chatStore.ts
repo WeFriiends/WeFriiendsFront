@@ -44,7 +44,7 @@ interface ChatState {
   selectedChatId: string | null
   selectedProfile: UserProfileDataShort | null
   setSelectedChatId: (chatId: string | null) => void
-  setSelectedProfile: (profile: UserProfileDataShort) => void
+  setSelectedProfile: (profile: UserProfileDataShort | null) => void
   subscribeToMessages: (conversationId: string) => void
   loadOlderMessages: () => void
   unsubscribeFromMessages: () => void

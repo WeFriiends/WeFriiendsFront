@@ -100,9 +100,7 @@ const useStyles = makeStyles()((theme) => ({
       width: 50,
       height: 50,
     },
-    ':hover': {
-      cursor: 'pointer',
-    },
+    cursor: 'pointer',
   },
   userName: {
     color: theme.palette.common.white,
