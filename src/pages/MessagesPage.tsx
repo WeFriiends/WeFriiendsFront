@@ -6,6 +6,12 @@ import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessa
 import { ChatContainer } from 'components/chat/ChatContainer'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
+import UserProfile from 'components/userProfile/UserProfile'
+import { useEffect, useState } from 'react'
+import { useUserProfileStore } from 'zustand/userProfileStore'
+import { UserProfileData } from 'types/UserProfileData'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
+import { mapProfileToData } from 'utils/mapProfileToData'
 
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
 // Note: unsubscription on tab/app close is handled globally in chatStore.ts
@@ -13,11 +19,47 @@ export default function MessagesPage() {
   const theme = useTheme()
   const { classes } = useStyles()
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
-  const { selectedChatId } = useChatStore()
+  const [friendsData, setFriendsData] = useState<UserProfileData | null>(null)
+  const { fetchUserProfile } = useUserProfileStore()
+
+  const { selectedChatId, selectedProfile } = useChatStore()
   const { conversations } = useConversationsStore()
   const selectedChat = selectedChatId
     ? conversations.find((conv) => conv.id === selectedChatId)
     : null
+
+  useEffect(() => {
+    if (!selectedProfile) {
+      return
+    }
+
+    let isCurrent = true
+
+    setFriendsData(mapProfileToData(null, selectedProfile))
+
+    async function fetchProfile() {
+      const fullProfile = await fetchUserProfile(selectedProfile?.id || '')
+
+      if (fullProfile && isCurrent) {
+        setFriendsData(mapProfileToData(fullProfile, selectedProfile))
+      }
+    }
+
+    fetchProfile()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [selectedProfile, fetchUserProfile])
+
+  useEffect(() => {
+    setFriendsData(null)
+  }, [selectedChat, selectedProfile])
+
+  const handleCloseFriendProfile = () => {
+    setFriendsData(null)
+  }
+
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box
@@ -30,7 +72,29 @@ export default function MessagesPage() {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {selectedChat && <ChatContainer chat={selectedChat} />}
+          {isMdUp ? (
+            // DESKTOP
+            <>
+              {selectedChat && !friendsData && (
+                <ChatContainer chat={selectedChat} />
+              )}
+
+              {friendsData && <UserProfile user={friendsData} />}
+            </>
+          ) : (
+            // MOBILE
+            <>
+              {selectedChat && <ChatContainer chat={selectedChat} />}
+
+              <MobileProfileDrawer
+                open={!!friendsData}
+                onClose={handleCloseFriendProfile}
+              >
+                {friendsData && <UserProfile user={friendsData} />}
+              </MobileProfileDrawer>
+            </>
+          )}
+
           {!selectedChat && isMdUp && (
             <Box>
               <SwipesWithFilters />
