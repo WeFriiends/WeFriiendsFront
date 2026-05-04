@@ -9,55 +9,9 @@ import { useConversationsStore } from 'zustand/conversationsStore'
 import UserProfile from 'components/userProfile/UserProfile'
 import { useEffect, useState } from 'react'
 import { useUserProfileStore } from 'zustand/userProfileStore'
-import { UserProfileDataShort, UserProfileData } from 'types/UserProfileData'
+import { UserProfileData } from 'types/UserProfileData'
 import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
-
-export interface UserProfile {
-  _id: string
-  name: string
-  age: number
-  zodiacSign: string
-  city: string
-  distance: number
-  likedMe: boolean
-  photos: {
-    src: string
-  }[]
-  reasons: string[]
-  preferences: {
-    questionary: {
-      smoking: string
-      education: string[]
-      children: string
-      drinking: string
-      pets: string[]
-      language: string[]
-    }
-    interests: string[]
-    aboutMe: string
-  }
-}
-
-const mapProfileToData = (
-  profile: UserProfile | null,
-  fallback: UserProfileDataShort | null
-) => {
-  if (!profile && !fallback) return null
-
-  const defaultPhoto = '/img/placeholders/girl-big.svg'
-
-  return {
-    id: profile?._id || fallback?.id || '',
-    name: profile?.name || fallback?.name || '',
-    age: profile?.age?.toString() || fallback?.age?.toString() || '',
-    photos: profile?.photos || [{ src: defaultPhoto }],
-    city: profile?.city || '',
-    distance: profile?.distance?.toString() || '',
-    likedMe: profile?.likedMe || false,
-    reasons: profile?.reasons || [],
-    preferences: profile?.preferences || {},
-  }
-}
+import { mapProfileToData } from 'utils/mapProfileToData'
 
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
 // Note: unsubscription on tab/app close is handled globally in chatStore.ts
