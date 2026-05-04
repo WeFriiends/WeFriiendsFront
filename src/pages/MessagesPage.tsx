@@ -7,11 +7,41 @@ import { ChatContainer } from 'components/chat/ChatContainer'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import UserProfile from 'components/userProfile/UserProfile'
-import { UserProfileData } from 'types/UserProfileData'
 import { useEffect, useState } from 'react'
 import { useUserProfileStore } from 'zustand/userProfileStore'
+import { UserProfileDataShort, UserProfileData } from 'types/UserProfileData'
+import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 
-const mapProfileToData = (profile: any, fallback: any) => {
+export interface UserProfile {
+  _id: string
+  name: string
+  age: number
+  zodiacSign: string
+  city: string
+  distance: number
+  likedMe: boolean
+  photos: {
+    src: string
+  }[]
+  reasons: string[]
+  preferences: {
+    questionary: {
+      smoking: string
+      education: string[]
+      children: string
+      drinking: string
+      pets: string[]
+      language: string[]
+    }
+    interests: string[]
+    aboutMe: string
+  }
+}
+
+const mapProfileToData = (
+  profile: UserProfile | null,
+  fallback: UserProfileDataShort | null
+) => {
   if (!profile && !fallback) return null
 
   const defaultPhoto = '/img/placeholders/girl-big.svg'
@@ -49,22 +79,32 @@ export default function MessagesPage() {
       return
     }
 
-    setFriendsData(mapProfileToData(undefined, selectedProfile))
+    let isCurrent = true
+
+    setFriendsData(mapProfileToData(null, selectedProfile))
 
     async function fetchProfile() {
       const fullProfile = await fetchUserProfile(selectedProfile?.id || '')
 
-      if (fullProfile) {
+      if (fullProfile && isCurrent) {
         setFriendsData(mapProfileToData(fullProfile, selectedProfile))
       }
     }
 
     fetchProfile()
+
+    return () => {
+      isCurrent = false
+    }
   }, [selectedProfile, fetchUserProfile])
 
   useEffect(() => {
     setFriendsData(null)
   }, [selectedChat, selectedProfile])
+
+  const handleCloseFriendProfile = () => {
+    setFriendsData(null)
+  }
 
   return (
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
@@ -78,11 +118,28 @@ export default function MessagesPage() {
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
-          {selectedChat && !friendsData && (
-            <ChatContainer chat={selectedChat} />
-          )}
+          {isMdUp ? (
+            // DESKTOP
+            <>
+              {selectedChat && !friendsData && (
+                <ChatContainer chat={selectedChat} />
+              )}
 
-          {friendsData && <UserProfile user={friendsData} />}
+              {friendsData && <UserProfile user={friendsData} />}
+            </>
+          ) : (
+            // MOBILE
+            <>
+              {selectedChat && <ChatContainer chat={selectedChat} />}
+
+              <MobileProfileDrawer
+                open={!!friendsData}
+                onClose={handleCloseFriendProfile}
+              >
+                {friendsData && <UserProfile user={friendsData} />}
+              </MobileProfileDrawer>
+            </>
+          )}
 
           {!selectedChat && isMdUp && (
             <Box>
