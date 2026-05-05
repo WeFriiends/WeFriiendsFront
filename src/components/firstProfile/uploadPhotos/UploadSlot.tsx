@@ -1,8 +1,11 @@
-import React, { useEffect, useRef } from 'react'
-import { Box } from '@mui/material'
+import React, { useRef } from 'react'
+import { Box, IconButton } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useProfileStore } from 'zustand/store'
 import { UserPicsType } from 'types/FirstProfile'
+import { IconClose } from 'common/svg/IconClose'
+import { IconEdit } from 'common/svg/IconEdit'
+import { MAX_PHOTO_SIZE_BYTES } from 'data/constants'
 
 interface SlotProps {
   id: string
@@ -13,7 +16,20 @@ interface SlotProps {
   resetSubmitClicked?: () => void
   iconSlot?: React.ReactNode
   disabled?: boolean
+  isAvatar?: boolean
+  onMultipleFiles?: (photos: UserPicsType[]) => void
 }
+
+const generateId = () => crypto.randomUUID()
+
+const isFileTooLarge = (file: File) => file.size > MAX_PHOTO_SIZE_BYTES
+
+const wrapFile = (file: File): UserPicsType => ({
+  id: generateId(),
+  url: URL.createObjectURL(file),
+  blobFile: file,
+  fileName: file.name,
+})
 
 const UploadSlot: React.FC<SlotProps> = ({
   id,
@@ -24,42 +40,53 @@ const UploadSlot: React.FC<SlotProps> = ({
   resetSubmitClicked,
   iconSlot,
   disabled,
+  isAvatar,
+  onMultipleFiles,
 }) => {
   const { classes, cx } = useStyles()
-  const { addTempPhoto } = useProfileStore()
+  const { addTempPhoto, replaceTempPhoto } = useProfileStore()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => {
-    return () => {
-      if (bgPic?.startsWith('blob:')) URL.revokeObjectURL(bgPic)
-    }
-  }, [bgPic])
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
 
-    const MAX = 5 * 1024 * 1024
-    if (file.size > MAX) {
-      setIsPicHuge?.(true)
-      return
+    if (isAvatar) {
+      const [file] = files
+      if (isFileTooLarge(file)) {
+        setIsPicHuge?.(true)
+        return
+      }
+      setIsPicHuge?.(false)
+      const photo = wrapFile(file)
+      if (bgPic) {
+        replaceTempPhoto(id, photo)
+      } else {
+        addTempPhoto(photo)
+      }
+      resetSubmitClicked?.()
+    } else {
+      const valid = files.reduce<UserPicsType[]>((acc, file) => {
+        if (isFileTooLarge(file)) {
+          setIsPicHuge?.(true)
+          return acc
+        }
+        setIsPicHuge?.(false)
+        acc.push(wrapFile(file))
+        return acc
+      }, [])
+      if (valid.length) {
+        onMultipleFiles?.(valid)
+        resetSubmitClicked?.()
+      }
     }
-    setIsPicHuge?.(false)
 
-    const url = URL.createObjectURL(file)
-    const generatedId = () =>
-      Date.now().toString() + Math.random().toString(36).slice(2, 7)
-
-    const temp: UserPicsType = {
-      id: generatedId(),
-      url,
-      blobFile: file,
-      fileName: file.name,
-    }
-    addTempPhoto(temp)
-
-    resetSubmitClicked?.()
     e.target.value = ''
+  }
+
+  const handleEditAvatarClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    fileInputRef.current?.click()
   }
 
   const handleSlotClick = () => {
@@ -81,13 +108,28 @@ const UploadSlot: React.FC<SlotProps> = ({
     >
       {!bgPic && iconSlot && <Box className={classes.innerBox}>{iconSlot}</Box>}
 
-      {bgPic && (
-        <img
-          src="/img/add-icon.svg"
-          alt="remove"
-          className={classes.closeIcon}
+      {bgPic && isAvatar && (
+        <IconButton
+          className={classes.actionIcon}
+          onClick={handleEditAvatarClick}
+          size="small"
+        >
+          <Box className={classes.editIconCircle}>
+            <IconEdit />
+          </Box>
+        </IconButton>
+      )}
+
+      {bgPic && !isAvatar && (
+        <IconButton
+          className={classes.actionIcon}
           onClick={handleDeleteClick}
-        />
+          size="small"
+        >
+          <Box className={classes.editIconCircle}>
+            <IconClose />
+          </Box>
+        </IconButton>
       )}
 
       {!disabled && (
@@ -95,7 +137,9 @@ const UploadSlot: React.FC<SlotProps> = ({
           ref={fileInputRef}
           type="file"
           accept=".png,.jpg,.jpeg"
+          multiple={!isAvatar}
           className={classes.hiddenInput}
+          onClick={(e) => e.stopPropagation()}
           onChange={handleChange}
         />
       )}
@@ -105,18 +149,21 @@ const UploadSlot: React.FC<SlotProps> = ({
 
 export default UploadSlot
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   slot: {
     borderRadius: 10,
     display: 'flex',
     width: 103,
     height: 140,
-    backgroundColor: '#fff1ec',
+    backgroundColor: theme.customPalette.authBtnBg,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     position: 'relative',
     transition: 'background-color .3s ease',
-    '&:hover': { backgroundColor: '#ffe5d1', cursor: 'pointer' },
+    '&:hover': {
+      backgroundColor: '#ffe5d1',
+      cursor: 'pointer',
+    },
   },
   slotDisabled: {
     backgroundColor: '#F0F0F0',
@@ -131,10 +178,20 @@ const useStyles = makeStyles()(() => ({
     margin: 'auto',
   },
   hiddenInput: { display: 'none' },
-  closeIcon: {
+  actionIcon: {
     position: 'absolute',
-    bottom: -8,
-    right: -8,
-    transform: 'rotate(45deg)',
+    bottom: -10,
+    right: -10,
+  },
+  editIconCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: '50%',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': { backgroundColor: theme.palette.primary.dark },
   },
 }))

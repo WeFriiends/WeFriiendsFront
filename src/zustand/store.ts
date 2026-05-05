@@ -11,6 +11,7 @@ import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
 import axios from 'axios'
+import { MAX_PROFILE_PHOTOS } from 'data/constants'
 
 interface AuthState {
   token: string | null
@@ -36,6 +37,8 @@ interface PhotoFields {
   setTempPhotos: (photos: UserPicsType[]) => void
   clearTempPhotos: () => void
   addTempPhoto: (photo: UserPicsType) => void
+  addTempPhotos: (photos: UserPicsType[]) => void
+  replaceTempPhoto: (id: string, newPhoto: UserPicsType) => void
   removeTempPhoto: (id: string) => void
 }
 
@@ -154,10 +157,29 @@ export const useProfileStore = create<ProfileStore>()(
             ],
           })),
 
+        addTempPhotos: (photos) =>
+          set((s) => {
+            const available = MAX_PROFILE_PHOTOS - s.tempPhotos.length
+            return {
+              tempPhotos: [...s.tempPhotos, ...photos.slice(0, available)],
+            }
+          }),
+
+        replaceTempPhoto: (id, newPhoto) =>
+          set((s) => {
+            const old = s.tempPhotos.find((p) => p.id === id)
+            if (old?.url?.startsWith('blob:')) URL.revokeObjectURL(old.url)
+            return {
+              tempPhotos: s.tempPhotos.map((p) => (p.id === id ? newPhoto : p)),
+            }
+          }),
+
         removeTempPhoto: (id) =>
-          set((s) => ({
-            tempPhotos: s.tempPhotos.filter((p) => p.id !== id),
-          })),
+          set((s) => {
+            const old = s.tempPhotos.find((p) => p.id === id)
+            if (old?.url?.startsWith('blob:')) URL.revokeObjectURL(old.url)
+            return { tempPhotos: s.tempPhotos.filter((p) => p.id !== id) }
+          }),
 
         createProfile: async (profileData, token) => {
           set({ loading: true, error: false, success: false })

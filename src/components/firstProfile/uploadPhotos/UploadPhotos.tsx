@@ -1,14 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Box, Typography, FormHelperText } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
+import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import UploadSlot from './UploadSlot'
 import { IconCamera } from 'common/svg/IconCamera'
 import { IconUser } from 'common/svg/IconUser'
 import { PhotoModal } from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
+
+const firstSlotIcon = <IconUser />
+const otherSlotIcon = (
+  <IconCamera color={createTheme.customPalette.colorPlaceholderText} />
+)
 
 interface UploadPhotosProps {
   isSubmitClicked?: boolean
@@ -22,44 +28,42 @@ export default function UploadPhotos({
   setIsPicHuge,
 }: UploadPhotosProps) {
   const { classes } = useStyles()
-  const { tempPhotos, setTempPhotos, data, deletePhoto } = useProfileStore()
+  const { tempPhotos, setTempPhotos, data, deletePhoto, addTempPhotos } =
+    useProfileStore()
   const { token } = useAuthStore()
 
+  const restoredRef = useRef(false)
+
   useEffect(() => {
-    if (data?.photos?.length && tempPhotos.length === 0) {
-      const restored: UserPicsType[] = data.photos.map((photo, i) => ({
-        id: `url-${i}`,
-        url:
-          typeof photo === 'string'
-            ? photo
-            : (photo as { url?: string })?.url ?? null,
-        blobFile: null,
-      }))
-      setTempPhotos(restored)
-    }
-  }, [data?.photos, tempPhotos.length, setTempPhotos])
+    if (restoredRef.current || !data?.photos?.length) return
+    restoredRef.current = true
+    const restored: UserPicsType[] = data.photos.map((photo, i) => ({
+      id: `url-${i}`,
+      url:
+        typeof photo === 'string'
+          ? photo
+          : (photo as { url?: string })?.url ?? null,
+      blobFile: null,
+    }))
+    setTempPhotos(restored)
+  }, [data?.photos, setTempPhotos])
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const slots = useMemo<UserPicsType[]>(() => {
     const count = tempPhotos.length
-    const empties = Array.from({ length: Math.max(0, 6 - count) }).map(
-      (_, i) => ({
-        id: `empty-${i}`,
-        url: null,
-        blobFile: null,
-      })
-    )
+    const empties = Array.from({
+      length: Math.max(0, MAX_PROFILE_PHOTOS - count),
+    }).map((_, i) => ({
+      id: `empty-${i}`,
+      url: null,
+      blobFile: null,
+    }))
     return [...tempPhotos, ...empties]
   }, [tempPhotos])
 
-  const nextEmpty = tempPhotos.length
-
-  const firstSlotIcon = <IconUser />
-  const otherSlotIcon = (
-    <IconCamera color={createTheme.customPalette.colorPlaceholderText} />
-  )
+  const hasAvatar = tempPhotos.length > 0
 
   return (
     <>
@@ -110,7 +114,9 @@ export default function UploadPhotos({
             setIsPicHuge={setIsPicHuge}
             resetSubmitClicked={resetSubmitClicked}
             iconSlot={index === 0 ? firstSlotIcon : otherSlotIcon}
-            disabled={!p.url && index !== nextEmpty}
+            disabled={index > 0 && !hasAvatar}
+            isAvatar={index === 0}
+            onMultipleFiles={addTempPhotos}
           />
         ))}
       </Box>
