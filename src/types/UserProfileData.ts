@@ -16,6 +16,11 @@ export interface UserProfileData {
   preferences?: UserPreferences
 }
 
+export type UserProfileDataShort = Pick<
+  UserProfileData,
+  'id' | 'name' | 'age' | 'photos'
+>
+
 export const emptyProfile: UserProfileData = {
   id: '-1',
   name: '',

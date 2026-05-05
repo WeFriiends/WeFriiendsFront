@@ -7,11 +7,11 @@ import { StartChatting } from './StartChatting'
 import { ChatInput } from './ChatInput'
 import { Conversation } from 'types/Conversation'
 
-interface ChatContainer {
+interface ChatContainerProps {
   chat: Conversation
 }
 
-export function ChatContainer({ chat }: ChatContainer) {
+export function ChatContainer({ chat }: ChatContainerProps) {
   const { classes } = useStyles()
   const { currentChat, loading } = useChatStore()
   const chatData = currentChat || { chatId: '', participants: [], messages: [] }
@@ -19,14 +19,12 @@ export function ChatContainer({ chat }: ChatContainer) {
     <Box className={classes.container}>
       <ChatHeader chat={chat} />
       <Box className={classes.innerContainer}>
-        {chatData && Object.keys(chatData).length !== 0 && (
-          <>
-            {chatData.messages.length === 0 && !loading && <StartChatting />}
+        <>
+          {chatData.messages.length === 0 && !loading && <StartChatting />}
 
-            <MessagesBox messages={chatData.messages} />
-            <ChatInput chat={chat} chatData={chatData} />
-          </>
-        )}
+          <MessagesBox messages={chatData.messages} />
+          <ChatInput chat={chat} chatData={chatData} />
+        </>
       </Box>
     </Box>
   )
