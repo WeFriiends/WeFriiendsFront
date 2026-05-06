@@ -35,6 +35,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     <>
       <Box className={className}>
         <Carousel
+          key={items.length}
           autoPlay={false}
           // display arrows if 2+ pics
           navButtonsAlwaysVisible={hasMultiplePhotos}

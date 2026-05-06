@@ -77,6 +77,7 @@ interface ProfileActions {
   deletePhoto: (id: string, token: string) => Promise<void>
   addPhotoToData: (photoUrl: string) => void
   removePhotoFromData: (photoUrl: string) => void
+  replacePhotoInData: (oldUrl: string, newUrl: string) => void
 }
 
 const initialState: ProfileState & {
@@ -169,8 +170,12 @@ export const useProfileStore = create<ProfileStore>()(
           set((s) => {
             const old = s.tempPhotos.find((p) => p.id === id)
             if (old?.url?.startsWith('blob:')) URL.revokeObjectURL(old.url)
+            const updated =
+              old?.url && !old.url.startsWith('blob:')
+                ? { ...newPhoto, replacedUrl: old.url }
+                : newPhoto
             return {
-              tempPhotos: s.tempPhotos.map((p) => (p.id === id ? newPhoto : p)),
+              tempPhotos: s.tempPhotos.map((p) => (p.id === id ? updated : p)),
             }
           }),
 
@@ -305,8 +310,22 @@ export const useProfileStore = create<ProfileStore>()(
           })
         },
 
+        replacePhotoInData: (oldUrl: string, newUrl: string) => {
+          set((state) => {
+            if (!state.data) return state
+            return {
+              data: {
+                ...state.data,
+                photos: state.data.photos.map((p) =>
+                  (typeof p === 'string' ? p : p.url) === oldUrl ? newUrl : p
+                ),
+              },
+            }
+          })
+        },
+
         uploadNewPhotos: async (token: string) => {
-          const { tempPhotos, addPhotoToData } = get()
+          const { tempPhotos, addPhotoToData, replacePhotoInData } = get()
           const newPhotos = tempPhotos.filter((p) => p.blobFile)
           if (newPhotos.length === 0) return
 
@@ -324,13 +343,32 @@ export const useProfileStore = create<ProfileStore>()(
             }
           )
 
-          for (const photoUrl of cloudinaryUrls) {
-            await axios.post(
-              `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
-              { photoUrl },
-              { headers: { Authorization: `Bearer ${token}` } }
-            )
-            addPhotoToData(photoUrl)
+          for (let i = 0; i < cloudinaryUrls.length; i++) {
+            const photoUrl = cloudinaryUrls[i]
+            const photo = newPhotos[i]
+
+            if (photo.replacedUrl) {
+              await axios.delete(
+                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                {
+                  data: { photoUrl: photo.replacedUrl },
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              )
+              await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                { photoUrl },
+                { headers: { Authorization: `Bearer ${token}` } }
+              )
+              replacePhotoInData(photo.replacedUrl, photoUrl)
+            } else {
+              await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                { photoUrl },
+                { headers: { Authorization: `Bearer ${token}` } }
+              )
+              addPhotoToData(photoUrl)
+            }
           }
           set({ tempPhotos: [] })
         },
