@@ -170,16 +170,20 @@ const useStyles = makeStyles()((theme) => ({
     backgroundPosition: 'center',
     position: 'relative',
     transition: 'background-color .3s ease',
-    '&:hover': {
-      backgroundColor: theme.customPalette.authBtnBgHover,
-      cursor: 'pointer',
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': {
+        backgroundColor: theme.customPalette.authBtnBgHover,
+        cursor: 'pointer',
+      },
     },
   },
   slotDisabled: {
     backgroundColor: theme.customPalette.colorDisabledBg,
-    '&:hover': {
-      backgroundColor: theme.customPalette.colorDisabledBg,
-      cursor: 'default',
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': {
+        backgroundColor: theme.customPalette.colorDisabledBg,
+        cursor: 'default',
+      },
     },
   },
   innerBox: {
@@ -205,6 +209,8 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    '&:hover': { backgroundColor: theme.palette.primary.dark },
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': { backgroundColor: theme.palette.primary.dark },
+    },
   },
 }))
