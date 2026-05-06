@@ -1,10 +1,12 @@
 import React, { useRef } from 'react'
-import { Box, IconButton } from '@mui/material'
+import { Box, IconButton, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useProfileStore } from 'zustand/store'
 import { UserPicsType } from 'types/FirstProfile'
 import { IconClose } from 'common/svg/IconClose'
 import { IconEdit } from 'common/svg/IconEdit'
+import { IconUser } from 'common/svg/IconUser'
+import { IconCamera } from 'common/svg/IconCamera'
 import { MAX_PHOTO_SIZE_BYTES } from 'data/constants'
 
 interface SlotProps {
@@ -14,10 +16,8 @@ interface SlotProps {
   openPreviewModal: (url: string) => void
   setIsPicHuge?: (flag: boolean) => void
   resetSubmitClicked?: () => void
-  iconSlot?: React.ReactNode
   disabled?: boolean
   isAvatar?: boolean
-  onMultipleFiles?: (photos: UserPicsType[]) => void
 }
 
 const generateId = () => crypto.randomUUID()
@@ -38,13 +38,12 @@ const UploadSlot: React.FC<SlotProps> = ({
   openPreviewModal,
   setIsPicHuge,
   resetSubmitClicked,
-  iconSlot,
   disabled,
   isAvatar,
-  onMultipleFiles,
 }) => {
   const { classes, cx } = useStyles()
-  const { addTempPhoto, replaceTempPhoto } = useProfileStore()
+  const theme = useTheme()
+  const { addTempPhoto, addTempPhotos, replaceTempPhoto } = useProfileStore()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +75,7 @@ const UploadSlot: React.FC<SlotProps> = ({
         return acc
       }, [])
       if (valid.length) {
-        onMultipleFiles?.(valid)
+        addTempPhotos(valid)
         resetSubmitClicked?.()
       }
     }
@@ -91,8 +90,12 @@ const UploadSlot: React.FC<SlotProps> = ({
 
   const handleSlotClick = () => {
     if (disabled) return
-    resetSubmitClicked?.()
-    bgPic ? openPreviewModal(bgPic) : fileInputRef.current?.click()
+    if (bgPic) {
+      openPreviewModal(bgPic)
+    } else {
+      resetSubmitClicked?.()
+      fileInputRef.current?.click()
+    }
   }
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -106,7 +109,19 @@ const UploadSlot: React.FC<SlotProps> = ({
       style={{ backgroundImage: bgPic ? `url(${bgPic})` : undefined }}
       onClick={handleSlotClick}
     >
-      {!bgPic && iconSlot && <Box className={classes.innerBox}>{iconSlot}</Box>}
+      {!bgPic && (
+        <Box className={classes.innerBox}>
+          {isAvatar ? (
+            <IconUser />
+          ) : (
+            <IconCamera
+              color={
+                disabled ? theme.customPalette.colorPlaceholderText : undefined
+              }
+            />
+          )}
+        </Box>
+      )}
 
       {bgPic && isAvatar && (
         <IconButton

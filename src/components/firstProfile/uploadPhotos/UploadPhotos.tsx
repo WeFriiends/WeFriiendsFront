@@ -1,55 +1,33 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Box, Typography, FormHelperText } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import UploadSlot from './UploadSlot'
-import { IconCamera } from 'common/svg/IconCamera'
-import { IconUser } from 'common/svg/IconUser'
 import { PhotoModal } from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
-
-const firstSlotIcon = <IconUser />
-const otherSlotIcon = (
-  <IconCamera color={createTheme.customPalette.colorPlaceholderText} />
-)
+import { useRestorePhotos } from './useRestorePhotos'
 
 interface UploadPhotosProps {
   isSubmitClicked?: boolean
   resetSubmitClicked?: () => void
-  setIsPicHuge?: (flag: boolean) => void
 }
 
 export default function UploadPhotos({
   isSubmitClicked,
   resetSubmitClicked,
-  setIsPicHuge,
 }: UploadPhotosProps) {
   const { classes } = useStyles()
-  const { tempPhotos, setTempPhotos, data, deletePhoto, addTempPhotos } =
-    useProfileStore()
+  const { tempPhotos, deletePhoto } = useProfileStore()
   const { token } = useAuthStore()
 
-  const restoredRef = useRef(false)
-
-  useEffect(() => {
-    if (restoredRef.current || !data?.photos?.length) return
-    restoredRef.current = true
-    const restored: UserPicsType[] = data.photos.map((photo, i) => ({
-      id: `url-${i}`,
-      url:
-        typeof photo === 'string'
-          ? photo
-          : (photo as { url?: string })?.url ?? null,
-      blobFile: null,
-    }))
-    setTempPhotos(restored)
-  }, [data?.photos, setTempPhotos])
+  useRestorePhotos()
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [isPicHuge, setIsPicHuge] = useState(false)
 
   const slots = useMemo<UserPicsType[]>(() => {
     const count = tempPhotos.length
@@ -78,6 +56,12 @@ export default function UploadPhotos({
         </>
       )}
 
+      {isPicHuge && (
+        <Typography className={classes.errorMsg}>
+          Please note: you can&apos;t upload photo more than 5 MB
+        </Typography>
+      )}
+
       <FormHelperText className={classes.hintMsg}>
         You can&apos;t upload photo larger than 5 MB
       </FormHelperText>
@@ -99,7 +83,6 @@ export default function UploadPhotos({
             deletePhoto(deleteId, token)
             setDeleteId(null)
           }}
-          setChosenId={() => void 0}
         />
       )}
 
@@ -113,10 +96,8 @@ export default function UploadPhotos({
             openDeleteModal={(id: string) => setDeleteId(id)}
             setIsPicHuge={setIsPicHuge}
             resetSubmitClicked={resetSubmitClicked}
-            iconSlot={index === 0 ? firstSlotIcon : otherSlotIcon}
             disabled={index > 0 && !hasAvatar}
             isAvatar={index === 0}
-            onMultipleFiles={addTempPhotos}
           />
         ))}
       </Box>

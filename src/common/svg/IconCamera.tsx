@@ -1,7 +1,7 @@
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 
-export function IconCamera({ color = theme.palette.text.primary }: IconProps) {
+export function IconCamera({ color = theme.palette.primary.main }: IconProps) {
   const { classes } = useStyles()
 
   return (

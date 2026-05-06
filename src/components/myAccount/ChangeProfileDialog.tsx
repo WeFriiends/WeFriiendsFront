@@ -16,7 +16,6 @@ interface ChangeProfileDialogProps {
 const ChangeProfileDialog = forwardRef(
   (props: ChangeProfileDialogProps, ref) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isPicHuge, setIsPicHuge] = useState(false)
     const [isSubmitClicked, setIsSubmitClicked] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
@@ -25,7 +24,6 @@ const ChangeProfileDialog = forwardRef(
 
     const handleOpenChangeProfileDialog = () => {
       setIsSubmitClicked(false)
-      setIsPicHuge(false)
       setIsModalVisible(true)
     }
 
@@ -60,15 +58,9 @@ const ChangeProfileDialog = forwardRef(
         onClose={handleClose}
         width={600}
       >
-        {isPicHuge && (
-          <Typography className={classes.picError}>
-            Please note: you can&apos;t upload photo more than 5 MB
-          </Typography>
-        )}
         <UploadPhotos
           isSubmitClicked={isSubmitClicked}
           resetSubmitClicked={() => setIsSubmitClicked(false)}
-          setIsPicHuge={setIsPicHuge}
         />
         <Box className={classes.titleContainer}>
           <Typography className={classes.titleStatus}>

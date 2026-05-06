@@ -255,7 +255,6 @@ const ProfileCarousel = () => {
         <UploadPhotos
           isSubmitClicked={isSubmitClicked}
           resetSubmitClicked={() => setSubmitClicked(false)}
-          setIsPicHuge={() => null}
         />
       ),
     },

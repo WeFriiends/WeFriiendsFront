@@ -7,24 +7,20 @@ interface DeletePhotoProps {
   setIsDeleteModalOpened: (isOpened: boolean) => void
   isOpened: boolean
   deleteChosenPic: () => void
-  setChosenId: (chosenId: string) => void
 }
 
 const DeletePhotos: React.FC<DeletePhotoProps> = ({
   setIsDeleteModalOpened,
   isOpened,
   deleteChosenPic,
-  setChosenId,
 }) => {
   const { classes } = useStyles()
 
   const deleteModalClose = () => {
-    setChosenId('')
     setIsDeleteModalOpened(false)
   }
 
   const cancelHandler = () => {
-    setChosenId('')
     setIsDeleteModalOpened(false)
   }
 
