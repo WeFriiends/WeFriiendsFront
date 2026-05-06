@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from 'types/UserProfileData'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
 import theme from '../../styles/createTheme'
-import { usePotentialFriendsStore, useMatchesStore } from 'zustand/friendsStore'
+import { usePotentialFriendsStore } from 'zustand/friendsStore'
 import { useProfileStore } from 'zustand/store'
 import Loader from 'common/components/Loader'
 
@@ -30,7 +30,6 @@ const Swipes = () => {
     isLoading,
   } = usePotentialFriendsStore()
 
-  const { addFriend } = useMatchesStore()
   const { data: profile } = useProfileStore()
 
   // Fetch potential friends when profile is loaded
@@ -72,14 +71,12 @@ const Swipes = () => {
 
   const onBeFriend = () => {
     if (currentPotentialFriend.likedMe) {
-      addFriend(currentPotentialFriend.id)
       setMatchedUser({
         id: currentPotentialFriend.id,
         avatar: currentPotentialFriend.photos[0].src,
       })
-    } else {
-      handleLike(currentPotentialFriend.id)
     }
+    handleLike(currentPotentialFriend.id)
     goToNextPotentialFriend(currentPotentialFriend)
   }
 
