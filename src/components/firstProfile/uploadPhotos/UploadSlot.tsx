@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { ChangeEvent, MouseEvent, useRef } from 'react'
 import { Box, IconButton, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useProfileStore } from 'zustand/store'
@@ -15,7 +15,6 @@ interface SlotProps {
   openDeleteModal: (slotId: string) => void
   openPreviewModal: (url: string) => void
   setIsPicHuge?: (flag: boolean) => void
-  resetSubmitClicked?: () => void
   disabled?: boolean
   isAvatar?: boolean
 }
@@ -31,22 +30,21 @@ const wrapFile = (file: File): UserPicsType => ({
   fileName: file.name,
 })
 
-const UploadSlot: React.FC<SlotProps> = ({
+const UploadSlot = ({
   id,
   bgPic,
   openDeleteModal,
   openPreviewModal,
   setIsPicHuge,
-  resetSubmitClicked,
   disabled,
   isAvatar,
-}) => {
+}: SlotProps) => {
   const { classes, cx } = useStyles()
   const theme = useTheme()
   const { addTempPhoto, addTempPhotos, replaceTempPhoto } = useProfileStore()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
     if (!files.length) return
 
@@ -63,7 +61,6 @@ const UploadSlot: React.FC<SlotProps> = ({
       } else {
         addTempPhoto(photo)
       }
-      resetSubmitClicked?.()
     } else {
       const valid = files.reduce<UserPicsType[]>((acc, file) => {
         if (isFileTooLarge(file)) {
@@ -76,14 +73,13 @@ const UploadSlot: React.FC<SlotProps> = ({
       }, [])
       if (valid.length) {
         addTempPhotos(valid)
-        resetSubmitClicked?.()
       }
     }
 
     e.target.value = ''
   }
 
-  const handleEditAvatarClick = (e: React.MouseEvent) => {
+  const handleEditAvatarClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     fileInputRef.current?.click()
   }
@@ -93,12 +89,11 @@ const UploadSlot: React.FC<SlotProps> = ({
     if (bgPic) {
       openPreviewModal(bgPic)
     } else {
-      resetSubmitClicked?.()
       fileInputRef.current?.click()
     }
   }
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     openDeleteModal(id)
   }
@@ -176,13 +171,16 @@ const useStyles = makeStyles()((theme) => ({
     position: 'relative',
     transition: 'background-color .3s ease',
     '&:hover': {
-      backgroundColor: '#ffe5d1',
+      backgroundColor: theme.customPalette.authBtnBgHover,
       cursor: 'pointer',
     },
   },
   slotDisabled: {
-    backgroundColor: '#F0F0F0',
-    '&:hover': { backgroundColor: '#F0F0F0', cursor: 'default' },
+    backgroundColor: theme.customPalette.colorDisabledBg,
+    '&:hover': {
+      backgroundColor: theme.customPalette.colorDisabledBg,
+      cursor: 'default',
+    },
   },
   innerBox: {
     width: 24,

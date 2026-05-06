@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Box, Typography, FormHelperText } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
@@ -10,16 +10,8 @@ import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
 import { useRestorePhotos } from './useRestorePhotos'
 
-interface UploadPhotosProps {
-  isSubmitClicked?: boolean
-  resetSubmitClicked?: () => void
-}
-
-export default function UploadPhotos({
-  isSubmitClicked,
-  resetSubmitClicked,
-}: UploadPhotosProps) {
-  const { classes } = useStyles()
+const UploadPhotos = () => {
+  const { classes, cx } = useStyles()
   const { tempPhotos, deletePhoto } = useProfileStore()
   const { token } = useAuthStore()
 
@@ -45,9 +37,9 @@ export default function UploadPhotos({
 
   return (
     <>
-      {isSubmitClicked && tempPhotos.length === 0 && (
+      {tempPhotos.length === 0 && (
         <>
-          <Typography className={classes.errorTitle}>
+          <Typography className={classes.title}>
             Upload at least 1 photo
           </Typography>
           <Typography className={classes.hint}>
@@ -56,15 +48,11 @@ export default function UploadPhotos({
         </>
       )}
 
-      {isPicHuge && (
-        <Typography className={classes.errorMsg}>
-          Please note: you can&apos;t upload photo more than 5 MB
-        </Typography>
-      )}
-
-      <FormHelperText className={classes.hintMsg}>
-        You can&apos;t upload photo larger than 5 MB
-      </FormHelperText>
+      <Typography
+        className={cx(classes.hintMsg, isPicHuge && classes.errorMsg)}
+      >
+        Please note: you can&apos;t upload photo more than 5 MB
+      </Typography>
 
       {previewUrl && (
         <PhotoModal
@@ -95,7 +83,6 @@ export default function UploadPhotos({
             openPreviewModal={(url: string) => setPreviewUrl(url)}
             openDeleteModal={(id: string) => setDeleteId(id)}
             setIsPicHuge={setIsPicHuge}
-            resetSubmitClicked={resetSubmitClicked}
             disabled={index > 0 && !hasAvatar}
             isAvatar={index === 0}
           />
@@ -104,6 +91,8 @@ export default function UploadPhotos({
     </>
   )
 }
+
+export default UploadPhotos
 
 const useStyles = makeStyles()(() => ({
   picContainer: {
@@ -116,7 +105,7 @@ const useStyles = makeStyles()(() => ({
   },
   title: {
     fontWeight: 600,
-    fontSize: 18,
+    fontSize: 15,
     textAlign: 'center',
     color: createTheme.palette.text.primary,
   },
@@ -127,17 +116,10 @@ const useStyles = makeStyles()(() => ({
   },
   hintMsg: {
     fontSize: 13,
+    color: createTheme.palette.secondary.main,
     textAlign: 'center',
   },
   errorMsg: {
-    fontSize: 13,
-    textAlign: 'center',
-    color: createTheme.palette.primary.dark,
-  },
-  errorTitle: {
-    fontWeight: 600,
-    fontSize: 18,
-    textAlign: 'center',
     color: createTheme.palette.primary.dark,
   },
 }))
