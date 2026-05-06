@@ -12,6 +12,9 @@ import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
 import axios from 'axios'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
+import { PHOTO_ENDPOINTS } from 'actions/endpoints'
+
+const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
 
 interface AuthState {
   token: string | null
@@ -333,7 +336,7 @@ export const useProfileStore = create<ProfileStore>()(
           newPhotos.forEach((p) => formData.append('images', p.blobFile!))
 
           const { data: cloudinaryUrls } = await axios.post<string[]>(
-            `${process.env.REACT_APP_API_BASE_URL}/api/photos/upload`,
+            `${API_BASE}/${PHOTO_ENDPOINTS.upload}`,
             formData,
             {
               headers: {
@@ -348,22 +351,19 @@ export const useProfileStore = create<ProfileStore>()(
             const photo = newPhotos[i]
 
             if (photo.replacedUrl) {
-              await axios.delete(
-                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
-                {
-                  data: { photoUrl: photo.replacedUrl },
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              )
+              await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
+                data: { photoUrl: photo.replacedUrl },
+                headers: { Authorization: `Bearer ${token}` },
+              })
               await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
                 { photoUrl },
                 { headers: { Authorization: `Bearer ${token}` } }
               )
               replacePhotoInData(photo.replacedUrl, photoUrl)
             } else {
               await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
+                `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
                 { photoUrl },
                 { headers: { Authorization: `Bearer ${token}` } }
               )
@@ -379,13 +379,10 @@ export const useProfileStore = create<ProfileStore>()(
           if (!photo) return
 
           if (!photo.blobFile && photo.url) {
-            await axios.delete(
-              `${process.env.REACT_APP_API_BASE_URL}/api/photos`,
-              {
-                data: { photoUrl: photo.url },
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            )
+            await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
+              data: { photoUrl: photo.url },
+              headers: { Authorization: `Bearer ${token}` },
+            })
             removePhotoFromData(photo.url)
           }
 

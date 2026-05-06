@@ -11,3 +11,8 @@ export const LIKE_ENDPOINTS = {
   likes: 'likes',
   onMe: 'likes/on-me',
 } as const
+
+export const PHOTO_ENDPOINTS = {
+  upload: 'photos/upload',
+  base: 'photos',
+} as const
