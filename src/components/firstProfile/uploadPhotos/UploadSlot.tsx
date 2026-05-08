@@ -1,9 +1,13 @@
-import React, { useRef } from 'react'
-import { Box, Typography } from '@mui/material'
+import { ChangeEvent, MouseEvent, useRef } from 'react'
+import { Box, IconButton, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import createTheme from 'styles/createTheme'
 import { useProfileStore } from 'zustand/store'
 import { UserPicsType } from 'types/FirstProfile'
+import { IconClose } from 'common/svg/IconClose'
+import { IconEdit } from 'common/svg/IconEdit'
+import { IconUser } from 'common/svg/IconUser'
+import { IconCamera } from 'common/svg/IconCamera'
+import { MAX_PHOTO_SIZE_BYTES } from 'data/constants'
 
 interface SlotProps {
   id: string
@@ -11,125 +15,202 @@ interface SlotProps {
   openDeleteModal: (slotId: string) => void
   openPreviewModal: (url: string) => void
   setIsPicHuge?: (flag: boolean) => void
-  resetSubmitClicked?: () => void
+  disabled?: boolean
+  isAvatar?: boolean
 }
 
-const UploadSlot: React.FC<SlotProps> = ({
+const generateId = () => crypto.randomUUID()
+
+const isFileTooLarge = (file: File) => file.size > MAX_PHOTO_SIZE_BYTES
+
+const wrapFile = (file: File): UserPicsType => ({
+  id: generateId(),
+  url: URL.createObjectURL(file),
+  blobFile: file,
+  fileName: file.name,
+})
+
+const UploadSlot = ({
   id,
   bgPic,
   openDeleteModal,
   openPreviewModal,
   setIsPicHuge,
-  resetSubmitClicked,
-}) => {
-  const { addTempPhoto } = useProfileStore()
-
-  const { classes } = useStyles()
+  disabled,
+  isAvatar,
+}: SlotProps) => {
+  const { classes, cx } = useStyles()
+  const theme = useTheme()
+  const { addTempPhoto, addTempPhotos, replaceTempPhoto } = useProfileStore()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
 
-    const MAX = 5 * 1024 * 1024
-    if (file.size > MAX) {
-      setIsPicHuge?.(true)
-      return
+    if (isAvatar) {
+      const [file] = files
+      if (isFileTooLarge(file)) {
+        setIsPicHuge?.(true)
+        return
+      }
+      setIsPicHuge?.(false)
+      const photo = wrapFile(file)
+      if (bgPic) {
+        replaceTempPhoto(id, photo)
+      } else {
+        addTempPhoto(photo)
+      }
+    } else {
+      const valid = files.reduce<UserPicsType[]>((acc, file) => {
+        if (isFileTooLarge(file)) {
+          setIsPicHuge?.(true)
+          return acc
+        }
+        setIsPicHuge?.(false)
+        acc.push(wrapFile(file))
+        return acc
+      }, [])
+      if (valid.length) {
+        addTempPhotos(valid)
+      }
     }
-    setIsPicHuge?.(false)
 
-    const url = URL.createObjectURL(file)
-    const generatedId = () =>
-      Date.now().toString() + Math.random().toString(36).slice(2, 7)
+    e.target.value = ''
+  }
 
-    const temp: UserPicsType = {
-      id: generatedId(),
-      url,
-      blobFile: file,
-      fileName: file.name,
-    }
-    addTempPhoto(temp)
-
-    resetSubmitClicked?.()
+  const handleEditAvatarClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    fileInputRef.current?.click()
   }
 
   const handleSlotClick = () => {
-    resetSubmitClicked?.()
-    bgPic ? openPreviewModal(bgPic) : fileInputRef.current?.click()
+    if (disabled) return
+    if (bgPic) {
+      openPreviewModal(bgPic)
+    } else {
+      fileInputRef.current?.click()
+    }
   }
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     openDeleteModal(id)
   }
 
   return (
     <Box
-      className={classes.slot}
+      className={cx(classes.slot, disabled && classes.slotDisabled)}
       style={{ backgroundImage: bgPic ? `url(${bgPic})` : undefined }}
       onClick={handleSlotClick}
     >
       {!bgPic && (
         <Box className={classes.innerBox}>
-          <img src="/img/add-icon.svg" alt="add" />
-          <Typography className={classes.text}>Upload</Typography>
+          {isAvatar ? (
+            <IconUser />
+          ) : (
+            <IconCamera
+              color={
+                disabled ? theme.customPalette.colorPlaceholderText : undefined
+              }
+            />
+          )}
         </Box>
       )}
 
-      {bgPic && (
-        <img
-          src="/img/add-icon.svg"
-          alt="remove"
-          className={classes.closeIcon}
-          onClick={handleDeleteClick}
-        />
+      {bgPic && isAvatar && (
+        <IconButton
+          className={classes.actionIcon}
+          onClick={handleEditAvatarClick}
+          size="small"
+        >
+          <Box className={classes.editIconCircle}>
+            <IconEdit />
+          </Box>
+        </IconButton>
       )}
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".png,.jpg,.jpeg"
-        className={classes.hiddenInput}
-        onChange={handleChange}
-      />
+      {bgPic && !isAvatar && (
+        <IconButton
+          className={classes.actionIcon}
+          onClick={handleDeleteClick}
+          size="small"
+        >
+          <Box className={classes.editIconCircle}>
+            <IconClose />
+          </Box>
+        </IconButton>
+      )}
+
+      {!disabled && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".png,.jpg,.jpeg"
+          multiple={!isAvatar}
+          className={classes.hiddenInput}
+          onClick={(e) => e.stopPropagation()}
+          onChange={handleChange}
+        />
+      )}
     </Box>
   )
 }
 
 export default UploadSlot
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   slot: {
     borderRadius: 10,
-    padding: '47px 29px',
+    display: 'flex',
     width: 103,
     height: 140,
-    backgroundColor: '#fff1ec',
+    backgroundColor: theme.customPalette.authBtnBg,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     position: 'relative',
     transition: 'background-color .3s ease',
-    '&:hover': { backgroundColor: '#ffe5d1', cursor: 'pointer' },
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': {
+        backgroundColor: theme.customPalette.authBtnBgHover,
+        cursor: 'pointer',
+      },
+    },
+  },
+  slotDisabled: {
+    backgroundColor: theme.customPalette.colorDisabledBg,
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': {
+        backgroundColor: theme.customPalette.colorDisabledBg,
+        cursor: 'default',
+      },
+    },
   },
   innerBox: {
-    width: 44,
-    height: 45,
+    width: 24,
+    height: 24,
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-  },
-  text: {
-    fontWeight: 700,
-    fontSize: 12,
-    lineHeight: '167%',
-    color: createTheme.palette.primary.main,
-    userSelect: 'none',
+    justifyContent: 'center',
+    margin: 'auto',
   },
   hiddenInput: { display: 'none' },
-  closeIcon: {
+  actionIcon: {
     position: 'absolute',
-    bottom: -8,
-    right: -8,
-    transform: 'rotate(45deg)',
+    bottom: -10,
+    right: -10,
+  },
+  editIconCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: '50%',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': { backgroundColor: theme.palette.primary.dark },
+    },
   },
 }))

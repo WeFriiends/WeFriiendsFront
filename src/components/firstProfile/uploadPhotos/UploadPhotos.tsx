@@ -1,63 +1,45 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { Box, Typography, FormHelperText } from '@mui/material'
+import { useMemo, useState } from 'react'
+import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
+import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import UploadSlot from './UploadSlot'
 import { PhotoModal } from './PhotoModal'
 import DeletePhoto from './DeletePhoto'
 import { UserPicsType } from 'types/FirstProfile'
+import { useRestorePhotos } from './useRestorePhotos'
 
-interface Props {
-  isSubmitClicked?: boolean
-  resetSubmitClicked?: () => void
-  setIsPicHuge?: (flag: boolean) => void
-}
-
-const UploadPhotos: React.FC<Props> = ({
-  isSubmitClicked,
-  resetSubmitClicked,
-  setIsPicHuge,
-}) => {
-  const { tempPhotos, setTempPhotos, data, deletePhoto } = useProfileStore()
+const UploadPhotos = () => {
+  const { classes, cx } = useStyles()
+  const { tempPhotos, deletePhoto } = useProfileStore()
   const { token } = useAuthStore()
 
-  useEffect(() => {
-    if (data?.photos?.length && tempPhotos.length === 0) {
-      const restored: UserPicsType[] = data.photos.map((photo, i) => ({
-        id: `url-${i}`,
-        url:
-          typeof photo === 'string'
-            ? photo
-            : (photo as { url?: string })?.url ?? null,
-        blobFile: null,
-      }))
-      setTempPhotos(restored)
-    }
-  }, [data?.photos, tempPhotos.length, setTempPhotos])
+  useRestorePhotos()
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [isPicHuge, setIsPicHuge] = useState(false)
 
   const slots = useMemo<UserPicsType[]>(() => {
     const count = tempPhotos.length
-    const empties = Array.from({ length: Math.max(0, 6 - count) }).map(
-      (_, i) => ({
-        id: `empty-${i}`,
-        url: null,
-        blobFile: null,
-      })
-    )
+    const empties = Array.from({
+      length: Math.max(0, MAX_PROFILE_PHOTOS - count),
+    }).map((_, i) => ({
+      id: `empty-${i}`,
+      url: null,
+      blobFile: null,
+    }))
     return [...tempPhotos, ...empties]
   }, [tempPhotos])
 
-  const { classes } = useStyles()
+  const hasAvatar = tempPhotos.length > 0
 
   return (
     <>
-      {isSubmitClicked && tempPhotos.length === 0 && (
+      {tempPhotos.length === 0 && (
         <>
-          <Typography className={classes.errorTitle}>
+          <Typography className={classes.title}>
             Upload at least 1 photo
           </Typography>
           <Typography className={classes.hint}>
@@ -66,9 +48,11 @@ const UploadPhotos: React.FC<Props> = ({
         </>
       )}
 
-      <FormHelperText className={classes.hintMsg}>
-        You can&apos;t upload photo larger than 5 MB
-      </FormHelperText>
+      <Typography
+        className={cx(classes.hintMsg, isPicHuge && classes.errorMsg)}
+      >
+        Please note: you can&apos;t upload photo more than 5 MB
+      </Typography>
 
       {previewUrl && (
         <PhotoModal
@@ -83,15 +67,15 @@ const UploadPhotos: React.FC<Props> = ({
           isOpened
           setIsDeleteModalOpened={() => setDeleteId(null)}
           deleteChosenPic={() => {
-            deletePhoto(deleteId, token!)
+            if (!token) return
+            deletePhoto(deleteId, token)
             setDeleteId(null)
           }}
-          setChosenId={() => void 0}
         />
       )}
 
       <Box className={classes.picContainer}>
-        {slots.map((p) => (
+        {slots.map((p, index) => (
           <UploadSlot
             key={p.id}
             id={p.id}
@@ -99,7 +83,8 @@ const UploadPhotos: React.FC<Props> = ({
             openPreviewModal={(url: string) => setPreviewUrl(url)}
             openDeleteModal={(id: string) => setDeleteId(id)}
             setIsPicHuge={setIsPicHuge}
-            resetSubmitClicked={resetSubmitClicked}
+            disabled={index > 0 && !hasAvatar}
+            isAvatar={index === 0}
           />
         ))}
       </Box>
@@ -120,7 +105,7 @@ const useStyles = makeStyles()(() => ({
   },
   title: {
     fontWeight: 600,
-    fontSize: 18,
+    fontSize: 15,
     textAlign: 'center',
     color: createTheme.palette.text.primary,
   },
@@ -131,17 +116,10 @@ const useStyles = makeStyles()(() => ({
   },
   hintMsg: {
     fontSize: 13,
+    color: createTheme.palette.secondary.main,
     textAlign: 'center',
   },
   errorMsg: {
-    fontSize: 13,
-    textAlign: 'center',
-    color: createTheme.palette.primary.dark,
-  },
-  errorTitle: {
-    fontWeight: 600,
-    fontSize: 18,
-    textAlign: 'center',
     color: createTheme.palette.primary.dark,
   },
 }))

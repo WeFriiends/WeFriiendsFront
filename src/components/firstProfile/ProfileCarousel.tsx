@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import GenericCarousel from '../../common/components/Carousel'
 import useHandleCarousel from 'hooks/useHandleCarousel'
 import NameInput from './name/NameInput'
@@ -42,7 +42,6 @@ const ProfileCarousel = () => {
   const [showDobError, setShowDobError] = useState(false)
   const [showGenderError, setShowGenderError] = useState(false)
   const [aboutMeError, setAboutMeError] = useState(false)
-  const [isSubmitClicked, setSubmitClicked] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
 
   const [name, setName] = useState<string>(
@@ -249,16 +248,7 @@ const ProfileCarousel = () => {
         />
       ),
     },
-    {
-      label: 'photos',
-      component: (
-        <UploadPhotos
-          isSubmitClicked={isSubmitClicked}
-          resetSubmitClicked={() => setSubmitClicked(false)}
-          setIsPicHuge={() => null}
-        />
-      ),
-    },
+    { label: 'photos', component: <UploadPhotos /> },
   ]
 
   const { classes } = useStyles()
@@ -283,7 +273,11 @@ const ProfileCarousel = () => {
             <PrimaryButton label="Next" onClickHandler={handleNext} />
           )}
           {activeStep === steps.length - 1 && (
-            <PrimaryButton label="Submit" onClickHandler={onSubmit} />
+            <PrimaryButton
+              label="Submit"
+              onClickHandler={onSubmit}
+              disabled={tempPhotos.length === 0}
+            />
           )}
 
           <MobileStepper

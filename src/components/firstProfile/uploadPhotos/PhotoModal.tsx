@@ -15,7 +15,10 @@ export const PhotoModal = ({
 }: PhotoModalProps) => {
   const { classes } = useStyles()
 
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [dimensions, setDimensions] = useState<{
+    width: number
+    height: number
+  } | null>(null)
 
   useEffect(() => {
     const img = new Image()
@@ -26,28 +29,20 @@ export const PhotoModal = ({
     }
   }, [url])
 
-  const { width: imgWidth, height: imgHeight } = dimensions
-  let displayedWidth: number = imgWidth
-  let displayedHeight: number = imgHeight
-
-  const windowWidth = window.innerWidth
-  const windowHeight = window.innerHeight
-
-  const widthScale = (windowWidth * 0.9) / imgWidth
-  const heightScale = (windowHeight * 0.9) / imgHeight
-
-  const scale = Math.min(widthScale, heightScale)
-
-  displayedWidth = imgWidth * scale
-  displayedHeight = imgHeight * scale
-
-  const style = {
-    backgroundImage: `url(${url})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    width: displayedWidth,
-    height: displayedHeight,
-  }
+  const style = dimensions
+    ? (() => {
+        const widthScale = (window.innerWidth * 0.9) / dimensions.width
+        const heightScale = (window.innerHeight * 0.9) / dimensions.height
+        const scale = Math.min(widthScale, heightScale)
+        return {
+          backgroundImage: `url(${url})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          width: dimensions.width * scale,
+          height: dimensions.height * scale,
+        }
+      })()
+    : undefined
 
   return (
     <Modal className={classes.modal} open={isOpened}>

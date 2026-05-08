@@ -64,6 +64,7 @@ const theme = {
     authBtnBg: '#FFF1EC',
     authBtnBgHover: '#FECAB7',
     colorPeach: '#FEDED2',
+    colorDisabledBg: '#EEEEEE',
   },
   customDimensions: {
     sidebarWidth: {
