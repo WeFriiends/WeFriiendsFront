@@ -41,7 +41,7 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
         senderId: userId,
         receiverId: chat.id,
         text: messageText,
-        seen: false,
+        isSeen: false,
       })
 
       setMessageText('')

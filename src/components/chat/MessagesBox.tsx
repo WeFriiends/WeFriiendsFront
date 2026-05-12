@@ -2,11 +2,14 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { Message } from 'types/Chat'
 import { useAuth0 } from '@auth0/auth0-react'
-import { formatTimestamp } from 'utils/formatTimestamp'
+import { formatTime } from 'utils/formatTime'
 import { scrollbarStyles } from 'styles/globalScrollbar'
 import { useEffect, useRef } from 'react'
 import { useChatStore } from 'zustand/chatStore'
 import Loader from 'common/components/Loader'
+import { db } from 'services/firebase'
+import { updateDoc, doc } from 'firebase/firestore'
+import { useTheme } from '@mui/material/styles'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -19,6 +22,8 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const { loading, loadOlderMessages } = useChatStore()
   const topRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const theme = useTheme()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -38,6 +43,34 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView()
   }, [messages, loading])
+
+  useEffect(() => {
+    if (!userId || messages.length === 0) return
+
+    const markMessagesAsRead = async () => {
+      const unreadMessages = messages.filter(
+        (msg) => msg.senderId !== userId && !msg.isSeen
+      )
+
+      if (unreadMessages.length === 0) return
+
+      const updates = unreadMessages
+        .filter((msg) => msg.chatId)
+        .map((msg) =>
+          updateDoc(
+            doc(db, 'conversations', msg.chatId, 'messages', msg.messageId),
+            { isSeen: true }
+          )
+        )
+
+      if (updates.length === 0) return
+
+      await Promise.all(updates)
+    }
+
+    markMessagesAsRead()
+  }, [messages, userId])
+
   return (
     <Box className={classes.messagesArea}>
       {loading && messages.length === 0 && <Loader />}
@@ -47,20 +80,30 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
         return (
           <Box
             key={message.messageId}
-            className={`${classes.message} ${
-              isMessageMine ? classes.sentMessage : classes.receivedMessage
-            }`}
+            className={`${classes.message} ${isMessageMine ? classes.sentMessage : classes.receivedMessage
+              }`}
           >
             <Typography className={classes.messageText}>
               {message.message}
             </Typography>
+
             <Typography
-              className={`${classes.messageDate} ${
-                isMessageMine ? classes.sentDate : classes.receivedDate
-              }`}
+              className={`${classes.messageDate} ${isMessageMine ? classes.sentDate : classes.receivedDate
+                }`}
             >
-              {formatTimestamp(message.timestamp)}
+              <span>{formatTime(message.timestamp)}</span>
+
+              {isMessageMine && (
+                <span className={classes.statusIcons}>
+                  {message.isSeen ? (
+                    <span className={classes.doubleCheck}>✓✓</span>
+                  ) : (
+                    <span className={classes.singleCheck}>✓</span>
+                  )}
+                </span>
+              )}
             </Typography>
+
             <div ref={bottomRef} />
           </Box>
         )
@@ -104,9 +147,11 @@ const useStyles = makeStyles()((theme) => ({
     color: theme.palette.text.primary,
   },
   messageDate: {
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 400,
     fontSize: '12px',
-    lineHeight: '15.6px',
-    color: 'rgba(68, 68, 68, 0.8)',
+    lineHeight: '16px',
+    color: theme.palette.text.primary,
     marginTop: 5,
   },
   sentDate: {
@@ -118,5 +163,19 @@ const useStyles = makeStyles()((theme) => ({
   observer: {
     height: '10px',
     minHeight: '10px',
+  },
+  statusIcons: {
+    marginLeft: '8px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  singleCheck: {
+    color: theme.palette.text.primary,
+    fontSize: '14px',
+  },
+  doubleCheck: {
+    color: theme.palette.primary.main,
+    fontSize: '14px',
   },
 }))

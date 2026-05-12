@@ -12,6 +12,8 @@ export function mapFirestoreDocToMessage(doc: QueryDocumentSnapshot): Message {
         ? data.createdAt.toDate().toISOString()
         : new Date().toISOString(),
     message: data.text,
-    readStatus: !data.seen,
+    isSeen: data.isSeen || false,
+    readStatus: data.isSeen || false,
+    chatId: data.chatId,
   }
 }

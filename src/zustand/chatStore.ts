@@ -26,7 +26,7 @@ interface FirestoreMessage {
   receiverId: string
   text: string
   createdAt: any
-  seen: boolean
+  isSeen: boolean
 }
 
 interface ChatState {
@@ -151,7 +151,7 @@ export const useChatStore = create<ChatState>()(
                   ? data.createdAt.toDate().toISOString()
                   : new Date().toISOString(),
               message: data.text,
-              readStatus: !data.seen,
+              readStatus: !data.isSeen,
             }
           }) as Message[]
 
@@ -458,7 +458,8 @@ export const useChatStore = create<ChatState>()(
             receiverId: message.receiverId,
             text: message.text,
             createdAt: serverTimestamp(),
-            seen: false,
+            isSeen: false,
+            chatId: conversationId,
           })
 
           // Update the conversation document with the last message info
