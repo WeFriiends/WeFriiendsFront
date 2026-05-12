@@ -50,8 +50,7 @@ const ReportDialog = forwardRef((props: ReportDialogProps, ref) => {
   return (
     <CommonModal
       isOpened={isModalVisible}
-      modalTitle={'Report User'}
-      modalDescription={'Choose an action to report or block the user.'}
+      ariaLabel="Report User"
       onClose={handleClose}
       height={modalHeight}
     >

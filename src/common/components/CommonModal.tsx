@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Box, Modal, Icon } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { makeStyles } from 'tss-react/mui'
@@ -7,23 +7,26 @@ import theme from '../../styles/createTheme'
 type CommonModalProps = {
   children: ReactNode
   isOpened: boolean
-  modalTitle: string
-  modalDescription: string
+  modalDescriptionID?: string
   onClose: () => void
   height?: 240 | 320 | 370 | 470 | 605
   width?: 600
   contentOverflow?: 'auto' | 'visible' | 'hidden'
-}
+} & (
+  | { ariaLabel: string; modalTitleID?: never }
+  | { ariaLabel?: never; modalTitleID: string }
+)
 
 export const CommonModal = ({
   children,
   isOpened,
-  modalTitle,
-  modalDescription,
+  modalTitleID,
+  modalDescriptionID,
   onClose,
   height,
   width,
   contentOverflow = 'auto',
+  ariaLabel,
 }: CommonModalProps) => {
   const { classes } = useStyles()
 
@@ -31,8 +34,9 @@ export const CommonModal = ({
     <Modal
       className={classes.modal}
       open={isOpened}
-      aria-labelledby={modalTitle}
-      aria-describedby={modalDescription}
+      aria-label={ariaLabel}
+      aria-labelledby={modalTitleID}
+      aria-describedby={modalDescriptionID}
       onClose={onClose}
     >
       <Box
@@ -97,7 +101,7 @@ const useStyles = makeStyles()(() => ({
     right: 15,
     top: 15,
     minWidth: 0,
-    '&: hover': {
+    '&:hover': {
       transform: 'scale(105%)',
       cursor: 'pointer',
     },

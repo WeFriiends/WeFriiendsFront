@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { Box, Avatar, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
@@ -19,6 +20,8 @@ export function Match({
   currentUserAvatar = '/img/firstProfile/female.svg',
 }: MatchProps) {
   const { classes } = useStyles()
+  const titleId = useId()
+  const descriptionId = useId()
   const startChatWith = useStartChatWith()
 
   function handleStartChat() {
@@ -31,8 +34,8 @@ export function Match({
     <CommonModal
       isOpened={!!matchedUser}
       onClose={onClose}
-      modalTitle={'modal-modal-title'}
-      modalDescription={'modal-modal-description'}
+      modalTitleID={titleId}
+      modalDescriptionID={descriptionId}
       height={605}
     >
       <Box className={classes.matchContainer}>
@@ -44,10 +47,10 @@ export function Match({
           />
         </Box>
         <Box className={classes.info}>
-          <Typography variant="h1" className={classes.title}>
+          <Typography variant="h1" id={titleId} className={classes.title}>
             Wow! It’s a Match!
           </Typography>
-          <Typography className={classes.subTitle}>
+          <Typography id={descriptionId} className={classes.subTitle}>
             Hurry up to say hello to your new friend!
           </Typography>
         </Box>
