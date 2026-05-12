@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Box, Modal, Icon } from '@mui/material'
+import { Box, Modal } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
@@ -9,8 +9,8 @@ type CommonModalProps = {
   isOpened: boolean
   modalDescriptionID?: string
   onClose: () => void
-  height?: 240 | 320 | 370 | 470 | 605
-  width?: 600
+  height?: number | 'auto'
+  width?: number
   contentOverflow?: 'auto' | 'visible' | 'hidden'
 } & (
   | { ariaLabel: string; modalTitleID?: never }
@@ -23,8 +23,8 @@ export const CommonModal = ({
   modalTitleID,
   modalDescriptionID,
   onClose,
-  height,
-  width,
+  height = 'auto',
+  width = 370,
   contentOverflow = 'auto',
   ariaLabel,
 }: CommonModalProps) => {
@@ -39,20 +39,14 @@ export const CommonModal = ({
       aria-describedby={modalDescriptionID}
       onClose={onClose}
     >
-      <Box
-        className={classes.wrapper}
-        sx={{ height: height ? height : 655, width: width ? width : 370 }}
-      >
+      <Box className={classes.wrapper} sx={{ height, width }}>
         <IconButton
-          disableRipple={true}
-          disableFocusRipple={true}
+          disableRipple
           aria-label="close modal"
           className={classes.closeButton}
           onClick={onClose}
         >
-          <Icon>
-            <img src="/img/icon-close-modal.svg" alt="Close" />
-          </Icon>
+          <img src="/img/icon-close-modal.svg" alt="Close" />
         </IconButton>
         <Box
           className={classes.wrapperContent}
