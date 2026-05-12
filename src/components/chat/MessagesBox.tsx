@@ -9,6 +9,9 @@ import { useChatStore } from 'zustand/chatStore'
 import Loader from 'common/components/Loader'
 import { db } from 'services/firebase'
 import { updateDoc, doc } from 'firebase/firestore'
+import { SingleCheck } from 'common/svg/SingleCheck'
+import { DoubleCheck } from 'common/svg/DoubleCheck'
+import { useTheme } from '@mui/material/styles'
 
 interface MessagesBoxProps {
   messages: Message[]
@@ -21,6 +24,8 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const { loading, loadOlderMessages } = useChatStore()
   const topRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const theme = useTheme()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,9 +100,9 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
               {isMessageMine && (
                 <span className={classes.statusIcons}>
                   {message.isSeen ? (
-                    <span className={classes.doubleCheck}>✓✓</span>
+                    <DoubleCheck color={theme.palette.primary.main} />
                   ) : (
-                    <span className={classes.singleCheck}>✓</span>
+                    <SingleCheck color={theme.palette.text.primary} />
                   )}
                 </span>
               )}
@@ -164,10 +169,12 @@ const useStyles = makeStyles()((theme) => ({
     minHeight: '10px',
   },
   statusIcons: {
-    marginLeft: '8px',
+    marginLeft: '2px',
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '2px',
+    verticalAlign: 'middle',
+    lineHeight: 1,
   },
   singleCheck: {
     color: theme.palette.text.primary,
@@ -176,5 +183,6 @@ const useStyles = makeStyles()((theme) => ({
   doubleCheck: {
     color: theme.palette.primary.main,
     fontSize: '14px',
+    letterSpacing: '-5px',
   },
 }))
