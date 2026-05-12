@@ -9,7 +9,6 @@ import { useChatStore } from 'zustand/chatStore'
 import Loader from 'common/components/Loader'
 import { db } from 'services/firebase'
 import { updateDoc, doc } from 'firebase/firestore'
-import { useTheme } from '@mui/material/styles'
 
 interface MessagesBoxProps {
   messages: Message[]
