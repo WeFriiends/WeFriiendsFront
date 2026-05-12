@@ -80,16 +80,18 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
         return (
           <Box
             key={message.messageId}
-            className={`${classes.message} ${isMessageMine ? classes.sentMessage : classes.receivedMessage
-              }`}
+            className={`${classes.message} ${
+              isMessageMine ? classes.sentMessage : classes.receivedMessage
+            }`}
           >
             <Typography className={classes.messageText}>
               {message.message}
             </Typography>
 
             <Typography
-              className={`${classes.messageDate} ${isMessageMine ? classes.sentDate : classes.receivedDate
-                }`}
+              className={`${classes.messageDate} ${
+                isMessageMine ? classes.sentDate : classes.receivedDate
+              }`}
             >
               <span>{formatTime(message.timestamp)}</span>
 
