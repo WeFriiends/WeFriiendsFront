@@ -23,8 +23,6 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const topRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const theme = useTheme()
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
