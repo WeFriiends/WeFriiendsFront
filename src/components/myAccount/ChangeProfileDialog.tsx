@@ -49,10 +49,10 @@ const ChangeProfileDialog = forwardRef(
     return (
       <CommonModal
         isOpened={isModalVisible}
-        modalTitle={'Edit Profile'}
-        modalDescription={'Update your profile photos and preferences.'}
+        ariaLabel="Edit Profile"
         onClose={handleClose}
         width={600}
+        height={655}
       >
         <UploadPhotos />
         <Box className={classes.titleContainer}>

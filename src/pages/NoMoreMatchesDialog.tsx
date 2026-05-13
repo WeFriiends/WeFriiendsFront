@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, Ref, useImperativeHandle } from 'react'
+import { useState, forwardRef, Ref, useImperativeHandle, useId } from 'react'
 import { Box, Button, Typography } from '@mui/material'
 import { CommonModal } from 'common/components/CommonModal'
 import { makeStyles } from 'tss-react/mui'
@@ -15,6 +15,8 @@ interface NoMoreMatchesDialogProps {
 const NoMoreMatchesDialog = forwardRef(
   (props: NoMoreMatchesDialogProps, ref) => {
     const { classes } = useStyles()
+    const titleId = useId()
+    const descriptionId = useId()
     const [isModalVisible, setIsModalVisible] = useState(false)
 
     const handleOpenNoMoreMatchesDialog = () => {
@@ -32,17 +34,21 @@ const NoMoreMatchesDialog = forwardRef(
     return (
       <CommonModal
         isOpened={isModalVisible}
-        modalTitle={props.title}
-        modalDescription={props.description || ''}
+        modalTitleID={titleId}
+        modalDescriptionID={descriptionId}
         onClose={handleClose}
         height={605}
         contentOverflow="visible"
       >
         <Box>
-          <Typography variant="h2" className={classes.title}>
+          <Typography variant="h2" id={titleId} className={classes.title}>
             {props.title}
           </Typography>
-          <Typography variant="body2" className={classes.description}>
+          <Typography
+            variant="body2"
+            id={descriptionId}
+            className={classes.description}
+          >
             {props.description}
           </Typography>
           <Box className={classes.slidersWrapper}>
