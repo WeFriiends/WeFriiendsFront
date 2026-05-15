@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
 import { useMatchesStore } from '../zustand/friendsStore'
 import { useConversationsStore } from '../zustand/conversationsStore'
+import { useNavigate } from 'react-router-dom'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -11,7 +12,7 @@ interface AuthTokenAndStoreProviderProps {
 const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
-  const { isAuthenticated, getAccessTokenSilently, user, isLoading } =
+  const { isAuthenticated, getAccessTokenSilently, user, isLoading, logout } =
     useAuth0()
   const { token, setToken } = useAuthStore()
   const {
@@ -30,6 +31,7 @@ const AuthTokenAndStoreProvider = ({
   // Флаги, предотвращающие повторные запросы
   const hasFetchedProfile = useRef(false)
   const hasCheckedProfile = useRef(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Если Auth0 ещё загружается или пользователь не аутентифицирован - выходим
@@ -54,7 +56,17 @@ const AuthTokenAndStoreProvider = ({
         // проверяем, что первый профиль заполнен и записываем в стор
         if (!hasCheckedProfile.current && token) {
           hasCheckedProfile.current = true // Помечаем, что запрос происходит
-          await checkProfile(token) // Дождаться завершения запроса после этого можно проверять hasProfile в стор
+          const response = await checkProfile(token) // Дождаться завершения запроса после этого можно проверять hasProfile в стор
+
+          if (response.status === 401 || response.status === 404) {
+            logout({
+              logoutParams: {
+                returnTo: window.location.origin,
+              },
+            })
+            localStorage.clear()
+            navigate('/')
+          }
         }
         if (
           !profile && // стор не наполнен
@@ -84,6 +96,8 @@ const AuthTokenAndStoreProvider = ({
     checkProfile,
     getProfile,
     hasProfile,
+    navigate,
+    logout,
   ])
 
   // Effect for fetching matches periodically

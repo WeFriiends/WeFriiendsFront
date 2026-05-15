@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useProfileStore } from '../zustand/store'
 
 const AuthCallbackPage = () => {
-  const { handleRedirectCallback } = useAuth0()
+  const { handleRedirectCallback, isAuthenticated } = useAuth0()
   const navigate = useNavigate()
   const location = useLocation()
   const shouldRedirect = useRef(true)
@@ -49,6 +49,9 @@ const AuthCallbackPage = () => {
         } else if (code && state) {
           await handleRedirectCallback()
         } else {
+          if (!isAuthenticated) {
+            navigate('/')
+          }
           console.error('No valid callback parameters found in URL: ', {
             message,
             errorDescription,
@@ -67,7 +70,7 @@ const AuthCallbackPage = () => {
       shouldRedirect.current = false
       processCallback()
     }
-  }, [handleRedirectCallback, navigate, location.search])
+  }, [handleRedirectCallback, navigate, location.search, isAuthenticated])
 
   return <Loader />
 }

@@ -10,9 +10,10 @@ import {
 import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import { PHOTO_ENDPOINTS } from 'actions/endpoints'
+import { ApiErrorResponse } from 'types/UserProfileData'
 
 const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
 
@@ -68,7 +69,9 @@ interface ProfileActions {
     token: string | null
   ) => Promise<void>
   getProfile: (token: string | null) => Promise<void>
-  checkProfile: (token: string | null) => boolean
+  checkProfile: (
+    token: string | null
+  ) => Promise<AxiosResponse | ApiErrorResponse>
   updateProfile: (
     profileData: Partial<Profile>,
     token: string | null
@@ -121,8 +124,8 @@ export const useProfileStore = create<ProfileStore>()(
           error: true,
           errorData: {
             message: error.message || 'Unknown error',
-            status: error.response?.status,
-            details: error.response?.data,
+            status: error.status,
+            details: error.data,
           },
         })
       }
@@ -234,8 +237,7 @@ export const useProfileStore = create<ProfileStore>()(
               console.error(`Unexpected status: ${response.status}`)
             }
           } catch (error) {
-            handleError(error, 'checkProfile')
-            throw new Error('Error in connection with backend or endpoint!')
+            return error
           }
         },
 
