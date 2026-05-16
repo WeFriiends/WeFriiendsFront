@@ -56,18 +56,20 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
 
       if (unreadMessages.length === 0) return
 
-      const updates = unreadMessages
-        .filter((msg) => msg.chatId)
-        .map((msg) =>
-          updateDoc(
-            doc(db, 'conversations', msg.chatId, 'messages', msg.messageId),
-            { isSeen: true }
-          )
+      const updates = unreadMessages.map((msg) =>
+        updateDoc(
+          doc(db, 'conversations', msg.chatId, 'messages', msg.messageId),
+          { isSeen: true }
         )
+      )
 
       if (updates.length === 0) return
 
-      await Promise.all(updates)
+      try {
+        await Promise.all(updates)
+      } catch (error) {
+        console.error('Failed to mark messages as read:', error)
+      }
     }
 
     markMessagesAsRead()
@@ -175,14 +177,5 @@ const useStyles = makeStyles()((theme) => ({
     gap: '2px',
     verticalAlign: 'middle',
     lineHeight: 1,
-  },
-  singleCheck: {
-    color: theme.palette.text.primary,
-    fontSize: '14px',
-  },
-  doubleCheck: {
-    color: theme.palette.primary.main,
-    fontSize: '14px',
-    letterSpacing: '-5px',
   },
 }))

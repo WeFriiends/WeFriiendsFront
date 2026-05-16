@@ -151,7 +151,7 @@ export const useChatStore = create<ChatState>()(
                   ? data.createdAt.toDate().toISOString()
                   : new Date().toISOString(),
               message: data.text,
-              readStatus: !data.isSeen,
+              isSeen: data.isSeen,
             }
           }) as Message[]
 
@@ -459,7 +459,6 @@ export const useChatStore = create<ChatState>()(
             text: message.text,
             createdAt: serverTimestamp(),
             isSeen: false,
-            chatId: conversationId,
           })
 
           // Update the conversation document with the last message info

@@ -1,9 +1,14 @@
+import theme from '../../styles/createTheme'
+
 interface IconProps {
   color?: string
   className?: string
 }
 
-export function DoubleCheck({ color = '#F46B5D', className }: IconProps) {
+export function DoubleCheck({
+  color = theme.palette.primary.main,
+  className,
+}: IconProps) {
   return (
     <svg
       width="16"

@@ -9,7 +9,6 @@ export interface Message {
   senderId: string
   timestamp: string
   message: string
-  readStatus: boolean
   deliveryError?: boolean
   isSeen: boolean
   chatId: string

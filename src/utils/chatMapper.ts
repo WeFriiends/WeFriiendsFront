@@ -4,6 +4,12 @@ import { Message } from 'types/Chat'
 export function mapFirestoreDocToMessage(doc: QueryDocumentSnapshot): Message {
   const data = doc.data()
 
+  const chatId = doc.ref.parent.parent?.id
+
+  if (!chatId) {
+    console.warn(`ChatId not found for message ${doc.id}, using 'unknown'`)
+  }
+
   return {
     messageId: doc.id,
     senderId: data.senderId,
@@ -13,7 +19,6 @@ export function mapFirestoreDocToMessage(doc: QueryDocumentSnapshot): Message {
         : new Date().toISOString(),
     message: data.text,
     isSeen: data.isSeen || false,
-    readStatus: data.isSeen || false,
-    chatId: data.chatId,
+    chatId: chatId || 'unknown',
   }
 }
