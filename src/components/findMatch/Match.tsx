@@ -37,6 +37,7 @@ export function Match({
       modalTitleID={titleId}
       modalDescriptionID={descriptionId}
       height={605}
+      width={390}
     >
       <Box className={classes.matchContainer}>
         <Box className={classes.matchedAvatarsContainer}>
@@ -47,11 +48,20 @@ export function Match({
           />
         </Box>
         <Box className={classes.info}>
-          <Typography variant="h1" id={titleId} className={classes.title}>
-            Wow! It’s a Match!
+          <Typography
+            id={titleId}
+            variant="h2"
+            component="h1"
+            className={classes.title}
+          >
+            It’s a WeFriiends Moment!
           </Typography>
-          <Typography id={descriptionId} className={classes.subTitle}>
-            Hurry up to say hello to your new friend!
+          <Typography
+            id={descriptionId}
+            variant="body1"
+            className={classes.subTitle}
+          >
+            Ready for a Girl’s Talk?
           </Typography>
         </Box>
         <Box className={classes.buttonsContainer}>
@@ -80,17 +90,11 @@ export function Match({
 
 const useStyles = makeStyles()({
   title: {
-    fontSize: 28,
-    fontWeight: 500,
-    lineHeight: '20px',
     textAlign: 'center',
   },
   subTitle: {
-    fontSize: 14,
-    lineHeight: '20px',
     color: theme.palette.common.black,
     textAlign: 'center',
-    fontWeight: 400,
   },
   matchContainer: {
     display: 'flex',
