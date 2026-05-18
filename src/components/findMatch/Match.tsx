@@ -61,7 +61,7 @@ export function Match({
             variant="body1"
             className={classes.subTitle}
           >
-            Ready for a Girl’s Talk?
+            Ready for a Girl Talk?
           </Typography>
         </Box>
         <Box className={classes.buttonsContainer}>
