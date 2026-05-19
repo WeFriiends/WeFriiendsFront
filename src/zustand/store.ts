@@ -14,6 +14,7 @@ import axios, { AxiosResponse } from 'axios'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import { PHOTO_ENDPOINTS } from 'actions/endpoints'
 import { ApiErrorResponse } from 'types/UserProfileData'
+import { AUTH_STORAGE_KEY } from 'data/constants'
 
 const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
 
@@ -107,7 +108,7 @@ export const useAuthStore = create<AuthState>()(
       setToken: (token) => set({ token }),
     }),
     {
-      name: 'auth-storage',
+      name: AUTH_STORAGE_KEY,
     }
   )
 )
@@ -237,7 +238,7 @@ export const useProfileStore = create<ProfileStore>()(
               console.error(`Unexpected status: ${response.status}`)
             }
           } catch (error) {
-            return error
+            throw error
           }
         },
 

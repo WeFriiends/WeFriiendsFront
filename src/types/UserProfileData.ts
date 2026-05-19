@@ -43,5 +43,5 @@ export interface UserChatProfile {
 export interface ApiErrorResponse {
   message: string
   status?: number
-  data?: any
+  data?: unknown
 }
