@@ -1,4 +1,4 @@
-import React from 'react'
+import { useId } from 'react'
 import { Box, Button, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { CommonModal } from 'common/components/CommonModal'
@@ -16,13 +16,13 @@ export const DeleteContactModal = ({
   onConfirm,
 }: DeleteContactModalProps) => {
   const { classes } = useStyles()
+  const titleId = useId()
 
   return (
     <CommonModal
       isOpened={isOpen}
       onClose={onClose}
-      modalTitle=""
-      modalDescription=""
+      modalTitleID={titleId}
       height={320}
     >
       <Box className={classes.modalContainer}>
@@ -32,7 +32,7 @@ export const DeleteContactModal = ({
           className={classes.imgAlert}
         />
         <Box className={classes.info}>
-          <Typography variant="h1" className={classes.title}>
+          <Typography variant="h1" id={titleId} className={classes.title}>
             Delete User
           </Typography>
         </Box>

@@ -28,8 +28,7 @@ const DeleteUserDialog = forwardRef((props: DeleteUserDialogProps, ref) => {
   return (
     <CommonModal
       isOpened={isModalVisible}
-      modalTitle={'Delete User'}
-      modalDescription={'Confirm to delete user.'}
+      ariaLabel="Delete User"
       onClose={handleClose}
       height={320}
     >

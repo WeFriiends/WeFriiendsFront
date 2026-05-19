@@ -21,7 +21,12 @@ const request = async (method, url, data = {}, token = null, params = {}) => {
     })
   } catch (error) {
     console.error(`API ${method} ${url} failed:`, error)
-    throw error.response?.data || error.message
+
+    throw {
+      data: error.response?.data,
+      status: error.response?.status,
+      message: error.message,
+    }
   }
 }
 

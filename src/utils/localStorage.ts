@@ -37,3 +37,13 @@ export const clearLocalStorage = (keys?: string[]) => {
     localStorage.clear() // Clears all data from localStorage
   }
 }
+
+/**
+ * Removes all localStorage keys that start with the given prefix.
+ * @param prefix - The prefix to match against localStorage keys.
+ */
+export const clearLocalStorageByPrefix = (prefix: string) => {
+  Object.keys(localStorage)
+    .filter((key) => key.startsWith(prefix))
+    .forEach((key) => localStorage.removeItem(key))
+}

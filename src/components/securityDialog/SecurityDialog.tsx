@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   forwardRef,
@@ -50,8 +50,7 @@ const SecurityDialog = forwardRef((props: ReportDialogProps, ref) => {
   return (
     <CommonModal
       isOpened={isModalVisible}
-      modalTitle={'Report User'}
-      modalDescription={'Choose an action to report or block the user.'}
+      ariaLabel="Manage User"
       onClose={handleClose}
       height={modalHeight}
     >
