@@ -3,7 +3,6 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
 import { useMatchesStore } from '../zustand/friendsStore'
 import { useConversationsStore } from '../zustand/conversationsStore'
-import { useNavigate } from 'react-router-dom'
 import { handleLogout } from '../utils/logoutUtils'
 import { ApiErrorResponse } from 'types/UserProfileData'
 
@@ -33,7 +32,6 @@ const AuthTokenAndStoreProvider = ({
   // Флаги, предотвращающие повторные запросы
   const hasFetchedProfile = useRef(false)
   const hasCheckedProfile = useRef(false)
-  const navigate = useNavigate()
 
   useEffect(() => {
     // Если Auth0 ещё загружается или пользователь не аутентифицирован - выходим
@@ -90,7 +88,6 @@ const AuthTokenAndStoreProvider = ({
     checkProfile,
     getProfile,
     hasProfile,
-    navigate,
     logout,
   ])
 

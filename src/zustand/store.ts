@@ -11,10 +11,9 @@ import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
 import axios, { AxiosResponse } from 'axios'
-import { MAX_PROFILE_PHOTOS } from 'data/constants'
+import { MAX_PROFILE_PHOTOS, AUTH_STORAGE_KEY } from 'data/constants'
 import { PHOTO_ENDPOINTS } from 'actions/endpoints'
 import { ApiErrorResponse } from 'types/UserProfileData'
-import { AUTH_STORAGE_KEY } from 'data/constants'
 
 const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
 
