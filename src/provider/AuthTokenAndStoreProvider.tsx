@@ -3,6 +3,8 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
 import { useMatchesStore } from '../zustand/friendsStore'
 import { useConversationsStore } from '../zustand/conversationsStore'
+import { handleLogout } from '../utils/logoutUtils'
+import { ApiErrorResponse } from 'types/UserProfileData'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -11,7 +13,7 @@ interface AuthTokenAndStoreProviderProps {
 const AuthTokenAndStoreProvider = ({
   children,
 }: AuthTokenAndStoreProviderProps) => {
-  const { isAuthenticated, getAccessTokenSilently, user, isLoading } =
+  const { isAuthenticated, getAccessTokenSilently, user, isLoading, logout } =
     useAuth0()
   const { token, setToken } = useAuthStore()
   const {
@@ -65,11 +67,13 @@ const AuthTokenAndStoreProvider = ({
           hasFetchedProfile.current = true // Помечаем, что запрос происходит
           getProfile(token)
         }
-      } catch (error) {
-        console.error(
-          'TODO here redirect to Error 500. Error fetching profile or token:',
-          error
-        )
+      } catch (error: unknown) {
+        const apiError = error as ApiErrorResponse
+        if (apiError.status === 401 || apiError.status === 404) {
+          handleLogout(logout)
+        } else {
+          console.error('Unexpected error in checkProfile:', error)
+        }
       }
     }
 
@@ -84,6 +88,7 @@ const AuthTokenAndStoreProvider = ({
     checkProfile,
     getProfile,
     hasProfile,
+    logout,
   ])
 
   // Effect for fetching matches periodically

@@ -39,3 +39,9 @@ export interface UserChatProfile {
   name: string
   age: string
 }
+
+export interface ApiErrorResponse {
+  message: string
+  status?: number
+  data?: unknown
+}
