@@ -41,11 +41,7 @@ const MyProfile: React.FC = () => {
         <Box className={classes.person}>
           <Avatar
             className={classes.avatar}
-            src={
-              typeof profile?.photos?.[0] === 'string'
-                ? profile?.photos?.[0]
-                : profile?.photos?.[0]?.url ?? '/img/placeholders/girl-big.svg'
-            }
+            src={profile?.photos?.[0] ?? '/img/placeholders/girl-big.svg'}
           />
           <Typography variant="h1" className={classes.name}>
             {loading ? 'Loading...' : profile?.name},{' '}
