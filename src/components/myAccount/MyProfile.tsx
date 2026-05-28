@@ -25,9 +25,7 @@ const MyProfile: React.FC = () => {
 
   useEffect(() => {
     if (profile?.photos?.length) {
-      setUserPhotos(
-        profile.photos.map((photo) => ({ src: photo as unknown as string }))
-      )
+      setUserPhotos(profile.photos.map((photo) => ({ src: photo })))
     }
   }, [profile?.photos])
 
