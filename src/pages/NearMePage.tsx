@@ -12,11 +12,7 @@ import { useProfileStore } from 'zustand/store'
 
 export default function NearMePage() {
   const { data: profile } = useProfileStore()
-  const currentUserAvatar = profile?.photos?.[0]
-  const currentUserAvatarSrc =
-    typeof currentUserAvatar === 'string'
-      ? currentUserAvatar
-      : currentUserAvatar?.url ?? ''
+  const currentUserAvatarSrc = profile?.photos?.[0]
 
   const { isOpen, snackbarInfo, showSnackbar, handleCloseSnackbar } =
     useSnackbar()
