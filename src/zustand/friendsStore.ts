@@ -49,6 +49,15 @@ interface PotentialFriendsActions {
 
 type PotentialFriendsStore = PotentialFriendsState & PotentialFriendsActions
 
+type MatchNotificationStore = {
+  friendData: {
+    id: string
+    name: string
+    photo: string
+  } | null
+  handleMatchUpdate: () => void
+}
+
 /**
  * Helper function to handle errors consistently
  */
@@ -207,5 +216,17 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
       },
     }),
     { name: 'potential-friends-store' }
+  )
+)
+
+export const useMatchNotificationStore = create<MatchNotificationStore>()(
+  devtools(
+    () => ({
+      handleMatchUpdate: async () => {
+        useMatchesStore.getState().fetchMatches()
+        usePotentialFriendsStore.getState().fetchPotentialFriends()
+      },
+    }),
+    { name: 'match-notification-store' }
   )
 )
