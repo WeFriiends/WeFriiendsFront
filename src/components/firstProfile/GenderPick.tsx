@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, FormHelperText, IconButton, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { getItemFromLocalStorage } from 'utils/localStorage'
 import { validateGender } from './utils/validateGender'
 
 interface GenderProps {
+  selectedGender: string | null
   showWithError: boolean
   onGenderChange: (value: string | null) => void
 }
 
-const Gender = ({ showWithError = false, onGenderChange }: GenderProps) => {
+const Gender = ({
+  selectedGender,
+  showWithError = false,
+  onGenderChange,
+}: GenderProps) => {
   const { classes } = useStyles()
-  const [chosenGender, setChosenGender] = useState<string | null>(
-    getItemFromLocalStorage('gender')
-  )
   const [hoveredGender, setHoveredGender] = useState<string | null>(null)
 
   const [error, setError] = useState<string | null>(null)
 
   const getImage = (gender: string) => {
     if (
-      chosenGender === gender ||
-      (hoveredGender === gender && chosenGender !== gender)
+      selectedGender === gender ||
+      (hoveredGender === gender && selectedGender !== gender)
     ) {
       return `/img/firstProfile/${gender}_active.svg`
     }
@@ -29,19 +30,17 @@ const Gender = ({ showWithError = false, onGenderChange }: GenderProps) => {
   }
   const genderPick = (gender: string) => {
     if (validateGender(gender)) {
-      setChosenGender(gender)
       onGenderChange(gender)
     } else {
       setError('Please choose a gender.')
     }
-    //setItemToLocalStorage('gender', gender)
   }
 
   useEffect(() => {
     if (showWithError) {
       setError('Please choose a gender.')
     }
-  }, [showWithError, chosenGender])
+  }, [showWithError, selectedGender])
 
   return (
     <>

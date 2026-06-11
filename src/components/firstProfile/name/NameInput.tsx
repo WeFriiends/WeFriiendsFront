@@ -3,23 +3,25 @@ import TextField from '@mui/material/TextField'
 import { makeStyles } from 'tss-react/mui'
 import theme from 'styles/createTheme'
 import { FormHelperText, Typography } from '@mui/material'
-import { getItemFromLocalStorage } from 'utils/localStorage'
 import { validateName } from '../utils/validateName'
 
 interface NameInputProps {
+  name: string
   showWithError: boolean
   onNameChange: (value: string) => void
 }
 
-const NameInput = ({ showWithError = false, onNameChange }: NameInputProps) => {
+const NameInput = ({
+  name,
+  showWithError = false,
+  onNameChange,
+}: NameInputProps) => {
   const { classes } = useStyles()
-  const [fullName, setFullName] = useState(getItemFromLocalStorage('name'))
   const [hasError, setHasError] = useState(false)
   //'Name should contain 2-15 letters only, spaces allowed in between, without numbers or special characters.'
   const [hasTyped, setHasTyped] = useState(false)
 
   const handleInputChange = (value: string) => {
-    setFullName(value)
     setHasTyped(value.length > 0) // Track if user has typed at least one symbol
     onNameChange(value) // Pass the value to the parent component
     const isValid = validateName(value)
@@ -43,7 +45,7 @@ const NameInput = ({ showWithError = false, onNameChange }: NameInputProps) => {
       </Typography>
       <TextField
         className={classes.profileInput}
-        value={fullName}
+        value={name}
         onChange={(e) => handleInputChange(e.target.value)}
         fullWidth
       />

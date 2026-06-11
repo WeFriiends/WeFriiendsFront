@@ -2,6 +2,7 @@ import { useState, forwardRef, Ref, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
 import { Box, Typography } from '@mui/material'
 import Status from 'components/firstProfile/Status'
+import { PROFILE_EDIT_STORAGE_KEYS } from 'components/firstProfile/storageKeys'
 import { makeStyles } from 'tss-react/mui'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
@@ -64,9 +65,13 @@ const ChangeProfileDialog = forwardRef(
           isTitleShown={false}
           isFormHelperTextShown={true}
           formHelperText=" Please, choose 3 statuses maximum"
+          storageKey={PROFILE_EDIT_STORAGE_KEYS.selectedStatuses}
         />
         <Box className={classes.interests}>
-          <Interests isAboutMeShown={true} />
+          <Interests
+            isAboutMeShown={true}
+            storageKey={PROFILE_EDIT_STORAGE_KEYS.userPreferences}
+          />
         </Box>
         <Box className={classes.buttonContainer}>
           <PrimaryButton
