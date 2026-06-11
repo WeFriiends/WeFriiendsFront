@@ -7,7 +7,7 @@ interface InviteFriendModalProps {
   onClose: () => void
 }
 
-const INVITE_URL = 'https://wefriiends.com'
+const INVITE_URL = 'https://app.wefriiends.com'
 
 export const InviteFriendModal = ({
   isOpened,
