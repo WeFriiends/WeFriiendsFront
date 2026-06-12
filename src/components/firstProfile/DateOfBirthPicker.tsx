@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import dayjs, { Dayjs } from 'dayjs'
-import { getItemFromLocalStorage } from 'utils/localStorage'
+import type { Dayjs } from 'dayjs'
 import { FormHelperText, Typography, Box } from '@mui/material'
 import theme from 'styles/createTheme'
 import { makeStyles } from 'tss-react/mui'
 import { validateDob } from './utils/validateDob'
 
 interface DateOfBirthPickerProps {
+  dob: Dayjs | null
   showWithError: boolean
   onDobChange: (value: Dayjs | null) => void
 }
 
 const DateOfBirthPicker = ({
+  dob,
   showWithError = false,
   onDobChange,
 }: DateOfBirthPickerProps) => {
   const { classes } = useStyles()
-  const initialDob = dayjs(getItemFromLocalStorage('dob'))
   const [error, setError] = useState<string | null>(null)
 
   const onChangePicker = (newValue: Dayjs | null) => {
@@ -28,8 +28,6 @@ const DateOfBirthPicker = ({
 
     if (newValue === null || !validateDob(newValue)) {
       setError('Invalid date. Please provide a valid date.')
-    } else {
-      setError(null)
     }
     onDobChange(newValue)
   }
@@ -52,7 +50,7 @@ const DateOfBirthPicker = ({
         <Box className={classes.dateWrapper}>
           <DatePicker
             className={classes.dateInput}
-            value={dayjs(initialDob)}
+            value={dob}
             onChange={(newValue) => onChangePicker(newValue)}
           />
           {!error && (
@@ -88,13 +86,11 @@ const useStyles = makeStyles()(() => ({
   dateInput: {
     backgroundColor: '#FFF1EC',
     borderRadius: 10,
+    paddingRight: '12px',
     '& .MuiInputBase-input.MuiOutlinedInput-input': {
       height: 60,
       padding: 0,
       textAlign: 'center',
-    },
-    '& .MuiButtonBase-root.MuiIconButton-root': {
-      padding: '0 20px 0 0',
     },
     '& .MuiOutlinedInput-notchedOutline': {
       border: 0,

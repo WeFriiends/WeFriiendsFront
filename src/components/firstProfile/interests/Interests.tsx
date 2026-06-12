@@ -7,32 +7,35 @@ import InterestsItem from './InterestsItem'
 import { LanguageItem } from './LanguageItem'
 import { validateAboutMe } from '../utils/validateAboutMe'
 
-const LOCAL_STORAGE_KEY = 'userPreferences'
+import {
+  getItemFromSessionStorage,
+  setItemToSessionStorage,
+} from 'utils/sessionStorage'
+import { REGISTRATION_STORAGE_KEYS } from '../storageKeys'
+
+type SavedPreferences = {
+  aboutMe?: string
+  selectedLanguages?: string[]
+  [key: string]: unknown
+}
 
 interface InterestsProps {
   isAboutMeShown?: boolean
   hasAboutMeError?: boolean
   setHasAboutMeError?: (value: boolean) => void
+  storageKey?: string
 }
 
 const Interests = ({
   isAboutMeShown = false,
   hasAboutMeError = false,
   setHasAboutMeError,
+  storageKey = REGISTRATION_STORAGE_KEYS.userPreferences,
 }: InterestsProps) => {
   const { classes } = useStyles()
 
-  const loadInitialData = () => {
-    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY)
-    if (savedData) {
-      try {
-        return JSON.parse(savedData)
-      } catch (error) {
-        console.error('Error parsing localStorage data:', error)
-      }
-    }
-    return {}
-  }
+  const loadInitialData = () =>
+    getItemFromSessionStorage<SavedPreferences>(storageKey) ?? {}
 
   const [preferences] = useState(() => loadInitialData())
   const [aboutMe, setAboutMe] = useState(preferences.aboutMe || '')
@@ -42,7 +45,9 @@ const Interests = ({
   const [interestsData, setInterestsData] = useState<InterestData[]>(
     dataInterests.map((interest) => ({
       ...interest,
-      selectedItems: preferences[interest.titleBase] || [],
+      selectedItems: Array.isArray(preferences[interest.titleBase])
+        ? (preferences[interest.titleBase] as string[])
+        : [],
     }))
   )
 
@@ -60,8 +65,8 @@ const Interests = ({
       ...userPreferences,
     }
 
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave))
-  }, [aboutMe, selectedLanguages, interestsData])
+    setItemToSessionStorage(storageKey, dataToSave)
+  }, [aboutMe, selectedLanguages, interestsData, storageKey])
 
   const handleAboutMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const aboutMeText = event.target.value
