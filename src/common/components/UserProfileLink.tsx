@@ -5,11 +5,7 @@ import { useProfileStore } from 'zustand/store'
 
 export function UserProfileLink() {
   const { data: profile, loading } = useProfileStore()
-  const avatar = profile?.photos?.[0]
-  const avatarSrc =
-    typeof avatar === 'string'
-      ? avatar
-      : avatar?.url ?? '/img/placeholders/girl-big.svg'
+  const avatarSrc = profile?.photos?.[0] ?? '/img/placeholders/girl-big.svg'
   const { classes } = useStyles()
 
   return (

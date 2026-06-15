@@ -11,7 +11,7 @@ export function useRestorePhotos() {
     restoredRef.current = true
     const restored: UserPicsType[] = data.photos.map((photo, i) => ({
       id: `url-${i}`,
-      url: typeof photo === 'string' ? photo : photo.url,
+      url: photo,
       blobFile: null,
     }))
     setTempPhotos(restored)

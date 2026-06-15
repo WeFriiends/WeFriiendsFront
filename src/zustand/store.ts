@@ -26,7 +26,7 @@ interface Profile {
   name: string
   dateOfBirth: string
   location: Location
-  photos: (string | { url: string })[]
+  photos: string[]
   gender: string
   reasons: string[]
   friendsAgeMin?: number
@@ -322,7 +322,7 @@ export const useProfileStore = create<ProfileStore>()(
               data: {
                 ...state.data,
                 photos: state.data.photos.map((p) =>
-                  (typeof p === 'string' ? p : p.url) === oldUrl ? newUrl : p
+                  p === oldUrl ? newUrl : p
                 ),
               },
             }

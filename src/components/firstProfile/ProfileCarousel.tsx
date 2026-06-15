@@ -15,17 +15,18 @@ import MobileStepper from '@mui/material/MobileStepper'
 import { makeStyles } from 'tss-react/mui'
 import { useAuthStore, useProfileStore } from '../../zustand/store'
 import {
-  setItemToLocalStorage,
-  getItemFromLocalStorage,
-  getItemsFromLocalStorage,
-  clearLocalStorage,
-} from 'utils/localStorage'
+  setItemToSessionStorage,
+  getItemFromSessionStorage,
+  getRequiredItemFromSessionStorage,
+  clearSessionStorage,
+} from 'utils/sessionStorage'
 import { validateName } from './utils/validateName'
 import { validateDob } from './utils/validateDob'
 import { validateGender } from './utils/validateGender'
 import { validateLocation } from './utils/validateLocation'
+import { REGISTRATION_STORAGE_KEYS } from './storageKeys'
 import { Location } from 'types/FirstProfile'
-import type { Dayjs } from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
 import AuthPagesWrapper from './AuthPagesWrapper'
 import axios from 'axios'
 
@@ -45,21 +46,31 @@ const ProfileCarousel = () => {
   const [isCreating, setIsCreating] = useState(false)
 
   const [name, setName] = useState<string>(
-    getItemFromLocalStorage('name') || ''
+    getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.name) || ''
+  )
+  const storedDob = getItemFromSessionStorage<string>(
+    REGISTRATION_STORAGE_KEYS.dob
   )
   const [dob, setDob] = useState<Dayjs | null>(
-    getItemFromLocalStorage('dob') || null
+    storedDob ? dayjs(storedDob) : null
   )
   const [gender, setGender] = useState<string | null>(
-    getItemFromLocalStorage('gender') || null
+    getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.gender) || null
   )
   const [location, setLocation] = useState<Location>({
-    country: getItemFromLocalStorage('country') || '',
-    city: getItemFromLocalStorage('city') || '',
-    street: getItemFromLocalStorage('street') || '',
-    houseNumber: getItemFromLocalStorage('houseNumber') || '',
-    lat: getItemFromLocalStorage('lat') || null,
-    lng: getItemFromLocalStorage('lng') || null,
+    country:
+      getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.country) ||
+      '',
+    city:
+      getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.city) || '',
+    street:
+      getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.street) || '',
+    houseNumber:
+      getItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.houseNumber
+      ) || '',
+    lat: getItemFromSessionStorage<number>(REGISTRATION_STORAGE_KEYS.lat) ?? 0,
+    lng: getItemFromSessionStorage<number>(REGISTRATION_STORAGE_KEYS.lng) ?? 0,
   })
 
   const onNameChange = (value: string) => setName(value)
@@ -74,7 +85,7 @@ const ProfileCarousel = () => {
     switch (activeStep) {
       case 0:
         if (validateName(name)) {
-          setItemToLocalStorage('name', name)
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.name, name)
           setShowNameError(false)
           proceedStep()
         } else setShowNameError(true)
@@ -82,7 +93,7 @@ const ProfileCarousel = () => {
 
       case 1:
         if (validateDob(dob)) {
-          setItemToLocalStorage('dob', dob)
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.dob, dob)
           setShowDobError(false)
           proceedStep()
         } else setShowDobError(true)
@@ -90,7 +101,7 @@ const ProfileCarousel = () => {
 
       case 2:
         if (gender != null && validateGender(gender)) {
-          setItemToLocalStorage('gender', gender)
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.gender, gender)
           setShowGenderError(false)
           proceedStep()
         } else setShowGenderError(true)
@@ -98,9 +109,21 @@ const ProfileCarousel = () => {
 
       case 3:
         if (validateLocation(location)) {
-          Object.entries(location).forEach(([key, value]) =>
-            setItemToLocalStorage(key, value)
+          setItemToSessionStorage(
+            REGISTRATION_STORAGE_KEYS.country,
+            location.country
           )
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.city, location.city)
+          setItemToSessionStorage(
+            REGISTRATION_STORAGE_KEYS.street,
+            location.street
+          )
+          setItemToSessionStorage(
+            REGISTRATION_STORAGE_KEYS.houseNumber,
+            location.houseNumber
+          )
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.lat, location.lat)
+          setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.lng, location.lng)
           proceedStep()
         }
         break
@@ -137,31 +160,39 @@ const ProfileCarousel = () => {
         .filter((p) => p.blobFile)
         .map((p, i) => blobToFile(p.blobFile!, `photo${i}.jpg`))
 
-      const {
-        name,
-        dob,
-        gender,
-        lat,
-        lng,
-        country,
-        city,
-        street,
-        houseNumber,
-        selectedStatuses,
-        userPreferences,
-      } = getItemsFromLocalStorage([
-        'name',
-        'dob',
-        'gender',
-        'lat',
-        'lng',
-        'country',
-        'city',
-        'street',
-        'houseNumber',
-        'selectedStatuses',
-        'userPreferences',
-      ])
+      const name = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.name
+      )
+      const dob = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.dob
+      )
+      const gender = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.gender
+      )
+      const lat = getRequiredItemFromSessionStorage<number>(
+        REGISTRATION_STORAGE_KEYS.lat
+      )
+      const lng = getRequiredItemFromSessionStorage<number>(
+        REGISTRATION_STORAGE_KEYS.lng
+      )
+      const country = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.country
+      )
+      const city = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.city
+      )
+      const street = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.street
+      )
+      const houseNumber = getRequiredItemFromSessionStorage<string>(
+        REGISTRATION_STORAGE_KEYS.houseNumber
+      )
+      const selectedStatuses = getRequiredItemFromSessionStorage<string[]>(
+        REGISTRATION_STORAGE_KEYS.selectedStatuses
+      )
+      const userPreferences = getItemFromSessionStorage<
+        Record<string, unknown>
+      >(REGISTRATION_STORAGE_KEYS.userPreferences)
 
       const formData = new FormData()
       formData.append('name', name)
@@ -187,19 +218,7 @@ const ProfileCarousel = () => {
         }
       )
 
-      clearLocalStorage([
-        'name',
-        'dob',
-        'gender',
-        'lat',
-        'lng',
-        'country',
-        'city',
-        'street',
-        'houseNumber',
-        'selectedStatuses',
-        'userPreferences',
-      ])
+      clearSessionStorage(Object.values(REGISTRATION_STORAGE_KEYS))
       clearTempPhotos()
 
       window.location.href = '/friends'
@@ -213,13 +232,18 @@ const ProfileCarousel = () => {
     {
       label: 'name',
       component: (
-        <NameInput onNameChange={onNameChange} showWithError={showNameError} />
+        <NameInput
+          name={name}
+          onNameChange={onNameChange}
+          showWithError={showNameError}
+        />
       ),
     },
     {
       label: 'dob',
       component: (
         <DateOfBirthPicker
+          dob={dob}
           onDobChange={onDobChange}
           showWithError={showDobError}
         />
@@ -229,6 +253,7 @@ const ProfileCarousel = () => {
       label: 'gender',
       component: (
         <GenderPick
+          selectedGender={gender}
           onGenderChange={onGenderChange}
           showWithError={showGenderError}
         />

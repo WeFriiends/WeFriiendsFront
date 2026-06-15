@@ -31,6 +31,7 @@ const Swipes = () => {
   } = usePotentialFriendsStore()
 
   const { data: profile } = useProfileStore()
+  const currentUserAvatarSrc = profile?.photos?.[0]
 
   // Fetch potential friends when profile is loaded
   useEffect(() => {
@@ -119,7 +120,11 @@ const Swipes = () => {
             <UserProfileButton skip={onSkip} beFriend={onBeFriend} />
           </>
         )}
-        <Match matchedUser={matchedUser} onClose={handleModalClose} />
+        <Match
+          matchedUser={matchedUser}
+          currentUserAvatar={currentUserAvatarSrc}
+          onClose={handleModalClose}
+        />
       </Box>
       <NoMoreMatchesDialog
         ref={NoMoreMatchesDialogRef}

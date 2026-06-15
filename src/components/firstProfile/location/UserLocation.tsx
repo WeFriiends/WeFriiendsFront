@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { reverseGeocode } from '../../../actions/geocoding'
 import { useGeolocation } from '@uidotdev/usehooks'
 import {
-  getItemFromLocalStorage,
-  setItemToLocalStorage,
-} from 'utils/localStorage'
+  getItemFromSessionStorage,
+  setItemToSessionStorage,
+} from 'utils/sessionStorage'
+import { REGISTRATION_STORAGE_KEYS } from '../storageKeys'
 import { Box, FormHelperText, Icon, Typography } from '@mui/material'
 import Loader from 'common/components/Loader'
 import { makeStyles } from 'tss-react/mui'
@@ -40,13 +41,25 @@ interface UserLocationProps {
 const UserLocation = ({ onLocationChange }: UserLocationProps) => {
   const { classes } = useStyles()
   const { latitude, longitude, error } = useGeolocation()
-  const [address, setAddress] = useState<Location | null>({
-    country: getItemFromLocalStorage('country'),
-    city: getItemFromLocalStorage('city'),
-    street: getItemFromLocalStorage('street'),
-    houseNumber: getItemFromLocalStorage('houseNumber'),
-    lat: getItemFromLocalStorage('lat'),
-    lng: getItemFromLocalStorage('lng'),
+  const [address, setAddress] = useState<Location | null>(() => {
+    const country = getItemFromSessionStorage<string>(
+      REGISTRATION_STORAGE_KEYS.country
+    )
+    if (!country) return null
+    return {
+      country,
+      city:
+        getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.city) || '',
+      street:
+        getItemFromSessionStorage<string>(REGISTRATION_STORAGE_KEYS.street) ||
+        '',
+      houseNumber:
+        getItemFromSessionStorage<string>(
+          REGISTRATION_STORAGE_KEYS.houseNumber
+        ) || '',
+      lat: getItemFromSessionStorage<number>(REGISTRATION_STORAGE_KEYS.lat)!,
+      lng: getItemFromSessionStorage<number>(REGISTRATION_STORAGE_KEYS.lng)!,
+    }
   })
   const [showManualInput, setShowManualInput] = useState(false)
   const [errorLocation, setErrorLocation] = useState<string | null>(null)
@@ -123,12 +136,12 @@ const UserLocation = ({ onLocationChange }: UserLocationProps) => {
         lng: 0,
       })
 
-      setItemToLocalStorage('country', '')
-      setItemToLocalStorage('city', '')
-      setItemToLocalStorage('street', '')
-      setItemToLocalStorage('houseNumber', '')
-      setItemToLocalStorage('lat', '')
-      setItemToLocalStorage('lng', '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.country, '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.city, '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.street, '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.houseNumber, '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.lat, '')
+      setItemToSessionStorage(REGISTRATION_STORAGE_KEYS.lng, '')
 
       setErrorLocation(
         'Invalid location data, accuracy up to house number is needed.'
