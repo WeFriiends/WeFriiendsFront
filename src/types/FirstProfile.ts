@@ -29,6 +29,21 @@ export interface UserPreferences {
   }
 }
 
+export interface ProfilePreferences {
+  aboutMe?: string
+  selectedLanguages?: string[]
+  smoking?: string[]
+  educationalLevel?: string[]
+  children?: string[]
+  drinking?: string[]
+  pets?: string[]
+  interests?: string[]
+}
+
+export type SavedPreferences = ProfilePreferences & {
+  [key: string]: unknown
+}
+
 export interface Profile {
   id: string
   name: string

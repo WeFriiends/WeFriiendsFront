@@ -3,7 +3,7 @@ import { Box, Chip } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 
 type ChipContainerProps = {
-  data: { title: string; item: string[]; titleBase?: string }
+  data: { title: string; item: string[]; preferenceKey?: string }
   multiple?: boolean | undefined
   onSelectedItems: (selectedItems: string[]) => void
   selectedItems: string[] | undefined
@@ -26,7 +26,7 @@ export const ChipContainerMulti: React.FC<ChipContainerProps> = ({
   }, [selectedItems])
 
   const isNoneSelected =
-    data.titleBase === 'Pets' && _selectedItems.includes('None')
+    data.preferenceKey === 'pets' && _selectedItems.includes('None')
 
   const checkItems = (item: string) => {
     if (isNoneSelected && item !== 'None') {
@@ -44,7 +44,7 @@ export const ChipContainerMulti: React.FC<ChipContainerProps> = ({
       newSelectedItems = [...base, item]
     }
 
-    if (data.titleBase === 'Pets') {
+    if (data.preferenceKey === 'pets') {
       if (item === 'None' && !isAlreadySelected) {
         newSelectedItems = ['None']
       } else if (item !== 'None') {

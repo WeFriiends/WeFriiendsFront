@@ -3,9 +3,11 @@ import { CommonModal } from 'common/components/CommonModal'
 import { Box, Typography } from '@mui/material'
 import Status from 'components/firstProfile/Status'
 import { PROFILE_EDIT_STORAGE_KEYS } from 'components/firstProfile/storageKeys'
+import { clearSessionStorage } from 'utils/sessionStorage'
 import { makeStyles } from 'tss-react/mui'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
+import type { SavedPreferences } from 'types/FirstProfile'
 import PrimaryButton from 'common/components/PrimaryButton'
 import theme from 'styles/createTheme'
 import UploadPhotos from 'components/firstProfile/uploadPhotos/UploadPhotos'
@@ -19,14 +21,29 @@ const ChangeProfileDialog = forwardRef(
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    const { uploadNewPhotos, getProfile } = useProfileStore()
+    const { uploadNewPhotos, getProfile, data } = useProfileStore()
     const { token } = useAuthStore()
+
+    const prefs = data?.preferences
+    const initialPreferences: SavedPreferences | undefined = prefs
+      ? {
+          aboutMe: prefs.aboutMe ?? '',
+          selectedLanguages: prefs.selectedLanguages ?? [],
+          smoking: prefs.smoking ?? [],
+          educationalLevel: prefs.educationalLevel ?? [],
+          children: prefs.children ?? [],
+          drinking: prefs.drinking ?? [],
+          pets: prefs.pets ?? [],
+          interests: prefs.interests ?? [],
+        }
+      : undefined
 
     const handleOpenChangeProfileDialog = () => {
       setIsModalVisible(true)
     }
 
     const handleClose = () => {
+      clearSessionStorage(Object.values(PROFILE_EDIT_STORAGE_KEYS))
       setIsModalVisible(false)
     }
 
@@ -66,11 +83,13 @@ const ChangeProfileDialog = forwardRef(
           isFormHelperTextShown={true}
           formHelperText=" Please, choose 3 statuses maximum"
           storageKey={PROFILE_EDIT_STORAGE_KEYS.selectedStatuses}
+          initialStatuses={data?.reasons}
         />
         <Box className={classes.interests}>
           <Interests
             isAboutMeShown={true}
             storageKey={PROFILE_EDIT_STORAGE_KEYS.userPreferences}
+            initialPreferences={initialPreferences}
           />
         </Box>
         <Box className={classes.buttonContainer}>

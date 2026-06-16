@@ -7,7 +7,11 @@ import {
   updateProfile,
   deleteProfile,
 } from './api'
-import { UserPicsType, Location, UserPreferences } from '../types/FirstProfile'
+import {
+  UserPicsType,
+  Location,
+  ProfilePreferences,
+} from '../types/FirstProfile'
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
 import axios, { AxiosResponse } from 'axios'
@@ -32,7 +36,7 @@ interface Profile {
   friendsAgeMin?: number
   friendsAgeMax?: number
   friendsDistance?: number
-  userPreferences?: UserPreferences
+  preferences?: ProfilePreferences
 }
 
 interface PhotoFields {
