@@ -124,21 +124,10 @@ const AuthTokenAndStoreProvider = ({
     // via the beforeunload event listener in conversationsStore.ts
   }, [hasProfile, user, fetchConversations, subscribeToConversations])
 
-  const componentMountedAt = useRef(Date.now() - 5000)
-
   useEffect(() => {
     if (!profile?._id) return
 
-    const unsubscribe = subscribeToMatches(profile._id, (matchData) => {
-      // Ignore old matches from initial page load, only process new ones
-      if (matchData?.createdAt) {
-        const matchTime = new Date(matchData.createdAt).getTime()
-
-        if (matchTime < componentMountedAt.current) {
-          return
-        }
-      }
-
+    const unsubscribe = subscribeToMatches(profile._id, () => {
       handleMatchUpdate()
     })
 

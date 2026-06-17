@@ -8,5 +8,4 @@ export interface FriendsMatch {
 export type MatchEvent = {
   type: 'added' | 'removed'
   userId: string
-  createdAt?: string
 }
