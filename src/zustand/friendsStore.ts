@@ -224,7 +224,7 @@ export const useMatchNotificationStore = create<MatchNotificationStore>()(
     () => ({
       handleMatchUpdate: async () => {
         useMatchesStore.getState().fetchMatches()
-        usePotentialFriendsStore.getState().fetchPotentialFriends()
+        usePotentialFriendsStore.getState().refreshPotentialFriends()
       },
     }),
     { name: 'match-notification-store' }
