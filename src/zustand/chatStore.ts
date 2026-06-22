@@ -188,158 +188,113 @@ export const useChatStore = create<ChatState>()(
       },
 
       subscribeToMessages: async (conversationId) => {
-        const { subscriptions, messagesCache, conversationSubscriptions } =
+        const { subscriptions, conversationSubscriptions, messagesCache } =
           get()
 
         if (conversationSubscriptions[conversationId]) {
           return
-        } else {
-          const conversationRef = doc(db, 'conversations', conversationId)
-          const unsubscribeConversation = onSnapshot(
-            conversationRef,
-            (docSnapshot) => {
-              if (!docSnapshot.exists()) {
-                const state = get()
+        }
 
-                if (state.subscriptions[conversationId]) {
-                  state.subscriptions[conversationId]()
-                }
+        const conversationRef = doc(db, 'conversations', conversationId)
+        const unsubscribeConversation = onSnapshot(
+          conversationRef,
+          (docSnapshot) => {
+            if (!docSnapshot.exists()) {
+              const state = get()
 
-                set((state) => {
-                  const newSubscriptions = { ...state.subscriptions }
-                  delete newSubscriptions[conversationId]
-
-                  const newConversationSubscriptions = {
-                    ...state.conversationSubscriptions,
-                  }
-                  delete newConversationSubscriptions[conversationId]
-
-                  const newMessagesCache = { ...state.messagesCache }
-                  delete newMessagesCache[conversationId]
-
-                  const newPaginationCursor = { ...state.paginationCursor }
-                  delete newPaginationCursor[conversationId]
-
-                  return {
-                    subscriptions: newSubscriptions,
-                    conversationSubscriptions: newConversationSubscriptions,
-                    messagesCache: newMessagesCache,
-                    paginationCursor: newPaginationCursor,
-                    currentChat:
-                      state.currentChat?.chatId === conversationId
-                        ? null
-                        : state.currentChat,
-                  }
-                })
+              if (state.subscriptions[conversationId]) {
+                state.subscriptions[conversationId]()
               }
+
+              set((state) => {
+                const newSubscriptions = { ...state.subscriptions }
+                delete newSubscriptions[conversationId]
+
+                const newConversationSubscriptions = {
+                  ...state.conversationSubscriptions,
+                }
+                delete newConversationSubscriptions[conversationId]
+
+                const newMessagesCache = { ...state.messagesCache }
+                delete newMessagesCache[conversationId]
+
+                const newPaginationCursor = { ...state.paginationCursor }
+                delete newPaginationCursor[conversationId]
+
+                return {
+                  subscriptions: newSubscriptions,
+                  conversationSubscriptions: newConversationSubscriptions,
+                  messagesCache: newMessagesCache,
+                  paginationCursor: newPaginationCursor,
+                  currentChat:
+                    state.currentChat?.chatId === conversationId
+                      ? null
+                      : state.currentChat,
+                }
+              })
             }
-          )
-
-          set((state) => ({
-            conversationSubscriptions: {
-              ...state.conversationSubscriptions,
-              [conversationId]: unsubscribeConversation,
-            },
-          }))
-        }
-
-        if (subscriptions[conversationId]) {
-          if (messagesCache[conversationId]) {
-            set({
-              currentChat: messagesCache[conversationId],
-              loading: false,
-            })
           }
-          return
-        }
-
-        if (!conversationId) {
-          console.error('No conversation ID provided for subscription')
-          return
-        }
-
-        const cachedChat = get().messagesCache[conversationId]
-        if (cachedChat) {
-          set({
-            currentChat: cachedChat,
-            loading: false,
-          })
-        }
-
-        let participants: string[] = []
-        const conversationDoc = await getDoc(
-          doc(db, 'conversations', conversationId)
-        )
-
-        if (conversationDoc.exists()) {
-          participants = conversationDoc.data().participants || []
-        }
-
-        const { lastVisible, messagesQuery } = await fetchMessagesPage(
-          db,
-          conversationId
         )
 
         set((state) => ({
-          loading: true,
-          error: null,
-          paginationCursor: {
-            ...state.paginationCursor,
-            [conversationId]: lastVisible,
+          conversationSubscriptions: {
+            ...state.conversationSubscriptions,
+            [conversationId]: unsubscribeConversation,
           },
         }))
 
+        if (subscriptions[conversationId]) {
+          return
+        }
+
+        const messagesRef = collection(
+          db,
+          'conversations',
+          conversationId,
+          'messages'
+        )
+        const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
+
         const unsubscribeSnapshot = onSnapshot(
           messagesQuery,
-          { includeMetadataChanges: false },
           async (querySnapshot) => {
-            try {
-              if (querySnapshot.metadata.hasPendingWrites) return
-
-              const messages: Message[] = []
-
-              querySnapshot.docChanges().forEach((change) => {
-                if (change.type === 'added' || change.type === 'modified') {
-                  messages.push(mapFirestoreDocToMessage(change.doc))
-                }
-              })
-
-              messages.reverse()
-              const oldMessages = get().messagesCache[conversationId]?.messages
-
-              const newMessages = oldMessages
-                ? [...oldMessages, ...messages]
-                : messages
-
-              const chat: Chat = {
-                chatId: conversationId,
-                participants,
-                messages: newMessages,
+            let participants: string[] = []
+            const conversationDoc = await getDoc(conversationRef)
+            if (conversationDoc.exists()) {
+              participants = conversationDoc.data().participants || []
+            } else {
+              const cachedChat = messagesCache[conversationId]
+              if (cachedChat) {
+                participants = cachedChat.participants
               }
-
-              set((state) => ({
-                messagesCache: {
-                  ...state.messagesCache,
-                  [conversationId]: chat,
-                },
-                currentChat:
-                  state.currentChat?.chatId === conversationId
-                    ? chat
-                    : state.currentChat,
-                loading: false,
-              }))
-            } catch (error) {
-              console.error('Error processing messages snapshot:', error)
-              set({
-                error:
-                  error instanceof Error ? error : new Error(String(error)),
-                loading: false,
-              })
             }
-          },
-          (error) => {
-            console.error('Error in messages snapshot listener:', error)
-            set({ error, loading: false })
+
+            const allMessages = querySnapshot.docs.map((doc) =>
+              mapFirestoreDocToMessage(doc)
+            )
+            allMessages.sort(
+              (a, b) =>
+                new Date(a.timestamp).getTime() -
+                new Date(b.timestamp).getTime()
+            )
+
+            const chat: Chat = {
+              chatId: conversationId,
+              participants,
+              messages: allMessages,
+            }
+
+            set((state) => ({
+              messagesCache: {
+                ...state.messagesCache,
+                [conversationId]: chat,
+              },
+              currentChat:
+                state.currentChat?.chatId === conversationId
+                  ? { ...chat, messages: [...allMessages] }
+                  : state.currentChat,
+              loading: false,
+            }))
           }
         )
 
@@ -395,9 +350,9 @@ export const useChatStore = create<ChatState>()(
           currentChat:
             state.currentChat?.chatId === chatId
               ? {
-                  ...state.currentChat,
-                  messages: newMessages,
-                }
+                ...state.currentChat,
+                messages: newMessages,
+              }
               : state.currentChat,
 
           loading: false,
