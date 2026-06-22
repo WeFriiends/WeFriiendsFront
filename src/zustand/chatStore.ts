@@ -82,6 +82,7 @@ export const useChatStore = create<ChatState>()(
             const { messagesCache } = get()
             const cachedChat = messagesCache[conversationRef]
 
+            // eslint-disable-next-line prefer-destructuring
             if (cachedChat) {
               // If we have the conversation in the cache, update currentChat immediately
               console.log(
