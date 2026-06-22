@@ -9,7 +9,7 @@ type CommonModalProps = {
   isOpened: boolean
   modalDescriptionID?: string
   onClose: () => void
-  height?: number | 'auto'
+  height?: number | string
   width?: number
   contentOverflow?: 'auto' | 'visible' | 'hidden'
 } & (

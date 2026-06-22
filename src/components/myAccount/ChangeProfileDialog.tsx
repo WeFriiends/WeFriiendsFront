@@ -70,7 +70,7 @@ const ChangeProfileDialog = forwardRef(
         ariaLabel="Edit Profile"
         onClose={handleClose}
         width={600}
-        height={655}
+        height="85vh"
       >
         <UploadPhotos />
         <Box className={classes.titleContainer}>
