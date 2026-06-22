@@ -266,6 +266,7 @@ export const useChatStore = create<ChatState>()(
             } else {
               const cachedChat = messagesCache[conversationId]
               if (cachedChat) {
+                // eslint-disable-next-line prefer-destructuring
                 participants = cachedChat.participants
               }
             }
