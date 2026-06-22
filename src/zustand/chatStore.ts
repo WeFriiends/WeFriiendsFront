@@ -350,9 +350,9 @@ export const useChatStore = create<ChatState>()(
           currentChat:
             state.currentChat?.chatId === chatId
               ? {
-                ...state.currentChat,
-                messages: newMessages,
-              }
+                  ...state.currentChat,
+                  messages: newMessages,
+                }
               : state.currentChat,
 
           loading: false,
