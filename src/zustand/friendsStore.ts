@@ -50,11 +50,6 @@ interface PotentialFriendsActions {
 type PotentialFriendsStore = PotentialFriendsState & PotentialFriendsActions
 
 type MatchNotificationStore = {
-  friendData: {
-    id: string
-    name: string
-    photo: string
-  } | null
   handleMatchUpdate: () => void
 }
 

@@ -132,7 +132,7 @@ const AuthTokenAndStoreProvider = ({
     })
 
     return () => unsubscribe()
-  }, [profile?._id, handleMatchUpdate, token])
+  }, [profile?._id, handleMatchUpdate])
 
   return <>{children}</>
 }
