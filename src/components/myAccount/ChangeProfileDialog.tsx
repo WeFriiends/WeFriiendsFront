@@ -3,11 +3,15 @@ import { CommonModal } from 'common/components/CommonModal'
 import { Box, Typography } from '@mui/material'
 import Status from 'components/firstProfile/Status'
 import { PROFILE_EDIT_STORAGE_KEYS } from 'components/firstProfile/storageKeys'
-import { clearSessionStorage } from 'utils/sessionStorage'
+import {
+  clearSessionStorage,
+  getItemFromSessionStorage,
+} from 'utils/sessionStorage'
 import { makeStyles } from 'tss-react/mui'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
-import type { SavedPreferences } from 'types/FirstProfile'
+import type { ProfilePreferences, SavedPreferences } from 'types/FirstProfile'
+import { useSnackbarStore } from 'zustand/snackbarStore'
 import PrimaryButton from 'common/components/PrimaryButton'
 import theme from 'styles/createTheme'
 import UploadPhotos from 'components/firstProfile/uploadPhotos/UploadPhotos'
@@ -21,7 +25,8 @@ const ChangeProfileDialog = forwardRef(
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    const { uploadNewPhotos, getProfile, data } = useProfileStore()
+    const { uploadNewPhotos, getProfile, updateProfile, data } =
+      useProfileStore()
     const { token } = useAuthStore()
 
     const prefs = data?.preferences
@@ -55,10 +60,43 @@ const ChangeProfileDialog = forwardRef(
       setIsSaving(true)
       try {
         await uploadNewPhotos(token!)
+
+        const savedReasons = getItemFromSessionStorage<string[]>(
+          PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
+        )
+        const savedPrefs = getItemFromSessionStorage<SavedPreferences>(
+          PROFILE_EDIT_STORAGE_KEYS.userPreferences
+        )
+
+        const getArr = (key: keyof ProfilePreferences): string[] =>
+          Array.isArray(savedPrefs?.[key]) ? (savedPrefs![key] as string[]) : []
+
+        const preferences: ProfilePreferences = {
+          aboutMe: savedPrefs?.aboutMe ?? '',
+          selectedLanguages: savedPrefs?.selectedLanguages ?? [],
+          smoking: getArr('smoking'),
+          educationalLevel: getArr('educationalLevel'),
+          children: getArr('children'),
+          drinking: getArr('drinking'),
+          pets: getArr('pets'),
+          interests: getArr('interests'),
+        }
+
+        await updateProfile(
+          {
+            preferences,
+            ...(savedReasons ? { reasons: savedReasons } : {}),
+          },
+          token!
+        )
+
         await getProfile(token!)
         handleClose()
       } catch (error) {
-        console.error('Photo update error:', error)
+        console.error('Profile update error:', error)
+        useSnackbarStore
+          .getState()
+          .showSnackbar('Failed to save profile', 'error')
       } finally {
         setIsSaving(false)
       }
