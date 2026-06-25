@@ -1,10 +1,14 @@
 import { ReactNode, useEffect, useRef } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useAuthStore, useProfileStore } from '../zustand/store'
-import { useMatchesStore } from '../zustand/friendsStore'
+import {
+  useMatchesStore,
+  useMatchNotificationStore,
+} from '../zustand/friendsStore'
 import { useConversationsStore } from '../zustand/conversationsStore'
 import { handleLogout } from '../utils/logoutUtils'
 import { ApiErrorResponse } from 'types/UserProfileData'
+import { subscribeToMatches } from '../services/matches'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -25,6 +29,8 @@ const AuthTokenAndStoreProvider = ({
 
   const { fetchMatches, startPeriodicFetching, stopPeriodicFetching } =
     useMatchesStore()
+
+  const { handleMatchUpdate } = useMatchNotificationStore()
 
   const { subscribeToConversations, fetchConversations } =
     useConversationsStore()
@@ -117,6 +123,16 @@ const AuthTokenAndStoreProvider = ({
     // No cleanup function here - unsubscription happens only when browser is closed
     // via the beforeunload event listener in conversationsStore.ts
   }, [hasProfile, user, fetchConversations, subscribeToConversations])
+
+  useEffect(() => {
+    if (!profile?._id) return
+
+    const unsubscribe = subscribeToMatches(profile._id, () => {
+      handleMatchUpdate()
+    })
+
+    return () => unsubscribe()
+  }, [profile?._id, handleMatchUpdate])
 
   return <>{children}</>
 }

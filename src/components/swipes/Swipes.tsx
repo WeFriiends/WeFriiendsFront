@@ -26,7 +26,7 @@ const Swipes = () => {
     potentialFriends,
     handleLike,
     handleDislike,
-    fetchPotentialFriends,
+    refreshPotentialFriends,
     isLoading,
   } = usePotentialFriendsStore()
 
@@ -36,9 +36,9 @@ const Swipes = () => {
   // Fetch potential friends when profile is loaded
   useEffect(() => {
     if (profile) {
-      fetchPotentialFriends()
+      refreshPotentialFriends()
     }
-  }, [profile, fetchPotentialFriends])
+  }, [profile, refreshPotentialFriends])
 
   useEffect(() => {
     if (!potentialFriends?.length) {
