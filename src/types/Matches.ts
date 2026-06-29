@@ -4,3 +4,8 @@ export interface FriendsMatch {
   age: number
   photo: string
 }
+
+export type MatchEvent = {
+  type: 'added' | 'removed'
+  userId: string
+}

@@ -37,6 +37,7 @@ interface Profile {
   friendsAgeMax?: number
   friendsDistance?: number
   preferences?: ProfilePreferences
+  _id?: string
 }
 
 interface PhotoFields {
