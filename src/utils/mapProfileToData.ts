@@ -11,7 +11,7 @@ export const mapProfileToData = (
     id: profile?._id || fallback?.id || '',
     name: profile?.name || fallback?.name || '',
     age: profile?.age?.toString() || fallback?.age?.toString() || '',
-    photos: profile?.photos || fallback?.photos || [{ src: defaultPhoto }],
+    photos: profile?.photos || fallback?.photos || [defaultPhoto],
     city: profile?.city || '',
     distance: profile?.distance?.toString() || '',
     likedMe: profile?.likedMe || false,

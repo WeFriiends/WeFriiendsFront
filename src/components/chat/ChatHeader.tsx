@@ -23,7 +23,7 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
       id: chat.id,
       name: chat.name,
       age: chat.age,
-      photos: [{ src: chat.avatar }],
+      photos: [chat.avatar],
     }
 
     setSelectedProfile(profile)

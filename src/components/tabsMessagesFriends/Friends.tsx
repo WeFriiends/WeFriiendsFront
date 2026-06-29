@@ -33,7 +33,7 @@ export function Friends({ onClick }: FriendsProps) {
       id: friend.id,
       name: friend.name,
       age: friend.age.toString(),
-      photos: [{ src: friend.photo }],
+      photos: [friend.photo],
     }
 
     onClick(mapProfileToData(null, selectedFriend))

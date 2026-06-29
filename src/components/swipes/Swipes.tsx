@@ -74,7 +74,7 @@ const Swipes = () => {
     if (currentPotentialFriend.likedMe) {
       setMatchedUser({
         id: currentPotentialFriend.id,
-        avatar: currentPotentialFriend.photos[0].src,
+        avatar: currentPotentialFriend.photos[0],
       })
     }
     handleLike(currentPotentialFriend.id)

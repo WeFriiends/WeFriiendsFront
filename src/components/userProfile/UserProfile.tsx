@@ -57,7 +57,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             items={
               user.photos && user.photos.length > 0
                 ? user.photos
-                : [{ src: '/img/placeholders/girl-big.svg' }]
+                : ['/img/placeholders/girl-big.svg']
             }
           />
           <Box className={classes.gradientOverlay} />

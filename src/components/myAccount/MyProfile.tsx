@@ -16,16 +16,16 @@ const MyProfile: React.FC = () => {
   const { data: profile, loading } = useProfileStore()
 
   const defaultPhotos = [
-    { src: '/img/placeholders/girl-big.svg' },
-    { src: '/img/placeholders/girl-big.svg' },
-    { src: '/img/placeholders/girl-big.svg' },
+    '/img/placeholders/girl-big.svg',
+    '/img/placeholders/girl-big.svg',
+    '/img/placeholders/girl-big.svg',
   ]
 
   const [userPhotos, setUserPhotos] = useState(defaultPhotos)
 
   useEffect(() => {
     if (profile?.photos?.length) {
-      setUserPhotos(profile.photos.map((photo) => ({ src: photo })))
+      setUserPhotos(profile.photos)
     }
   }, [profile?.photos])
 

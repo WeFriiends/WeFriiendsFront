@@ -1,14 +1,14 @@
 import { UserPreferences } from './FirstProfile'
 
-export interface UserPhoto {
-  src: string
-}
+// A profile photo is just its URL. Aliased so that, if a photo ever needs
+// extra fields (id, order…), only this line changes
+export type ProfilePhoto = string
 
 export interface UserProfileData {
   id: string
   name: string
   age: string
-  photos: UserPhoto[]
+  photos: ProfilePhoto[]
   city: string
   distance: string
   likedMe: boolean

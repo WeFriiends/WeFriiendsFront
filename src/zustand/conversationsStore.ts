@@ -133,7 +133,7 @@ export const useConversationsStore = create<ConversationsState>()(
             const userMessage: Conversation = {
               id: otherParticipantId,
               avatar:
-                profile?.photos?.[0]?.src ||
+                profile?.photos?.[0] ||
                 conversationData.participantAvatar ||
                 `/img/placeholders/girl-big.svg`,
               name:
@@ -240,7 +240,7 @@ export const useConversationsStore = create<ConversationsState>()(
                 const userMessage: Conversation = {
                   id: otherParticipantId,
                   avatar:
-                    profile?.photos?.[0]?.src ||
+                    profile?.photos?.[0] ||
                     conversationData.participantAvatar ||
                     `/img/placeholders/girl-big.svg`,
                   name:

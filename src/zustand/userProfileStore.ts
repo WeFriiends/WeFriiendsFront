@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { getUserById } from './api'
 import { useAuthStore } from './store'
+import { ProfilePhoto } from 'types/UserProfileData'
 
 // Define UserProfile interface
 export interface UserProfile {
@@ -12,9 +13,7 @@ export interface UserProfile {
   city: string
   distance: number
   likedMe: boolean
-  photos: {
-    src: string
-  }[]
+  photos: ProfilePhoto[]
   reasons: string[]
   preferences: {
     questionary: {
