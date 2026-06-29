@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Carousel from 'react-material-ui-carousel'
 import UserPic from './UserPic'
 import { ProfilePhoto } from 'types/UserProfileData'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material'
 import { Box } from '@mui/material'
 import { PhotoModal } from 'components/firstProfile/uploadPhotos/PhotoModal'
@@ -18,7 +19,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
 
-  const defaultPhoto = '/img/placeholders/girl-big.svg'
+  const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
   const handleImageClick = (src: string) => {
     setSelectedImage(src)

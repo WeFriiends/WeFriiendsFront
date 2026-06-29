@@ -14,6 +14,7 @@ import { PhotoCarousel } from './PhotoCarousel'
 import { UserProfileData } from '../../types/UserProfileData'
 import LikeDispay from './LikedDisplay'
 import ReportDialog from 'components/report/ReportDialog'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface UserProfileProps {
   user: UserProfileData
@@ -57,7 +58,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             items={
               user.photos && user.photos.length > 0
                 ? user.photos
-                : ['/img/placeholders/girl-big.svg']
+                : [DEFAULT_PROFILE_PHOTO]
             }
           />
           <Box className={classes.gradientOverlay} />

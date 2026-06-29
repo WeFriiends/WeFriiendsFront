@@ -11,6 +11,7 @@ import { NoNewMatchesOrMessages } from './NoNewMatchesOrMessages'
 import { useMatchesStore } from 'zustand/friendsStore'
 import { useUserProfileStore } from 'zustand/userProfileStore'
 import { mapProfileToData } from 'utils/mapProfileToData'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
@@ -23,7 +24,7 @@ export function Friends({ onClick }: FriendsProps) {
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
-  const defaultPhoto = '/img/placeholders/girl-big.svg'
+  const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
   const handleClick = async (friend: FriendsMatch) => {
     setSelectedFriendId(friend.id)
