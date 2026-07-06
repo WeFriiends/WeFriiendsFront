@@ -293,50 +293,55 @@ export const useChatStore = create<ChatState>()(
           messagesQuery,
           { includeMetadataChanges: false },
           (querySnapshot) => {
-            const incomingMessages = querySnapshot.docs.map((doc) =>
-              mapFirestoreDocToMessage(doc)
-            )
+            try {
+              const incomingMessages = querySnapshot.docs.map((doc) =>
+                mapFirestoreDocToMessage(doc)
+              )
 
-            // Сортируем по возрастанию времени (старые сверху)
-            incomingMessages.sort(
-              (a, b) =>
-                new Date(a.timestamp).getTime() -
-                new Date(b.timestamp).getTime()
-            )
+              // Сортируем по возрастанию времени (старые сверху)
+              incomingMessages.sort(
+                (a, b) =>
+                  new Date(a.timestamp).getTime() -
+                  new Date(b.timestamp).getTime()
+              )
 
-            const existingMessages =
-              get().messagesCache[conversationId]?.messages || []
-            const messageMap = new Map(
-              existingMessages.map((msg) => [msg.messageId, msg])
-            )
+              const existingMessages =
+                get().messagesCache[conversationId]?.messages || []
+              const messageMap = new Map(
+                existingMessages.map((msg) => [msg.messageId, msg])
+              )
 
-            incomingMessages.forEach((msg) => {
-              messageMap.set(msg.messageId, msg)
-            })
+              incomingMessages.forEach((msg) => {
+                messageMap.set(msg.messageId, msg)
+              })
 
-            const allMessages = Array.from(messageMap.values()).sort(
-              (a, b) =>
-                new Date(a.timestamp).getTime() -
-                new Date(b.timestamp).getTime()
-            )
+              const allMessages = Array.from(messageMap.values())
 
-            const chat: Chat = {
-              chatId: conversationId,
-              participants,
-              messages: allMessages,
+              const chat: Chat = {
+                chatId: conversationId,
+                participants,
+                messages: allMessages,
+              }
+
+              set((state) => ({
+                messagesCache: {
+                  ...state.messagesCache,
+                  [conversationId]: chat,
+                },
+                currentChat:
+                  state.currentChat?.chatId === conversationId
+                    ? { ...chat, messages: [...allMessages] }
+                    : state.currentChat,
+                loading: false,
+              }))
+            } catch (error) {
+              console.error('Error processing messages snapshot:', error)
+              set({
+                error:
+                  error instanceof Error ? error : new Error(String(error)),
+                loading: false,
+              })
             }
-
-            set((state) => ({
-              messagesCache: {
-                ...state.messagesCache,
-                [conversationId]: chat,
-              },
-              currentChat:
-                state.currentChat?.chatId === conversationId
-                  ? { ...chat, messages: [...allMessages] }
-                  : state.currentChat,
-              loading: false,
-            }))
           },
           (error) => {
             console.error('Error in messages snapshot listener:', error)
