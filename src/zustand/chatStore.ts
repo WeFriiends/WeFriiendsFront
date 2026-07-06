@@ -14,6 +14,7 @@ import {
   getDoc,
   getDocs,
   Timestamp,
+  limit,
 } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
@@ -54,6 +55,8 @@ interface ChatState {
     message: Omit<FirestoreMessage, 'createdAt'>
   ) => Promise<void>
 }
+
+const MESSAGES_PER_PAGE = 10
 
 export const useChatStore = create<ChatState>()(
   devtools(
@@ -189,14 +192,30 @@ export const useChatStore = create<ChatState>()(
       },
 
       subscribeToMessages: async (conversationId) => {
-        const { subscriptions, conversationSubscriptions, messagesCache } =
-          get()
+        const { conversationSubscriptions } = get()
 
         if (conversationSubscriptions[conversationId]) {
           return
         }
 
         const conversationRef = doc(db, 'conversations', conversationId)
+
+        // Получаем участников чата один раз до подписки
+        let participants: string[] = []
+        const conversationDoc = await getDoc(conversationRef)
+        if (conversationDoc.exists()) {
+          participants = conversationDoc.data().participants || []
+        } else {
+          // const cachedChat = get().messagesCache[conversationId]
+          const { messagesCache } = get()
+          const cachedChat = messagesCache[conversationId]
+          if (cachedChat) {
+            // eslint-disable-next-line prefer-destructuring
+            participants = cachedChat.participants
+          }
+        }
+
+        // Отслеживаем удаление чата
         const unsubscribeConversation = onSnapshot(
           conversationRef,
           (docSnapshot) => {
@@ -244,37 +263,58 @@ export const useChatStore = create<ChatState>()(
           },
         }))
 
-        if (subscriptions[conversationId]) {
-          return
-        }
-
+        // Подписываемся на последние 10 сообщений
         const messagesRef = collection(
           db,
           'conversations',
           conversationId,
           'messages'
         )
-        const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
+        const messagesQuery = query(
+          messagesRef,
+          orderBy('createdAt', 'desc'), //сортировка от новых к старым
+          limit(MESSAGES_PER_PAGE)
+        )
+
+        // Устанавливаем курсор для пагинации:
+        // он будет указывать на самое старое сообщение из загруженных
+        const initialSnapshot = await getDocs(messagesQuery)
+        const lastVisible =
+          initialSnapshot.docs[initialSnapshot.docs.length - 1] || null
+
+        set((state) => ({
+          paginationCursor: {
+            ...state.paginationCursor,
+            [conversationId]: lastVisible,
+          },
+        }))
 
         const unsubscribeSnapshot = onSnapshot(
           messagesQuery,
-          async (querySnapshot) => {
-            let participants: string[] = []
-            const conversationDoc = await getDoc(conversationRef)
-            if (conversationDoc.exists()) {
-              participants = conversationDoc.data().participants || []
-            } else {
-              const cachedChat = messagesCache[conversationId]
-              if (cachedChat) {
-                // eslint-disable-next-line prefer-destructuring
-                participants = cachedChat.participants
-              }
-            }
-
-            const allMessages = querySnapshot.docs.map((doc) =>
+          { includeMetadataChanges: false },
+          (querySnapshot) => {
+            const incomingMessages = querySnapshot.docs.map((doc) =>
               mapFirestoreDocToMessage(doc)
             )
-            allMessages.sort(
+
+            // Сортируем по возрастанию времени (старые сверху)
+            incomingMessages.sort(
+              (a, b) =>
+                new Date(a.timestamp).getTime() -
+                new Date(b.timestamp).getTime()
+            )
+
+            const existingMessages =
+              get().messagesCache[conversationId]?.messages || []
+            const messageMap = new Map(
+              existingMessages.map((msg) => [msg.messageId, msg])
+            )
+
+            incomingMessages.forEach((msg) => {
+              messageMap.set(msg.messageId, msg)
+            })
+
+            const allMessages = Array.from(messageMap.values()).sort(
               (a, b) =>
                 new Date(a.timestamp).getTime() -
                 new Date(b.timestamp).getTime()
@@ -297,6 +337,10 @@ export const useChatStore = create<ChatState>()(
                   : state.currentChat,
               loading: false,
             }))
+          },
+          (error) => {
+            console.error('Error in messages snapshot listener:', error)
+            set({ error, loading: false })
           }
         )
 
