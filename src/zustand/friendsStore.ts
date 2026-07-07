@@ -187,10 +187,14 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
         await get().fetchPotentialFriends()
         // todo: when we have a queue with potential friends and then change the filters, for example ageRange set to very narrow, one of potential friends is still remaining in queue and nothing happens when I push "skip" (dislike), it should disappear from the queue and the queue should become empty
       },
-      //TODO: why we have handleLike and handleDislike in the store?
-      // They don't change the state of the store, they just call the API and return status.
-      // Maybe we should remove them, because they are in src/actions/friendsServices.ts
+
       handleLike: async (idPotentialFriend: string) => {
+        get().potentialFriends?.forEach((friend) => {
+          if (friend.id === idPotentialFriend) {
+            friend.likedByMe = true
+          }
+        })
+
         try {
           return await addLike(idPotentialFriend)
         } catch (error) {

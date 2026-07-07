@@ -14,6 +14,7 @@ export interface UserProfileData {
   likedMe: boolean
   reasons: string[]
   preferences?: UserPreferences
+  likedByMe?: boolean
 }
 
 export type UserProfileDataShort = Pick<

@@ -2,7 +2,7 @@ import { Box, Button, Typography } from '@mui/material'
 import { Match } from 'components/findMatch/Match'
 import UserProfile from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { emptyProfile, UserProfileData } from 'types/UserProfileData'
 import NoMoreMatchesDialog from 'pages/NoMoreMatchesDialog'
@@ -26,40 +26,44 @@ const Swipes = () => {
     potentialFriends,
     handleLike,
     handleDislike,
-    refreshPotentialFriends,
+    fetchPotentialFriends,
     isLoading,
   } = usePotentialFriendsStore()
 
   const { data: profile } = useProfileStore()
   const currentUserAvatarSrc = profile?.photos?.[0]
 
+  const friendsWithNoMyLike = useMemo(() => {
+    return potentialFriends?.filter((friend) => !friend.likedByMe)
+  }, [potentialFriends])
+
   // Fetch potential friends when profile is loaded
   useEffect(() => {
     if (profile) {
-      refreshPotentialFriends()
+      fetchPotentialFriends()
     }
-  }, [profile, refreshPotentialFriends])
+  }, [profile, fetchPotentialFriends])
 
   useEffect(() => {
-    if (!potentialFriends?.length) {
+    if (!friendsWithNoMyLike?.length) {
       return
     }
     setNoPotentialFriends(false)
-    setFriendsData(potentialFriends[0])
-    setCurrentPotentialFriend(potentialFriends[0])
-  }, [potentialFriends])
+    setFriendsData(friendsWithNoMyLike[0])
+    setCurrentPotentialFriend(friendsWithNoMyLike[0])
+  }, [friendsWithNoMyLike])
 
   const goToNextPotentialFriend = (currentUserProfile: UserProfileData) => {
-    if (!potentialFriends?.length) {
+    if (!friendsWithNoMyLike?.length) {
       return
     }
-    const currentIndex = potentialFriends.findIndex(
+    const currentIndex = friendsWithNoMyLike.findIndex(
       (element: UserProfileData) => element.id === currentUserProfile.id
     )
-    const lastIndex = potentialFriends.length - 1
+    const lastIndex = friendsWithNoMyLike.length - 1
     if (currentIndex < lastIndex) {
-      setFriendsData(potentialFriends[currentIndex + 1])
-      setCurrentPotentialFriend(potentialFriends[currentIndex + 1])
+      setFriendsData(friendsWithNoMyLike[currentIndex + 1])
+      setCurrentPotentialFriend(friendsWithNoMyLike[currentIndex + 1])
     } else {
       setNoPotentialFriends(true)
     }
@@ -94,7 +98,7 @@ const Swipes = () => {
   return (
     <>
       <Box>
-        {isLoading || potentialFriends === undefined ? (
+        {isLoading || friendsWithNoMyLike === undefined ? (
           <Box className={classes.mainBlock}>
             <Loader />
           </Box>
