@@ -189,14 +189,17 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
       },
 
       handleLike: async (idPotentialFriend: string) => {
-        get().potentialFriends?.forEach((friend) => {
-          if (friend.id === idPotentialFriend) {
+        try {
+          const result = await addLike(idPotentialFriend)
+          const friend = get().potentialFriends?.find((friend) => {
+            return friend.id === idPotentialFriend
+          })
+
+          if (friend) {
             friend.likedByMe = true
           }
-        })
 
-        try {
-          return await addLike(idPotentialFriend)
+          return result
         } catch (error) {
           console.error('Error adding like:', error)
           set({ error: handleError(error) })

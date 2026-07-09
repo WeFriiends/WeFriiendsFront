@@ -17,8 +17,6 @@ export function useUserListActions(
     avatar: string
   } | null>(null)
 
-  const { handleLike } = usePotentialFriendsStore()
-
   const handleCloseMatch = () => setMatchedUser(null)
 
   const removeUserAndSelectNext = async (userId: string) => {
@@ -66,7 +64,7 @@ export function useUserListActions(
         showSnackbar('Friend request sent', 'success')
       }
 
-      await handleLike(selectedUser.id)
+      await usePotentialFriendsStore.getState().handleLike(selectedUser.id)
       await removeUserAndSelectNext(selectedUser.id)
     } catch (e: unknown) {
       showSnackbar(getApiErrorMessage(e) || 'Failed to add friend', 'error')
