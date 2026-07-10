@@ -191,13 +191,14 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
       handleLike: async (idPotentialFriend: string) => {
         try {
           const result = await addLike(idPotentialFriend)
-          const friend = get().potentialFriends?.find((friend) => {
-            return friend.id === idPotentialFriend
-          })
+          const friends = [...(get().potentialFriends ?? [])]
+          const friend = friends.find((f) => f.id === idPotentialFriend)
 
           if (friend) {
             friend.likedByMe = true
           }
+
+          set({ potentialFriends: friends })
 
           return result
         } catch (error) {
