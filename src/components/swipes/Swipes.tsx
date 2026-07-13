@@ -26,40 +26,48 @@ const Swipes = () => {
     potentialFriends,
     handleLike,
     handleDislike,
-    refreshPotentialFriends,
+    fetchPotentialFriends,
     isLoading,
   } = usePotentialFriendsStore()
 
   const { data: profile } = useProfileStore()
   const currentUserAvatarSrc = profile?.photos?.[0]
 
+  const [sessionFriends, setSessionFriends] = useState<UserProfileData[]>()
+
+  useEffect(() => {
+    if (potentialFriends && sessionFriends === undefined) {
+      setSessionFriends(potentialFriends.filter((f) => !f.likedByMe))
+    }
+  }, [potentialFriends, sessionFriends])
+
   // Fetch potential friends when profile is loaded
   useEffect(() => {
     if (profile) {
-      refreshPotentialFriends()
+      fetchPotentialFriends()
     }
-  }, [profile, refreshPotentialFriends])
+  }, [profile, fetchPotentialFriends])
 
   useEffect(() => {
-    if (!potentialFriends?.length) {
+    if (!sessionFriends?.length) {
       return
     }
     setNoPotentialFriends(false)
-    setFriendsData(potentialFriends[0])
-    setCurrentPotentialFriend(potentialFriends[0])
-  }, [potentialFriends])
+    setFriendsData(sessionFriends[0])
+    setCurrentPotentialFriend(sessionFriends[0])
+  }, [sessionFriends])
 
   const goToNextPotentialFriend = (currentUserProfile: UserProfileData) => {
-    if (!potentialFriends?.length) {
+    if (!sessionFriends?.length) {
       return
     }
-    const currentIndex = potentialFriends.findIndex(
+    const currentIndex = sessionFriends.findIndex(
       (element: UserProfileData) => element.id === currentUserProfile.id
     )
-    const lastIndex = potentialFriends.length - 1
+    const lastIndex = sessionFriends.length - 1
     if (currentIndex < lastIndex) {
-      setFriendsData(potentialFriends[currentIndex + 1])
-      setCurrentPotentialFriend(potentialFriends[currentIndex + 1])
+      setFriendsData(sessionFriends[currentIndex + 1])
+      setCurrentPotentialFriend(sessionFriends[currentIndex + 1])
     } else {
       setNoPotentialFriends(true)
     }
@@ -94,7 +102,7 @@ const Swipes = () => {
   return (
     <>
       <Box>
-        {isLoading || potentialFriends === undefined ? (
+        {isLoading || sessionFriends === undefined ? (
           <Box className={classes.mainBlock}>
             <Loader />
           </Box>
