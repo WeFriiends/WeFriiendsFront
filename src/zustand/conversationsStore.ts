@@ -15,6 +15,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { useUserProfileStore } from './userProfileStore'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface ConversationsState {
   conversations: Conversation[]
@@ -133,9 +134,9 @@ export const useConversationsStore = create<ConversationsState>()(
             const userMessage: Conversation = {
               id: otherParticipantId,
               avatar:
-                profile?.photos?.[0]?.src ||
+                profile?.photos?.[0] ||
                 conversationData.participantAvatar ||
-                `/img/placeholders/girl-big.svg`,
+                DEFAULT_PROFILE_PHOTO,
               name:
                 profile?.name || conversationData.participantName || `Friend`,
               age:
@@ -240,9 +241,9 @@ export const useConversationsStore = create<ConversationsState>()(
                 const userMessage: Conversation = {
                   id: otherParticipantId,
                   avatar:
-                    profile?.photos?.[0]?.src ||
+                    profile?.photos?.[0] ||
                     conversationData.participantAvatar ||
-                    `/img/placeholders/girl-big.svg`,
+                    DEFAULT_PROFILE_PHOTO,
                   name:
                     profile?.name ||
                     conversationData.participantName ||

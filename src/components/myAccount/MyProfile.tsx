@@ -7,6 +7,7 @@ import PrimaryButton from '../../common/components/PrimaryButton'
 import ChangeProfileDialog from './ChangeProfileDialog'
 import { useProfileStore } from '../../zustand/store'
 import { getAge } from '../../utils/getAge'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 const MyProfile: React.FC = () => {
   const { classes } = useStyles()
@@ -15,17 +16,11 @@ const MyProfile: React.FC = () => {
   }>(null)
   const { data: profile, loading } = useProfileStore()
 
-  const defaultPhotos = [
-    { src: '/img/placeholders/girl-big.svg' },
-    { src: '/img/placeholders/girl-big.svg' },
-    { src: '/img/placeholders/girl-big.svg' },
-  ]
-
-  const [userPhotos, setUserPhotos] = useState(defaultPhotos)
+  const [userPhotos, setUserPhotos] = useState([DEFAULT_PROFILE_PHOTO])
 
   useEffect(() => {
     if (profile?.photos?.length) {
-      setUserPhotos(profile.photos.map((photo) => ({ src: photo })))
+      setUserPhotos(profile.photos)
     }
   }, [profile?.photos])
 
@@ -39,7 +34,7 @@ const MyProfile: React.FC = () => {
         <Box className={classes.person}>
           <Avatar
             className={classes.avatar}
-            src={profile?.photos?.[0] ?? '/img/placeholders/girl-big.svg'}
+            src={profile?.photos?.[0] ?? DEFAULT_PROFILE_PHOTO}
           />
           <Typography variant="h1" className={classes.name}>
             {loading ? 'Loading...' : profile?.name},{' '}
