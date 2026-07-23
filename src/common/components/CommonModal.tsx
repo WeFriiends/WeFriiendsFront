@@ -13,9 +13,9 @@ type CommonModalProps = {
   width?: number
   contentOverflow?: 'auto' | 'visible' | 'hidden'
 } & (
-    | { ariaLabel: string; modalTitleID?: never }
-    | { ariaLabel?: never; modalTitleID: string }
-  )
+  | { ariaLabel: string; modalTitleID?: never }
+  | { ariaLabel?: never; modalTitleID: string }
+)
 
 export const CommonModal = ({
   children,
