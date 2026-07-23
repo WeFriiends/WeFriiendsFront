@@ -10,7 +10,6 @@ export interface ReportData {
 }
 
 export const sendReport = async (reportData: ReportData) => {
-  console.log('💎💎💎 На бэкенд будет отправлено:', reportData)
   try {
     //  блокируем пользователя (удаляем матч и чат)
     await blockUser(reportData.reportedUserId, reportData.reporterUserId)

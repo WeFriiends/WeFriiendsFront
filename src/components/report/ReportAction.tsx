@@ -21,7 +21,6 @@ export const ReportAction: React.FC<ReportActionProps> = ({
   const handleBlock = async () => {
     try {
       await blockUser(reportedUserId, reporterUserId)
-      console.log('✅ Пользователь заблокирован')
       chooseBlock()
     } catch (error) {
       console.error('❌ Ошибка при блокировке:', error)
