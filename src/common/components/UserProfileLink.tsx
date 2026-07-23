@@ -2,14 +2,11 @@ import { Link } from 'react-router-dom'
 import { Avatar, Button, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useProfileStore } from 'zustand/store'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 export function UserProfileLink() {
   const { data: profile, loading } = useProfileStore()
-  const avatar = profile?.photos?.[0]
-  const avatarSrc =
-    typeof avatar === 'string'
-      ? avatar
-      : avatar?.url ?? '/img/placeholders/girl-big.svg'
+  const avatarSrc = profile?.photos?.[0] ?? DEFAULT_PROFILE_PHOTO
   const { classes } = useStyles()
 
   return (

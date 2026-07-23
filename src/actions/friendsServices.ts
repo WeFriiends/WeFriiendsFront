@@ -9,7 +9,7 @@ import {
   LIKE_ENDPOINTS,
   MATCHES_ENDPOINT,
 } from './endpoints'
-import { getApiErrorMessage } from 'actions/helpers/getApiErrorMessage'
+import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 export const getFriends = async (
   url: string

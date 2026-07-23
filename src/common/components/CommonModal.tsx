@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Box, Modal, Icon } from '@mui/material'
+import { Box, Modal } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
@@ -7,23 +7,26 @@ import theme from '../../styles/createTheme'
 type CommonModalProps = {
   children: ReactNode
   isOpened: boolean
-  modalTitle: string
-  modalDescription: string
+  modalDescriptionID?: string
   onClose: () => void
-  height?: 240 | 320 | 370 | 470 | 605 | 'auto'
-  width?: 600
+  height?: number | 'auto' | string
+  width?: number
   contentOverflow?: 'auto' | 'visible' | 'hidden'
-}
+} & (
+    | { ariaLabel: string; modalTitleID?: never }
+    | { ariaLabel?: never; modalTitleID: string }
+  )
 
 export const CommonModal = ({
   children,
   isOpened,
-  modalTitle,
-  modalDescription,
+  modalTitleID,
+  modalDescriptionID,
   onClose,
-  height,
-  width,
+  height = 'auto',
+  width = 370,
   contentOverflow = 'auto',
+  ariaLabel,
 }: CommonModalProps) => {
   const { classes } = useStyles()
 
@@ -31,28 +34,26 @@ export const CommonModal = ({
     <Modal
       className={classes.modal}
       open={isOpened}
-      aria-labelledby={modalTitle}
-      aria-describedby={modalDescription}
+      aria-label={ariaLabel}
+      aria-labelledby={modalTitleID}
+      aria-describedby={modalDescriptionID}
       onClose={onClose}
     >
       <Box
         className={classes.wrapper}
         sx={{
-          height: height ? height : 'auto',
-          width: width ? width : 370,
+          height: height || 'auto',
+          width: width || 370,
           maxHeight: '90vh',
         }}
       >
         <IconButton
-          disableRipple={true}
-          disableFocusRipple={true}
+          disableRipple
           aria-label="close modal"
           className={classes.closeButton}
           onClick={onClose}
         >
-          <Icon>
-            <img src="/img/icon-close-modal.svg" alt="Close" />
-          </Icon>
+          <img src="/img/icon-close-modal.svg" alt="Close" />
         </IconButton>
         <Box
           className={classes.wrapperContent}
@@ -101,7 +102,7 @@ const useStyles = makeStyles()(() => ({
     right: 15,
     top: 15,
     minWidth: 0,
-    '&: hover': {
+    '&:hover': {
       transform: 'scale(105%)',
       cursor: 'pointer',
     },

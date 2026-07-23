@@ -2,7 +2,7 @@ import { Typography, Link, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useAuth0 } from '@auth0/auth0-react'
 import { commonStyles } from 'styles/commonStyles'
-import LoadingScreen from 'common/svg/Loader'
+import Loader from 'common/components/Loader'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
@@ -23,7 +23,7 @@ const UserAuthentication = () => {
   }, [isAuthenticated, navigate])
 
   if (isLoading) {
-    return <LoadingScreen />
+    return <Loader />
   }
 
   const handleLogin = async () => {

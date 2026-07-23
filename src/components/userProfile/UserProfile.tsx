@@ -14,6 +14,7 @@ import { UserProfileData } from '../../types/UserProfileData'
 import LikeDispay from './LikedDisplay'
 import { ReportDialog } from 'components/report/ReportDialog'
 import { useAuth0 } from '@auth0/auth0-react'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface UserProfileProps {
   user: UserProfileData
@@ -60,7 +61,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             items={
               user.photos && user.photos.length > 0
                 ? user.photos
-                : [{ src: '/img/placeholders/girl-big.svg' }]
+                : [DEFAULT_PROFILE_PHOTO]
             }
           />
           <Box className={classes.gradientOverlay} />
@@ -100,7 +101,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
           </AccordionSummary>
           <AccordionDetails>
             <List className={classes.reasons}>
-              {user.reasons.map((reason) => (
+              {user.reasons?.map((reason) => (
                 <ListItem key={reason} className={classes.reason}>
                   {reason}
                 </ListItem>
@@ -143,7 +144,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                     Interests
                   </Typography>
                   <List className={classes.tagsList}>
-                    {user.preferences.interests.map((interest) => (
+                    {user.preferences.interests?.map((interest) => (
                       <ListItem key={interest} className={classes.tag}>
                         {interest}
                       </ListItem>

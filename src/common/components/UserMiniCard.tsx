@@ -39,7 +39,11 @@ export function UserMiniCard({
       <Box component="aside" className={classes.labelContainer}>
         <h4 className={classes.userName}>{user.name}</h4>
         <Box className={classes.distanceContainer}>
-          <img src="/img/icon-location.svg" alt="distance" />
+          <img
+            src="/img/icon-location.svg"
+            alt="distance"
+            className={classes.locationIcon}
+          />
           <Typography className={classes.distance}>
             {`${user.distance} km`}
           </Typography>
@@ -148,6 +152,10 @@ const useStyles = makeStyles<{ size: Size; isActive: boolean }>()(
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: '0.03em',
+      },
+      locationIcon: {
+        width: '0.08em',
+        height: '0.08em',
       },
       distance: {
         color: theme.palette.text.primary,

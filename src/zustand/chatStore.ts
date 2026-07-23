@@ -14,15 +14,20 @@ import {
   getDoc,
   getDocs,
   Timestamp,
+  limit,
 } from 'firebase/firestore'
+import type { DocumentSnapshot } from 'firebase/firestore'
 import { Chat, Message } from '../types/Chat'
+import { mapFirestoreDocToMessage } from 'utils/chatMapper'
+import { fetchMessagesPage } from 'utils/fetchMessagesPage'
+import { UserProfileDataShort } from 'types/UserProfileData'
 
 interface FirestoreMessage {
   senderId: string
   receiverId: string
   text: string
   createdAt: any
-  seen: boolean
+  isSeen: boolean
 }
 
 interface ChatState {
@@ -31,14 +36,18 @@ interface ChatState {
   messagesCache: Record<string, Chat | undefined>
   loading: boolean
   error: Error | null
-  // Map of conversation IDs to unsubscribe functions
+  paginationCursor: Record<string, DocumentSnapshot | null>
+  // Map of conversati on IDs to unsubscribe functions
   subscriptions: Record<string, () => void>
   // store document subscriptions separately
   conversationSubscriptions: Record<string, () => void>
   // Selected chat ID for decoupled components
   selectedChatId: string | null
+  selectedProfile: UserProfileDataShort | null
   setSelectedChatId: (chatId: string | null) => void
+  setSelectedProfile: (profile: UserProfileDataShort | null) => void
   subscribeToMessages: (conversationId: string) => void
+  loadOlderMessages: () => void
   unsubscribeFromMessages: () => void
   refreshMessages: (conversationId: string) => Promise<void>
   sendMessage: (
@@ -47,6 +56,8 @@ interface ChatState {
   ) => Promise<void>
 }
 
+const MESSAGES_PER_PAGE = 10
+
 export const useChatStore = create<ChatState>()(
   devtools(
     (set, get) => ({
@@ -54,12 +65,14 @@ export const useChatStore = create<ChatState>()(
       messagesCache: {},
       loading: false,
       error: null,
+      paginationCursor: {},
       subscriptions: {},
       conversationSubscriptions: {},
       selectedChatId: null,
+      selectedProfile: null,
 
       setSelectedChatId: (chatId) => {
-        set({ selectedChatId: chatId })
+        set({ selectedChatId: chatId, selectedProfile: null })
 
         // If we have a chat ID, update currentChat and subscribe to messages for that conversation
         if (chatId) {
@@ -72,6 +85,7 @@ export const useChatStore = create<ChatState>()(
             const { messagesCache } = get()
             const cachedChat = messagesCache[conversationRef]
 
+            // eslint-disable-next-line prefer-destructuring
             if (cachedChat) {
               // If we have the conversation in the cache, update currentChat immediately
               console.log(
@@ -141,7 +155,7 @@ export const useChatStore = create<ChatState>()(
                   ? data.createdAt.toDate().toISOString()
                   : new Date().toISOString(),
               message: data.text,
-              readStatus: !data.seen,
+              isSeen: data.isSeen,
             }
           }) as Message[]
 
@@ -177,124 +191,136 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      subscribeToMessages: (conversationId) => {
-        const { subscriptions, messagesCache, conversationSubscriptions } =
-          get()
+      subscribeToMessages: async (conversationId) => {
+        const { conversationSubscriptions } = get()
 
         if (conversationSubscriptions[conversationId]) {
           return
+        }
+
+        const conversationRef = doc(db, 'conversations', conversationId)
+
+        // Получаем участников чата один раз до подписки
+        let participants: string[] = []
+        const conversationDoc = await getDoc(conversationRef)
+        if (conversationDoc.exists()) {
+          participants = conversationDoc.data().participants || []
         } else {
-          const conversationRef = doc(db, 'conversations', conversationId)
-          const unsubscribeConversation = onSnapshot(
-            conversationRef,
-            (docSnapshot) => {
-              if (!docSnapshot.exists()) {
-                const state = get()
-
-                if (state.subscriptions[conversationId]) {
-                  state.subscriptions[conversationId]()
-                }
-
-                set((state) => {
-                  const newSubscriptions = { ...state.subscriptions }
-                  delete newSubscriptions[conversationId]
-
-                  const newConversationSubscriptions = {
-                    ...state.conversationSubscriptions,
-                  }
-                  delete newConversationSubscriptions[conversationId]
-
-                  const newMessagesCache = { ...state.messagesCache }
-                  delete newMessagesCache[conversationId]
-
-                  return {
-                    subscriptions: newSubscriptions,
-                    conversationSubscriptions: newConversationSubscriptions,
-                    messagesCache: newMessagesCache,
-                    currentChat:
-                      state.currentChat?.chatId === conversationId
-                        ? null
-                        : state.currentChat,
-                  }
-                })
-              }
-            }
-          )
-
-          set((state) => ({
-            conversationSubscriptions: {
-              ...state.conversationSubscriptions,
-              [conversationId]: unsubscribeConversation,
-            },
-          }))
-        }
-
-        if (subscriptions[conversationId]) {
-          if (messagesCache[conversationId]) {
-            set({
-              currentChat: messagesCache[conversationId],
-              loading: false,
-            })
+          // const cachedChat = get().messagesCache[conversationId]
+          const { messagesCache } = get()
+          const cachedChat = messagesCache[conversationId]
+          if (cachedChat) {
+            // eslint-disable-next-line prefer-destructuring
+            participants = cachedChat.participants
           }
-          return
         }
 
-        if (!conversationId) {
-          console.error('No conversation ID provided for subscription')
-          return
-        }
+        // Отслеживаем удаление чата
+        const unsubscribeConversation = onSnapshot(
+          conversationRef,
+          (docSnapshot) => {
+            if (!docSnapshot.exists()) {
+              const state = get()
 
-        const cachedChat = get().messagesCache[conversationId]
-        if (cachedChat) {
-          set({
-            currentChat: cachedChat,
-            loading: false,
-          })
-        }
+              if (state.subscriptions[conversationId]) {
+                state.subscriptions[conversationId]()
+              }
 
+              set((state) => {
+                const newSubscriptions = { ...state.subscriptions }
+                delete newSubscriptions[conversationId]
+
+                const newConversationSubscriptions = {
+                  ...state.conversationSubscriptions,
+                }
+                delete newConversationSubscriptions[conversationId]
+
+                const newMessagesCache = { ...state.messagesCache }
+                delete newMessagesCache[conversationId]
+
+                const newPaginationCursor = { ...state.paginationCursor }
+                delete newPaginationCursor[conversationId]
+
+                return {
+                  subscriptions: newSubscriptions,
+                  conversationSubscriptions: newConversationSubscriptions,
+                  messagesCache: newMessagesCache,
+                  paginationCursor: newPaginationCursor,
+                  currentChat:
+                    state.currentChat?.chatId === conversationId
+                      ? null
+                      : state.currentChat,
+                }
+              })
+            }
+          }
+        )
+
+        set((state) => ({
+          conversationSubscriptions: {
+            ...state.conversationSubscriptions,
+            [conversationId]: unsubscribeConversation,
+          },
+        }))
+
+        // Подписываемся на последние 10 сообщений
         const messagesRef = collection(
           db,
           'conversations',
           conversationId,
           'messages'
         )
-        const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'))
+        const messagesQuery = query(
+          messagesRef,
+          orderBy('createdAt', 'desc'), //сортировка от новых к старым
+          limit(MESSAGES_PER_PAGE)
+        )
 
-        set({ loading: true, error: null })
+        // Устанавливаем курсор для пагинации:
+        // он будет указывать на самое старое сообщение из загруженных
+        const initialSnapshot = await getDocs(messagesQuery)
+        const lastVisible =
+          initialSnapshot.docs[initialSnapshot.docs.length - 1] || null
+
+        set((state) => ({
+          paginationCursor: {
+            ...state.paginationCursor,
+            [conversationId]: lastVisible,
+          },
+        }))
 
         const unsubscribeSnapshot = onSnapshot(
           messagesQuery,
           { includeMetadataChanges: false },
-          async (querySnapshot) => {
+          (querySnapshot) => {
             try {
-              if (querySnapshot.metadata.hasPendingWrites) return
-
-              const messages = querySnapshot.docs.map((doc) => {
-                const data = doc.data()
-                return {
-                  messageId: doc.id,
-                  senderId: data.senderId,
-                  timestamp:
-                    data.createdAt instanceof Timestamp
-                      ? data.createdAt.toDate().toISOString()
-                      : new Date().toISOString(),
-                  message: data.text,
-                  readStatus: !data.seen,
-                }
-              }) as Message[]
-
-              let participants: string[] = []
-              const conversationDoc = await getDoc(
-                doc(db, 'conversations', conversationId)
+              const incomingMessages = querySnapshot.docs.map((doc) =>
+                mapFirestoreDocToMessage(doc)
               )
-              if (conversationDoc.exists()) {
-                participants = conversationDoc.data().participants || []
-              }
+
+              // Сортируем по возрастанию времени (старые сверху)
+              incomingMessages.sort(
+                (a, b) =>
+                  new Date(a.timestamp).getTime() -
+                  new Date(b.timestamp).getTime()
+              )
+
+              const existingMessages =
+                get().messagesCache[conversationId]?.messages || []
+              const messageMap = new Map(
+                existingMessages.map((msg) => [msg.messageId, msg])
+              )
+
+              incomingMessages.forEach((msg) => {
+                messageMap.set(msg.messageId, msg)
+              })
+
+              const allMessages = Array.from(messageMap.values())
 
               const chat: Chat = {
                 chatId: conversationId,
                 participants,
-                messages,
+                messages: allMessages,
               }
 
               set((state) => ({
@@ -304,7 +330,7 @@ export const useChatStore = create<ChatState>()(
                 },
                 currentChat:
                   state.currentChat?.chatId === conversationId
-                    ? chat
+                    ? { ...chat, messages: [...allMessages] }
                     : state.currentChat,
                 loading: false,
               }))
@@ -327,6 +353,63 @@ export const useChatStore = create<ChatState>()(
           subscriptions: {
             ...state.subscriptions,
             [conversationId]: unsubscribeSnapshot,
+          },
+        }))
+      },
+
+      loadOlderMessages: async () => {
+        const chatId = get().currentChat?.chatId
+        const { paginationCursor } = get()
+
+        if (!chatId) {
+          console.log('No active chat')
+          return
+        }
+
+        const cursor = paginationCursor[chatId]
+
+        if (!cursor) {
+          return
+        }
+
+        const { lastVisible, snapshot } = await fetchMessagesPage(
+          db,
+          chatId,
+          cursor
+        )
+
+        if (snapshot.empty || !lastVisible) {
+          return
+        }
+
+        const messages: Message[] = snapshot.docs.map((item) => {
+          return mapFirestoreDocToMessage(item)
+        })
+
+        const messagesCache = get().messagesCache[chatId]?.messages || []
+        const newMessages = [...messages.reverse(), ...messagesCache]
+
+        set((state) => ({
+          messagesCache: {
+            ...state.messagesCache,
+            [chatId]: {
+              chatId,
+              participants: state.messagesCache[chatId]?.participants ?? [],
+              messages: newMessages,
+            },
+          },
+          currentChat:
+            state.currentChat?.chatId === chatId
+              ? {
+                  ...state.currentChat,
+                  messages: newMessages,
+                }
+              : state.currentChat,
+
+          loading: false,
+          paginationCursor: {
+            ...state.paginationCursor,
+            [chatId]: lastVisible,
           },
         }))
       },
@@ -381,7 +464,7 @@ export const useChatStore = create<ChatState>()(
             receiverId: message.receiverId,
             text: message.text,
             createdAt: serverTimestamp(),
-            seen: false,
+            isSeen: false,
           })
 
           // Update the conversation document with the last message info
@@ -408,6 +491,10 @@ export const useChatStore = create<ChatState>()(
             loading: false,
           })
         }
+      },
+
+      setSelectedProfile(profile) {
+        set({ selectedProfile: profile })
       },
     }),
     { name: 'chat-store' }

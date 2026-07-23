@@ -14,9 +14,12 @@ import { useEffect, useState } from 'react'
 
 const useBearerToken = () => {
   const [token, setToken] = useState('')
-  const { user, getAccessTokenSilently } = useAuth0()
+  const { user, getAccessTokenSilently, isLoading, isAuthenticated } =
+    useAuth0()
 
   useEffect(() => {
+    if (isLoading || !isAuthenticated) return
+
     const getToken = async () => {
       try {
         const accessToken = await getAccessTokenSilently()
@@ -27,7 +30,7 @@ const useBearerToken = () => {
     }
 
     getToken()
-  }, [getAccessTokenSilently, user?.sub])
+  }, [getAccessTokenSilently, user?.sub, isLoading, isAuthenticated])
 
   return token
 }

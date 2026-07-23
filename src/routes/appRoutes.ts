@@ -1,0 +1,17 @@
+export const APP_ROUTES = {
+  home: '/',
+  callback: 'callback',
+  emailConfirmed: 'email-confirmed',
+  accountCreated: 'account-created',
+  emailAlreadyConfirmed: 'email-already-confirmed',
+  fillProfile: 'fill-profile',
+  account: 'account',
+  friends: 'friends',
+  swipes: 'swipes',
+  messages: 'messages',
+  whoLikedYou: 'who-liked-you',
+  nearMe: 'near-me',
+  myAccount: 'my-account',
+  logout: 'logout',
+  notFound: '*',
+} as const

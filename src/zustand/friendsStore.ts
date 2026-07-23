@@ -49,6 +49,10 @@ interface PotentialFriendsActions {
 
 type PotentialFriendsStore = PotentialFriendsState & PotentialFriendsActions
 
+type MatchNotificationStore = {
+  handleMatchUpdate: () => void
+}
+
 /**
  * Helper function to handle errors consistently
  */
@@ -183,12 +187,20 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
         await get().fetchPotentialFriends()
         // todo: when we have a queue with potential friends and then change the filters, for example ageRange set to very narrow, one of potential friends is still remaining in queue and nothing happens when I push "skip" (dislike), it should disappear from the queue and the queue should become empty
       },
-      //TODO: why we have handleLike and handleDislike in the store?
-      // They don't change the state of the store, they just call the API and return status.
-      // Maybe we should remove them, because they are in src/actions/friendsServices.ts
+
       handleLike: async (idPotentialFriend: string) => {
         try {
-          return await addLike(idPotentialFriend)
+          const result = await addLike(idPotentialFriend)
+          const friends = [...(get().potentialFriends ?? [])]
+          const friend = friends.find((f) => f.id === idPotentialFriend)
+
+          if (friend) {
+            friend.likedByMe = true
+          }
+
+          set({ potentialFriends: friends })
+
+          return result
         } catch (error) {
           console.error('Error adding like:', error)
           set({ error: handleError(error) })
@@ -207,5 +219,17 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
       },
     }),
     { name: 'potential-friends-store' }
+  )
+)
+
+export const useMatchNotificationStore = create<MatchNotificationStore>()(
+  devtools(
+    () => ({
+      handleMatchUpdate: async () => {
+        useMatchesStore.getState().fetchMatches()
+        usePotentialFriendsStore.getState().refreshPotentialFriends()
+      },
+    }),
+    { name: 'match-notification-store' }
   )
 )

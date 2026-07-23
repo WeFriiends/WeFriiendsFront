@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import Carousel from 'react-material-ui-carousel'
 import UserPic from './UserPic'
-import { UserPhoto } from 'types/UserProfileData'
+import { ProfilePhoto } from 'types/UserProfileData'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material'
 import { Box } from '@mui/material'
 import { PhotoModal } from 'components/firstProfile/uploadPhotos/PhotoModal'
 
 interface PhotoCarouselProps {
-  items: UserPhoto[]
+  items: ProfilePhoto[]
   className?: string
 }
 
@@ -18,7 +19,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
 
-  const defaultPhoto = '/img/placeholders/girl-big.svg'
+  const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
   const handleImageClick = (src: string) => {
     setSelectedImage(src)
@@ -35,6 +36,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     <>
       <Box className={className}>
         <Carousel
+          key={items.length}
           autoPlay={false}
           // display arrows if 2+ pics
           navButtonsAlwaysVisible={hasMultiplePhotos}
@@ -102,14 +104,14 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
             height: { xs: 420, sm: 535 },
           }}
         >
-          {items.length > 0 && items[0].src !== defaultPhoto ? (
-            items.map((item: UserPhoto) => (
+          {items.length > 0 && items[0] !== defaultPhoto ? (
+            items.map((item: ProfilePhoto) => (
               <div
-                key={item.src}
-                onClick={() => handleImageClick(item.src)}
+                key={item}
+                onClick={() => handleImageClick(item)}
                 style={{ cursor: 'pointer' }}
               >
-                <UserPic src={item.src} />
+                <UserPic src={item} />
               </div>
             ))
           ) : (

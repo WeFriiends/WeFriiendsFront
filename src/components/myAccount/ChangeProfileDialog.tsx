@@ -1,7 +1,8 @@
-import React, { useState, forwardRef, Ref, useImperativeHandle } from 'react'
+import { useState, forwardRef, Ref, useImperativeHandle } from 'react'
 import { CommonModal } from 'common/components/CommonModal'
 import { Box, Typography } from '@mui/material'
 import Status from 'components/firstProfile/Status'
+import { PROFILE_EDIT_STORAGE_KEYS } from 'components/firstProfile/storageKeys'
 import { makeStyles } from 'tss-react/mui'
 import { useAuthStore, useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
@@ -16,16 +17,12 @@ interface ChangeProfileDialogProps {
 const ChangeProfileDialog = forwardRef(
   (props: ChangeProfileDialogProps, ref) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isPicHuge, setIsPicHuge] = useState(false)
-    const [isSubmitClicked, setIsSubmitClicked] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    const { tempPhotos, uploadNewPhotos, getProfile } = useProfileStore()
+    const { uploadNewPhotos, getProfile } = useProfileStore()
     const { token } = useAuthStore()
 
     const handleOpenChangeProfileDialog = () => {
-      setIsSubmitClicked(false)
-      setIsPicHuge(false)
       setIsModalVisible(true)
     }
 
@@ -38,8 +35,6 @@ const ChangeProfileDialog = forwardRef(
     }))
 
     const handleSaveClick = async () => {
-      setIsSubmitClicked(true)
-      if (tempPhotos.length === 0) return
       setIsSaving(true)
       try {
         await uploadNewPhotos(token!)
@@ -55,21 +50,12 @@ const ChangeProfileDialog = forwardRef(
     return (
       <CommonModal
         isOpened={isModalVisible}
-        modalTitle={'Edit Profile'}
-        modalDescription={'Update your profile photos and preferences.'}
+        ariaLabel="Edit Profile"
         onClose={handleClose}
         width={600}
+        height={655}
       >
-        {isPicHuge && (
-          <Typography className={classes.picError}>
-            Please note: you can&apos;t upload photo more than 5 MB
-          </Typography>
-        )}
-        <UploadPhotos
-          isSubmitClicked={isSubmitClicked}
-          resetSubmitClicked={() => setIsSubmitClicked(false)}
-          setIsPicHuge={setIsPicHuge}
-        />
+        <UploadPhotos />
         <Box className={classes.titleContainer}>
           <Typography className={classes.titleStatus}>
             I&apos;m Here For
@@ -79,9 +65,13 @@ const ChangeProfileDialog = forwardRef(
           isTitleShown={false}
           isFormHelperTextShown={true}
           formHelperText=" Please, choose 3 statuses maximum"
+          storageKey={PROFILE_EDIT_STORAGE_KEYS.selectedStatuses}
         />
         <Box className={classes.interests}>
-          <Interests isAboutMeShown={true} />
+          <Interests
+            isAboutMeShown={true}
+            storageKey={PROFILE_EDIT_STORAGE_KEYS.userPreferences}
+          />
         </Box>
         <Box className={classes.buttonContainer}>
           <PrimaryButton
@@ -97,13 +87,6 @@ const ChangeProfileDialog = forwardRef(
 export default ChangeProfileDialog
 
 const useStyles = makeStyles()({
-  picError: {
-    fontFamily: 'Inter',
-    fontSize: 13,
-    textAlign: 'center',
-    color: theme.palette.primary.dark,
-    marginBottom: 4,
-  },
   titleContainer: {
     position: 'relative',
     display: 'flex',
@@ -113,7 +96,7 @@ const useStyles = makeStyles()({
     width: '100%',
     height: '42px',
     borderRadius: '20px',
-    backgroundColor: '#FEDED2',
+    backgroundColor: theme.customPalette.colorPeach,
     marginTop: '50px',
     marginBottom: '15px',
   },

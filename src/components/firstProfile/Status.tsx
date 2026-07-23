@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { Typography, Box, FormHelperText } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import {
-  getItemFromLocalStorage,
-  setItemToLocalStorage,
-} from 'utils/localStorage'
+  getItemFromSessionStorage,
+  setItemToSessionStorage,
+} from 'utils/sessionStorage'
+import { REGISTRATION_STORAGE_KEYS } from './storageKeys'
 
 const STATUSES: Array<string> = [
   'Looking for new friends',
@@ -20,21 +21,23 @@ type StatusProps = {
   isTitleShown?: boolean
   isFormHelperTextShown?: boolean
   formHelperText?: React.ReactNode
+  storageKey?: string
 }
 const Status: React.FC<StatusProps> = ({
   isTitleShown = true,
   isFormHelperTextShown = true,
   formHelperText,
+  storageKey = REGISTRATION_STORAGE_KEYS.selectedStatuses,
 }) => {
   const { classes } = useStyles()
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
-    getItemFromLocalStorage('selectedStatuses') || []
+    getItemFromSessionStorage<string[]>(storageKey) ?? []
   )
 
   useEffect(() => {
-    setItemToLocalStorage('selectedStatuses', selectedStatuses)
-  }, [selectedStatuses])
+    setItemToSessionStorage(storageKey, selectedStatuses)
+  }, [selectedStatuses, storageKey])
 
   const toggleStatus = (statusId: string) => {
     if (selectedStatuses.includes(statusId)) {

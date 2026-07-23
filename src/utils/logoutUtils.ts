@@ -1,5 +1,11 @@
-import { clearLocalStorage } from './localStorage'
+import { clearLocalStorage, clearLocalStorageByPrefix } from './localStorage'
+import { clearSessionStorage } from './sessionStorage'
 import { useAuthStore } from '../zustand/store'
+import { AUTH_STORAGE_KEY, AUTH0_STORAGE_PREFIX } from 'data/constants'
+import {
+  REGISTRATION_STORAGE_KEYS,
+  PROFILE_EDIT_STORAGE_KEYS,
+} from 'components/firstProfile/storageKeys'
 
 /**
  * Utility function to handle logout process
@@ -13,7 +19,13 @@ export const handleLogout = (
   returnTo: string = window.location.origin + '/'
 ) => {
   // Clear localStorage
-  clearLocalStorage()
+  clearLocalStorage([AUTH_STORAGE_KEY])
+  clearLocalStorageByPrefix(AUTH0_STORAGE_PREFIX)
+
+  clearSessionStorage([
+    ...Object.values(REGISTRATION_STORAGE_KEYS),
+    ...Object.values(PROFILE_EDIT_STORAGE_KEYS),
+  ])
 
   // Reset the auth store state
   const resetAuthStore = useAuthStore.getState().setToken

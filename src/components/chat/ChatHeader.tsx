@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 import { ChatMenu } from './ChatMenu'
 import { UserChatProfile } from 'types/UserProfileData'
 import { useChatStore } from 'zustand/chatStore'
+import { UserProfileDataShort } from 'types/UserProfileData'
 
 interface ChatHeaderProps {
   chat: UserChatProfile
@@ -10,11 +11,22 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ chat }: ChatHeaderProps) {
   const { classes } = useStyles()
-  const { setSelectedChatId } = useChatStore()
+  const { setSelectedChatId, setSelectedProfile } = useChatStore()
 
   function handleCloseChat() {
     setSelectedChatId(null)
     // We don't unsubscribe when closing chat, only when tab/app is closed
+  }
+
+  function handleOpenProfile() {
+    const profile: UserProfileDataShort = {
+      id: chat.id,
+      name: chat.name,
+      age: chat.age,
+      photos: [chat.avatar],
+    }
+
+    setSelectedProfile(profile)
   }
 
   return (
@@ -30,7 +42,11 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
       </IconButton>
 
       <Box className={classes.userInHeader}>
-        <Avatar className={classes.userAvatar} src={chat.avatar} />
+        <Avatar
+          className={classes.userAvatar}
+          src={chat.avatar}
+          onClick={handleOpenProfile}
+        />
         <Typography className={classes.userName}>
           {chat.name}
           <Box className={classes.userAge} component="span">
@@ -67,12 +83,12 @@ const useStyles = makeStyles()((theme) => ({
     height: 64,
     padding: '0 20px',
     display: 'flex',
+    flexShrink: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
     color: theme.palette.common.white,
     [theme.breakpoints.up('md')]: {
       height: 'auto',
-      marginTop: 30,
       padding: 0,
       backgroundColor: theme.palette.common.white,
     },
@@ -84,6 +100,7 @@ const useStyles = makeStyles()((theme) => ({
       width: 50,
       height: 50,
     },
+    cursor: 'pointer',
   },
   userName: {
     color: theme.palette.common.white,

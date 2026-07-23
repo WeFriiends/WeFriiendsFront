@@ -2,11 +2,16 @@ import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import classnames from 'classnames'
-import { UserProfileData } from '../../types/UserProfileData'
+import {
+  UserProfileData,
+  UserProfileDataShort,
+} from '../../types/UserProfileData'
 import { FriendsMatch } from 'types/Matches'
 import { NoNewMatchesOrMessages } from './NoNewMatchesOrMessages'
 import { useMatchesStore } from 'zustand/friendsStore'
 import { useUserProfileStore } from 'zustand/userProfileStore'
+import { mapProfileToData } from 'utils/mapProfileToData'
+import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
@@ -19,39 +24,26 @@ export function Friends({ onClick }: FriendsProps) {
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
-  const defaultPhoto = '/img/placeholders/girl-big.svg'
+  const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
   const handleClick = async (friend: FriendsMatch) => {
     setSelectedFriendId(friend.id)
     setLoading(friend.id)
 
-    onClick({
+    const selectedFriend: UserProfileDataShort = {
       id: friend.id,
       name: friend.name,
       age: friend.age.toString(),
-      photos: [{ src: friend.photo || defaultPhoto }],
-      city: '',
-      distance: '',
-      likedMe: false,
-      reasons: [],
-      preferences: {},
-    })
+      photos: [friend.photo],
+    }
+
+    onClick(mapProfileToData(null, selectedFriend))
 
     try {
       const fullProfile = await fetchUserProfile(friend.id)
 
       if (fullProfile) {
-        onClick({
-          id: fullProfile._id,
-          name: fullProfile.name,
-          age: fullProfile.age.toString(),
-          photos: fullProfile.photos,
-          city: fullProfile.city || '',
-          distance: fullProfile.distance?.toString() || '',
-          likedMe: fullProfile.likedMe || false,
-          reasons: fullProfile.reasons || [],
-          preferences: fullProfile.preferences || {},
-        })
+        onClick(mapProfileToData(fullProfile, selectedFriend))
       }
     } catch (error) {
       console.error('Error fetching full profile:', error)

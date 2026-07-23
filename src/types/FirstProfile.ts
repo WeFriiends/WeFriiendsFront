@@ -12,6 +12,7 @@ export interface UserPicsType {
   url: string | null
   blobFile?: Blob | null
   fileName?: string
+  replacedUrl?: string
 }
 
 export interface UserPreferences {

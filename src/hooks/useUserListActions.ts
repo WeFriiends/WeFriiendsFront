@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { AlertColor } from '@mui/material'
 import { mutate } from 'swr'
-import { addDislike, addLike } from 'actions/friendsServices'
+import { addDislike } from 'actions/friendsServices'
 import { UserMiniProfile } from 'common/types/userTypes'
 import { getNextSelectedUser } from 'helpers/getNextSelectedUser'
 import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
-import { useMatchesStore } from 'zustand/friendsStore'
+import { usePotentialFriendsStore } from 'zustand/friendsStore'
 
 export function useUserListActions(
   swrKey: string,
@@ -16,8 +16,6 @@ export function useUserListActions(
     id: string
     avatar: string
   } | null>(null)
-
-  const { addFriend } = useMatchesStore()
 
   const handleCloseMatch = () => setMatchedUser(null)
 
@@ -58,21 +56,15 @@ export function useUserListActions(
     if (!selectedUser) return
     try {
       if (selectedUser.likedMe) {
-        const status = await addFriend(selectedUser.id)
-
-        if (!status) {
-          throw new Error('Failed to add friend')
-        }
-
         setMatchedUser({
           id: selectedUser.id,
           avatar: selectedUser.picture ?? '',
         })
       } else {
-        await addLike(selectedUser.id)
         showSnackbar('Friend request sent', 'success')
       }
 
+      await usePotentialFriendsStore.getState().handleLike(selectedUser.id)
       await removeUserAndSelectNext(selectedUser.id)
     } catch (e: unknown) {
       showSnackbar(getApiErrorMessage(e) || 'Failed to add friend', 'error')

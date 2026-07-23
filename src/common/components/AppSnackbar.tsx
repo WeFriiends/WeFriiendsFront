@@ -21,9 +21,22 @@ export function AppSnackbar({
       open={open}
       autoHideDuration={autoHideDuration}
       onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
-      <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
+      <Alert
+        onClose={onClose}
+        severity={severity}
+        sx={(theme) => ({
+          width: '100%',
+          ...(severity === 'error' && {
+            backgroundColor: theme.palette.primary.dark,
+            color: theme.palette.common.white,
+            '& .MuiAlert-icon': {
+              color: theme.palette.common.white,
+            },
+          }),
+        })}
+      >
         {message}
       </Alert>
     </Snackbar>
