@@ -12,18 +12,14 @@ import {
   setItemToSessionStorage,
 } from 'utils/sessionStorage'
 import { REGISTRATION_STORAGE_KEYS } from '../storageKeys'
-
-type SavedPreferences = {
-  aboutMe?: string
-  selectedLanguages?: string[]
-  [key: string]: unknown
-}
+import type { SavedPreferences } from 'types/FirstProfile'
 
 interface InterestsProps {
   isAboutMeShown?: boolean
   hasAboutMeError?: boolean
   setHasAboutMeError?: (value: boolean) => void
   storageKey?: string
+  initialPreferences?: SavedPreferences
 }
 
 const Interests = ({
@@ -31,11 +27,14 @@ const Interests = ({
   hasAboutMeError = false,
   setHasAboutMeError,
   storageKey = REGISTRATION_STORAGE_KEYS.userPreferences,
+  initialPreferences,
 }: InterestsProps) => {
   const { classes } = useStyles()
 
-  const loadInitialData = () =>
-    getItemFromSessionStorage<SavedPreferences>(storageKey) ?? {}
+  const loadInitialData = (): SavedPreferences =>
+    initialPreferences ??
+    getItemFromSessionStorage<SavedPreferences>(storageKey) ??
+    {}
 
   const [preferences] = useState(() => loadInitialData())
   const [aboutMe, setAboutMe] = useState(preferences.aboutMe || '')
@@ -45,8 +44,8 @@ const Interests = ({
   const [interestsData, setInterestsData] = useState<InterestData[]>(
     dataInterests.map((interest) => ({
       ...interest,
-      selectedItems: Array.isArray(preferences[interest.titleBase])
-        ? (preferences[interest.titleBase] as string[])
+      selectedItems: Array.isArray(preferences[interest.preferenceKey])
+        ? (preferences[interest.preferenceKey] as string[])
         : [],
     }))
   )
@@ -54,7 +53,7 @@ const Interests = ({
   useEffect(() => {
     const userPreferences = interestsData.reduce((acc, interest) => {
       if (interest.selectedItems && interest.selectedItems.length > 0) {
-        acc[interest.titleBase] = interest.selectedItems
+        acc[interest.preferenceKey] = interest.selectedItems
       }
       return acc
     }, {} as Record<string, any>)

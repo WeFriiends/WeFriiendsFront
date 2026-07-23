@@ -1,6 +1,6 @@
 export interface InterestData {
   title: string
-  titleBase: string
+  preferenceKey: string
   item: string[]
   multiple?: boolean
   isOpen?: boolean
@@ -10,12 +10,12 @@ export interface InterestData {
 export const interestsData: InterestData[] = [
   {
     title: 'Smoking',
-    titleBase: 'Smoking',
+    preferenceKey: 'smoking',
     item: ['Social Smoking', 'Occasional Smoking', 'Smoker', 'Non-Smoker'],
   },
   {
     title: 'Educational Level',
-    titleBase: 'EducationalLevel',
+    preferenceKey: 'educationalLevel',
     item: [
       'High School',
       'Associate Degrees',
@@ -30,7 +30,7 @@ export const interestsData: InterestData[] = [
   },
   {
     title: 'Children',
-    titleBase: 'Children',
+    preferenceKey: 'children',
     item: [
       'None',
       '1 Child',
@@ -44,7 +44,7 @@ export const interestsData: InterestData[] = [
   },
   {
     title: 'Drinking',
-    titleBase: 'Drinking',
+    preferenceKey: 'drinking',
     item: [
       'Never',
       'Less than monthly',
@@ -56,7 +56,7 @@ export const interestsData: InterestData[] = [
   },
   {
     title: 'Pets',
-    titleBase: 'Pets',
+    preferenceKey: 'pets',
     item: [
       'None',
       '1 Dog',
@@ -75,7 +75,7 @@ export const interestsData: InterestData[] = [
   },
   {
     title: 'Interests',
-    titleBase: 'Interests',
+    preferenceKey: 'interests',
     item: [
       'Hiking',
       'Cooking',
