@@ -22,17 +22,20 @@ type StatusProps = {
   isFormHelperTextShown?: boolean
   formHelperText?: React.ReactNode
   storageKey?: string
+  initialStatuses?: string[]
 }
 const Status: React.FC<StatusProps> = ({
   isTitleShown = true,
   isFormHelperTextShown = true,
   formHelperText,
   storageKey = REGISTRATION_STORAGE_KEYS.selectedStatuses,
+  initialStatuses,
 }) => {
   const { classes } = useStyles()
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
-    getItemFromSessionStorage<string[]>(storageKey) ?? []
+    () =>
+      initialStatuses ?? getItemFromSessionStorage<string[]>(storageKey) ?? []
   )
 
   useEffect(() => {
