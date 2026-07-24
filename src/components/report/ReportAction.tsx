@@ -1,22 +1,39 @@
 import React from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
+import { blockUser } from '../../actions/blockService'
+import { usePotentialFriendsStore } from 'zustand/friendsStore'
 
 type ReportActionProps = {
   chooseBlock: () => void
   chooseReport: () => void
+  reportedUserId: string
+  reporterUserId: string
 }
 
-const ReportAction: React.FC<ReportActionProps> = ({
+export const ReportAction: React.FC<ReportActionProps> = ({
   chooseBlock,
   chooseReport,
+  reportedUserId,
+  reporterUserId,
 }) => {
   const { classes } = useStyles()
 
-  const handleBlock = () => {
-    // TODO: Add API and code for user blocking
-    chooseBlock()
+  const removeUserFromSwipes = (userId: string) => {
+    const { potentialFriends, setPotentialFriends } =
+      usePotentialFriendsStore.getState()
+    const updatedFriends = potentialFriends?.filter((f) => f.id !== userId)
+    setPotentialFriends(updatedFriends)
+  }
+
+  const handleBlock = async () => {
+    try {
+      await blockUser(reportedUserId, reporterUserId)
+      removeUserFromSwipes(reportedUserId)
+      chooseBlock()
+    } catch (error) {
+      console.error('❌ Ошибка при блокировке:', error)
+    }
   }
 
   const handleReport = () => {
@@ -57,9 +74,7 @@ const ReportAction: React.FC<ReportActionProps> = ({
   )
 }
 
-export default ReportAction
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   reportContainer: {
     display: 'grid',
   },
@@ -100,4 +115,4 @@ const useStyles = makeStyles()({
       color: theme.palette.common.white,
     },
   },
-})
+}))

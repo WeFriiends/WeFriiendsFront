@@ -6,7 +6,7 @@ import { TabsMessagesFriends } from '../components/tabsMessagesFriends/TabsMessa
 import { ChatContainer } from 'components/chat/ChatContainer'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { useEffect, useState } from 'react'
 import { useUserProfileStore } from 'zustand/userProfileStore'
 import { UserProfileData } from 'types/UserProfileData'

@@ -12,6 +12,14 @@ export const LIKE_ENDPOINTS = {
   onMe: 'likes/on-me',
 } as const
 
+export const REPORT_ENDPOINTS = {
+  create: '/report',
+} as const
+
+export const BLOCK_ENDPOINTS = {
+  create: '/block',
+} as const
+
 export const PHOTO_ENDPOINTS = {
   upload: 'photos/upload',
   base: 'photos',
