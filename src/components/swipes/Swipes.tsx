@@ -36,10 +36,10 @@ const Swipes = () => {
   const [sessionFriends, setSessionFriends] = useState<UserProfileData[]>()
 
   useEffect(() => {
-    if (potentialFriends && sessionFriends === undefined) {
+    if (potentialFriends) {
       setSessionFriends(potentialFriends.filter((f) => !f.likedByMe))
     }
-  }, [potentialFriends, sessionFriends])
+  }, [potentialFriends])
 
   // Fetch potential friends when profile is loaded
   useEffect(() => {

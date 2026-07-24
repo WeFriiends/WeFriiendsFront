@@ -107,7 +107,7 @@ export const removeFriend = async (
   } catch (error: any) {
     // Если матч не найден (404) - не считаем ошибкой
     if (error.response?.status === 404 || error.response?.status === 400) {
-      console.log('ℹ️ Матч не найден, пропускаем удаление')
+      // Матч не найден, пропускаем удаление
       return
     }
     throw error

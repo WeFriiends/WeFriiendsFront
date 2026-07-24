@@ -45,6 +45,7 @@ interface PotentialFriendsActions {
   refreshPotentialFriends: () => Promise<void>
   handleLike: (idPotentialFriend: string) => Promise<number | undefined>
   handleDislike: (idPotentialFriend: string) => Promise<number | undefined>
+  setPotentialFriends: (friends: UserProfileData[] | undefined) => void
 }
 
 type PotentialFriendsStore = PotentialFriendsState & PotentialFriendsActions
@@ -217,6 +218,8 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
           return undefined
         }
       },
+
+      setPotentialFriends: (friends) => set({ potentialFriends: friends }),
     }),
     { name: 'potential-friends-store' }
   )

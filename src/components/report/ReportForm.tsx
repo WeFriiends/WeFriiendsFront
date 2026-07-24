@@ -10,6 +10,7 @@ import {
 import { makeStyles } from 'tss-react/mui'
 import ReportInputRadio from './ReportInputRadio'
 import { sendReport } from '../../actions/reportService'
+import { usePotentialFriendsStore } from 'zustand/friendsStore'
 
 type ReportFormProps = {
   onSuccess: () => void
@@ -49,6 +50,13 @@ export const ReportForm: React.FC<ReportFormProps> = ({
         reason: selectedReason,
         comment,
       })
+      // Удаляем пользователя из свайпов
+      const { potentialFriends, setPotentialFriends } =
+        usePotentialFriendsStore.getState()
+      const updatedFriends = potentialFriends?.filter(
+        (f) => f.id !== reportedUserId
+      )
+      setPotentialFriends(updatedFriends)
       onSuccess()
     } catch (err) {
       setError('Failed to send report. Please try again.')
