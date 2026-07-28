@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore'
 import { useUserProfileStore } from './userProfileStore'
 import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
+import { useMatchesStore } from 'zustand/friendsStore'
 
 interface ConversationsState {
   conversations: Conversation[]
@@ -201,6 +202,7 @@ export const useConversationsStore = create<ConversationsState>()(
 
         // Set up the listener
         set({ loading: true, error: null })
+        let initialized = false
 
         const unsubscribe = onSnapshot(
           conversationsQuery,
@@ -213,6 +215,17 @@ export const useConversationsStore = create<ConversationsState>()(
                   data: doc.data(),
                 })),
               })
+
+              // Check if this is the first snapshot to fetch new friends
+              if (!initialized) {
+                initialized = true
+              } else {
+                querySnapshot.docChanges().forEach((change) => {
+                  if (change.type === 'added') {
+                    useMatchesStore.getState().fetchMatches()
+                  }
+                })
+              }
 
               // Get the userProfileStore instance
               const userProfileStore = useUserProfileStore.getState()
