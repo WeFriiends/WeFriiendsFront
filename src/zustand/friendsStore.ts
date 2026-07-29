@@ -29,6 +29,7 @@ interface MatchesActions {
   stopPeriodicFetching: () => void
   addFriend: (idFriend: string) => Promise<number | undefined>
   removeFriend: (idFriend: string, currentUserId?: string) => Promise<void>
+  refreshMatches: () => Promise<void>
 }
 
 type MatchesStore = MatchesState & MatchesActions
@@ -130,6 +131,10 @@ export const useMatchesStore = create<MatchesStore>()(
           })
           throw error
         }
+      },
+
+      refreshMatches: async () => {
+        await get().fetchMatches()
       },
     }),
     { name: 'matches-store' }

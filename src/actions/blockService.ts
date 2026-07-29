@@ -7,16 +7,21 @@ export const blockUser = async (
   blockedUserId: string,
   blockerUserId: string
 ) => {
-  // 1. Пытаемся удалить матч (если есть)
-  try {
-    await removeFriend(blockedUserId, blockerUserId)
-  } catch (error: any) {
-    if (error.response?.status !== 404 && error.response?.status !== 400) {
-      console.error('Ошибка при удалении матча:', error)
+  // Проверяем, находимся ли мы на странице /friends
+  const shouldCheckMatch = window.location.pathname.includes('/friends')
+
+  // 1. Пытаемся удалить матч (только если мы на /friends)
+  if (shouldCheckMatch) {
+    try {
+      await removeFriend(blockedUserId, blockerUserId)
+    } catch (error: any) {
+      if (error.response?.status !== 404 && error.response?.status !== 400) {
+        console.error('Ошибка при удалении матча:', error)
+      }
     }
   }
 
-  // 2. пытаемся удалить чат (если есть)
+  // 2. Пытаемся удалить чат (всегда)
   try {
     await deleteConversation(blockerUserId, blockedUserId)
   } catch (error) {

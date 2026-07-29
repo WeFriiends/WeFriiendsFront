@@ -3,6 +3,7 @@ import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { blockUser } from '../../actions/blockService'
 import { usePotentialFriendsStore } from 'zustand/friendsStore'
+import { updateUserListsAfterBlock } from 'utils/updateUserLists'
 
 type ReportActionProps = {
   chooseBlock: () => void
@@ -29,7 +30,7 @@ export const ReportAction: React.FC<ReportActionProps> = ({
   const handleBlock = async () => {
     try {
       await blockUser(reportedUserId, reporterUserId)
-      removeUserFromSwipes(reportedUserId)
+      updateUserListsAfterBlock(reportedUserId)
       chooseBlock()
     } catch (error) {
       console.error('❌ Ошибка при блокировке:', error)

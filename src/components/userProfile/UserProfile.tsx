@@ -161,7 +161,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               </Typography>
               <ReportDialog
                 ref={reportDialogRef}
-                reportedUserId={user?.id || ''}
+                reportedUserId={user?.id || user?._id || ''}
                 reporterUserId={currentUserId || ''}
               />
               <Typography className={classes.textReport}>
