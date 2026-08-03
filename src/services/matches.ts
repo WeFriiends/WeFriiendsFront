@@ -21,10 +21,12 @@ export function subscribeToMatches(
         return
       }
       snapshot.docChanges().forEach((change) => {
-        callback({
-          type: change.type,
-          userId,
-        } as MatchEvent)
+        if (change.type === 'added' || change.type === 'removed') {
+          callback({
+            type: change.type,
+            userId,
+          } as MatchEvent)
+        }
       })
     },
     (err) => {
