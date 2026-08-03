@@ -1,49 +1,36 @@
-import { ref, onChildAdded, onChildRemoved, get } from 'firebase/database'
-import { rtdb } from './firebase'
+import { db } from './firebase'
 import { MatchEvent } from 'types/Matches'
+import { collection, query, onSnapshot, where } from 'firebase/firestore'
 
 export function subscribeToMatches(
   userId: string,
   callback: (data: MatchEvent) => void
 ) {
-  const matchesRef = ref(rtdb, `matches/${userId}`)
   let initialized = false
 
-  const existing = new Set<string>()
+  const q = query(
+    collection(db, 'matches'),
+    where('users', 'array-contains', userId)
+  )
 
-  const unsubscribeAdded = onChildAdded(matchesRef, async (snapshot) => {
-    const key = snapshot.key!
-
-    if (!initialized) {
-      existing.add(key)
-      return
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      if (!initialized) {
+        initialized = true
+        return
+      }
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added' || change.type === 'removed') {
+          callback({
+            type: change.type,
+            userId,
+          } as MatchEvent)
+        }
+      })
+    },
+    (err) => {
+      console.error(err)
     }
-
-    if (existing.has(key)) {
-      existing.delete(key)
-      return
-    }
-
-    callback({
-      type: 'added',
-      userId,
-    })
-  })
-
-  get(matchesRef).then((snapshot) => {
-    snapshot.forEach((child) => {
-      existing.add(child.key!)
-    })
-
-    initialized = true
-  })
-
-  const unsubscribeRemoved = onChildRemoved(matchesRef, () => {
-    callback({ type: 'removed', userId })
-  })
-
-  return () => {
-    unsubscribeAdded()
-    unsubscribeRemoved()
-  }
+  )
 }
