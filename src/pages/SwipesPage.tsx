@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { UserProfileData } from 'types/UserProfileData'
 import { Friends } from 'components/tabsMessagesFriends/Friends'

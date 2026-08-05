@@ -27,7 +27,7 @@ const ReportReceived: React.FC<ReportReceivedProps> = ({ closeModal }) => {
         </Typography>
         <Typography className={classes.content}>
           Thank you for your message. We will review <br />
-          it as soon as possible and take care about this problem.
+          it as soon as possible and take of this problem.
         </Typography>
       </Box>
 
