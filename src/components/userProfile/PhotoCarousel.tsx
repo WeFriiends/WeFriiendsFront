@@ -17,13 +17,13 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   className,
 }) => {
   const [modalOpen, setModalOpen] = useState(false)
-  const [selectedImage, setSelectedImage] = useState('')
+  const [selectedIndexImage, setSelectedIndexImage] = useState<number>(0)
 
   const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
-  const handleImageClick = (src: string) => {
-    setSelectedImage(src)
+  const handleImageClick = (index: number) => {
     setModalOpen(true)
+    setSelectedIndexImage(index)
   }
 
   const handleCloseModal = () => {
@@ -105,10 +105,10 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
         >
           {items.length > 0 && items[0] !== defaultPhoto ? (
-            items.map((item: ProfilePhoto) => (
+            items.map((item: ProfilePhoto, index) => (
               <div
                 key={item}
-                onClick={() => handleImageClick(item)}
+                onClick={() => handleImageClick(index)}
                 style={{ cursor: 'pointer' }}
               >
                 <UserPic src={item} />
@@ -124,7 +124,8 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
 
       <PhotoModal
         isOpened={modalOpen}
-        url={selectedImage}
+        items={items}
+        imageIndex={selectedIndexImage}
         setIsPhotoModalOpened={handleCloseModal}
       />
     </>
