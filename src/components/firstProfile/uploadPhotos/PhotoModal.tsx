@@ -48,7 +48,15 @@ export const PhotoModal = ({
           }}
         >
           {items?.map((item) => (
-            <img src={item} alt="card" className={classes.img} key={item} />
+            <Box
+              key={item}
+              sx={{
+                width: '100%',
+                height: '80vh',
+              }}
+            >
+              <img src={item} alt="card" className={classes.img} key={item} />
+            </Box>
           ))}
         </Carousel>
       </Box>
@@ -75,12 +83,13 @@ const useStyles = makeStyles()(() => ({
   img: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
+    objectFit: 'cover',
   },
   closeIcon: {
     position: 'absolute',
     top: '-21px',
     right: '-21px',
+    zIndex: 10,
     '&:hover': {
       cursor: 'pointer',
     },
