@@ -1,58 +1,64 @@
-import React, { useEffect, useState } from 'react'
 import { Box, Modal } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import Carousel from 'react-material-ui-carousel'
+import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material'
+import { ProfilePhoto } from 'types/UserProfileData'
 
 type PhotoModalProps = {
   isOpened: boolean
   setIsPhotoModalOpened: (isOpened: boolean) => void
-  url: string
+  items: ProfilePhoto[]
+  imageIndex: number
 }
 
 export const PhotoModal = ({
   isOpened,
-  url,
+  items,
+  imageIndex,
   setIsPhotoModalOpened,
 }: PhotoModalProps) => {
   const { classes } = useStyles()
 
-  const [dimensions, setDimensions] = useState<{
-    width: number
-    height: number
-  } | null>(null)
-
-  useEffect(() => {
-    const img = new Image()
-    img.src = url
-
-    img.onload = () => {
-      setDimensions({ width: img.width, height: img.height })
-    }
-  }, [url])
-
-  const style = dimensions
-    ? (() => {
-        const widthScale = (window.innerWidth * 0.9) / dimensions.width
-        const heightScale = (window.innerHeight * 0.9) / dimensions.height
-        const scale = Math.min(widthScale, heightScale)
-        return {
-          backgroundImage: `url(${url})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          width: dimensions.width * scale,
-          height: dimensions.height * scale,
-        }
-      })()
-    : undefined
-
   return (
     <Modal className={classes.modal} open={isOpened}>
-      <Box style={style} className={classes.box}>
+      <Box className={classes.box}>
         <img
           src={'/img/x-square-white.svg'}
           alt="close photo"
           className={classes.closeIcon}
           onClick={() => setIsPhotoModalOpened(false)}
         />
+        <Carousel
+          index={imageIndex}
+          autoPlay={false}
+          navButtonsAlwaysVisible={items?.length > 1}
+          NavButton={items?.length > 1 ? undefined : () => null}
+          NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
+          PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
+          IndicatorIcon={null}
+          sx={{
+            height: '80vh',
+            width: {
+              xs: '90vw',
+              sm: '80vw',
+              md: '60vw',
+              lg: '50vw',
+              xl: '40vw',
+            },
+          }}
+        >
+          {items?.map((item) => (
+            <Box
+              key={item}
+              sx={{
+                width: '100%',
+                height: '80vh',
+              }}
+            >
+              <img src={item} alt="card" className={classes.img} key={item} />
+            </Box>
+          ))}
+        </Carousel>
       </Box>
     </Modal>
   )
@@ -69,11 +75,21 @@ const useStyles = makeStyles()(() => ({
   },
   box: {
     position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  img: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   closeIcon: {
     position: 'absolute',
     top: '-21px',
     right: '-21px',
+    zIndex: 10,
     '&:hover': {
       cursor: 'pointer',
     },

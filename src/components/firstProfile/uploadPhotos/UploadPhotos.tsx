@@ -57,7 +57,8 @@ const UploadPhotos = () => {
       {previewUrl && (
         <PhotoModal
           isOpened
-          url={previewUrl}
+          items={[previewUrl]}
+          imageIndex={0}
           setIsPhotoModalOpened={() => setPreviewUrl(null)}
         />
       )}
