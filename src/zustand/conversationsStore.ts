@@ -13,10 +13,13 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore'
 import { useUserProfileStore } from './userProfileStore'
 import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 import { useMatchesStore } from 'zustand/friendsStore'
+import type { FirestoreConversation } from 'types/FirestoreConversation'
+import { isConversationUnread } from 'helpers/isConversationUnread'
 
 interface ConversationsState {
   conversations: Conversation[]
@@ -29,6 +32,7 @@ interface ConversationsState {
   subscribeToConversations: (userId: string) => void
   unsubscribeFromConversations: () => void
   createConversation: (currentUserId: string, userId: string) => Promise<string>
+  markConversationAsRead: (conversationId: string) => Promise<void>
 }
 
 export const useConversationsStore = create<ConversationsState>()(
@@ -117,13 +121,21 @@ export const useConversationsStore = create<ConversationsState>()(
 
           // Process the results
           for (const doc of querySnapshot.docs) {
-            const conversationData = doc.data()
+            const conversationData = doc.data() as FirestoreConversation
             // console.log('Processing conversation document:', {id: doc.id, data: conversationData,})
 
             // Get the other participant's ID
             const otherParticipantId = conversationData.participants.find(
               (participantId: string) => participantId !== currentUserId
             )
+
+            if (!otherParticipantId) {
+              console.error(
+                `Conversation ${doc.id} has no other participant, skipping`,
+                conversationData.participants
+              )
+              continue
+            }
 
             // Fetch the user profile
             // console.log(`Fetching profile for user: ${otherParticipantId}`)
@@ -134,19 +146,16 @@ export const useConversationsStore = create<ConversationsState>()(
             // Create a UserLastMessage object with profile data if available
             const userMessage: Conversation = {
               id: otherParticipantId,
-              avatar:
-                profile?.photos?.[0] ||
-                conversationData.participantAvatar ||
-                DEFAULT_PROFILE_PHOTO,
-              name:
-                profile?.name || conversationData.participantName || `Friend`,
-              age:
-                profile?.age?.toString() ||
-                conversationData.participantAge ||
-                `--`,
+              avatar: profile?.photos?.[0] || DEFAULT_PROFILE_PHOTO,
+              name: profile?.name || `Friend`,
+              age: profile?.age?.toString() || `--`,
               lastMessage: conversationData.lastMessage || '',
-              messageCount:
-                conversationData.lastMessageSeen === false ? '1' : '0',
+              messageCount: isConversationUnread(
+                conversationData,
+                currentUserId
+              )
+                ? '1'
+                : '0',
               conversationRef: doc.id,
               lastMessageSeen:
                 conversationData.lastMessageSeen !== undefined
@@ -233,7 +242,7 @@ export const useConversationsStore = create<ConversationsState>()(
 
               // Process the results
               for (const doc of querySnapshot.docs) {
-                const conversationData = doc.data()
+                const conversationData = doc.data() as FirestoreConversation
                 // console.log('Processing conversation document:', {
                 //   id: doc.id,
                 //   data: conversationData,
@@ -244,6 +253,14 @@ export const useConversationsStore = create<ConversationsState>()(
                   (participantId: string) => participantId !== currentUserId
                 )
 
+                if (!otherParticipantId) {
+                  console.error(
+                    `Conversation ${doc.id} has no other participant, skipping`,
+                    conversationData.participants
+                  )
+                  continue
+                }
+
                 // Fetch the user profile
                 // console.log(`Fetching profile for user: ${otherParticipantId}`)
                 const profile = await userProfileStore.fetchUserProfile(
@@ -253,21 +270,16 @@ export const useConversationsStore = create<ConversationsState>()(
                 // Create a UserLastMessage object with profile data if available
                 const userMessage: Conversation = {
                   id: otherParticipantId,
-                  avatar:
-                    profile?.photos?.[0] ||
-                    conversationData.participantAvatar ||
-                    DEFAULT_PROFILE_PHOTO,
-                  name:
-                    profile?.name ||
-                    conversationData.participantName ||
-                    `Friend`,
-                  age:
-                    profile?.age?.toString() ||
-                    conversationData.participantAge ||
-                    `--`,
+                  avatar: profile?.photos?.[0] || DEFAULT_PROFILE_PHOTO,
+                  name: profile?.name || `Friend`,
+                  age: profile?.age?.toString() || `--`,
                   lastMessage: conversationData.lastMessage || '',
-                  messageCount:
-                    conversationData.lastMessageSeen === false ? '1' : '0',
+                  messageCount: isConversationUnread(
+                    conversationData,
+                    currentUserId
+                  )
+                    ? '1'
+                    : '0',
                   conversationRef: doc.id,
                   lastMessageSeen:
                     conversationData.lastMessageSeen !== undefined
@@ -372,6 +384,20 @@ export const useConversationsStore = create<ConversationsState>()(
             loading: false,
           })
           throw error
+        }
+      },
+
+      markConversationAsRead: async (conversationId: string) => {
+        if (!conversationId) {
+          return
+        }
+
+        try {
+          await updateDoc(doc(db, 'conversations', conversationId), {
+            lastMessageSeen: true,
+          })
+        } catch (error) {
+          console.error('Failed to mark conversation as read:', error)
         }
       },
     }),

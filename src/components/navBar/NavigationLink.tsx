@@ -8,13 +8,27 @@ interface NavigationLink {
   to: string
   icon: FC<IconProps>
   isActive: boolean
+  showBadge?: boolean
 }
 
-export function NavigationLink({ to, icon: Icon, isActive }: NavigationLink) {
+export function NavigationLink({
+  to,
+  icon: Icon,
+  isActive,
+  showBadge = false,
+}: NavigationLink) {
   const { classes } = useStyles()
 
   const linkIcon = (
-    <Badge invisible>
+    <Badge
+      variant="dot"
+      invisible={!showBadge}
+      sx={{
+        '& .MuiBadge-badge': {
+          backgroundColor: theme.palette.primary.main,
+        },
+      }}
+    >
       <Icon
         color={
           isActive

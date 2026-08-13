@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { MessagesBox } from './MessagesBox'
 import { ChatHeader } from './ChatHeader'
 import { useChatStore } from '../../zustand/chatStore'
+import { useConversationsStore } from '../../zustand/conversationsStore'
 import { StartChatting } from './StartChatting'
 import { ChatInput } from './ChatInput'
 import { Conversation } from 'types/Conversation'
@@ -15,6 +17,18 @@ export function ChatContainer({ chat }: ChatContainerProps) {
   const { classes } = useStyles()
   const { currentChat, loading } = useChatStore()
   const chatData = currentChat || { chatId: '', participants: [], messages: [] }
+
+  // Reset the conversation-level unread indicator (envelope + header dot)
+  // whenever this chat is open and the last message came from the other user.
+  // Driven by the conversation itself, so it works regardless of which
+  // messages are currently loaded in the paginated window.
+  useEffect(() => {
+    if (Number(chat.messageCount) > 0) {
+      useConversationsStore
+        .getState()
+        .markConversationAsRead(chat.conversationRef)
+    }
+  }, [chat.messageCount, chat.conversationRef])
   return (
     <Box className={classes.container}>
       <ChatHeader chat={chat} />

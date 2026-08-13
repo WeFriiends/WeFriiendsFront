@@ -473,6 +473,7 @@ export const useChatStore = create<ChatState>()(
             lastMessage: message.text,
             lastMessageAt: serverTimestamp(),
             lastMessageSeen: false,
+            lastMessageSender: message.senderId,
           })
 
           // We don't need to update the local state here
