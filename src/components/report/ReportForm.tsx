@@ -10,7 +10,6 @@ import {
 import { makeStyles } from 'tss-react/mui'
 import ReportInputRadio from './ReportInputRadio'
 import { sendReport } from '../../actions/reportService'
-import { usePotentialFriendsStore } from 'zustand/friendsStore'
 import { updateUserListsAfterBlock } from 'utils/updateUserLists'
 
 type ReportFormProps = {

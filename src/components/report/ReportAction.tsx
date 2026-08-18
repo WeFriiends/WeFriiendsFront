@@ -2,7 +2,6 @@ import React from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { blockUser } from '../../actions/blockService'
-import { usePotentialFriendsStore } from 'zustand/friendsStore'
 import { updateUserListsAfterBlock } from 'utils/updateUserLists'
 
 type ReportActionProps = {
@@ -19,13 +18,6 @@ export const ReportAction: React.FC<ReportActionProps> = ({
   reporterUserId,
 }) => {
   const { classes } = useStyles()
-
-  const removeUserFromSwipes = (userId: string) => {
-    const { potentialFriends, setPotentialFriends } =
-      usePotentialFriendsStore.getState()
-    const updatedFriends = potentialFriends?.filter((f) => f.id !== userId)
-    setPotentialFriends(updatedFriends)
-  }
 
   const handleBlock = async () => {
     try {
