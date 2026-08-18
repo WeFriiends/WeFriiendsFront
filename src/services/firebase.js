@@ -1,8 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 
-import { getDatabase } from 'firebase/database'
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -17,5 +15,3 @@ const firebaseConfig = {
 export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
 export const db = getFirestore(app)
-
-export const rtdb = getDatabase(app)

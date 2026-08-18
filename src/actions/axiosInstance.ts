@@ -3,6 +3,7 @@ import { useAuthStore } from 'zustand/store'
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.REACT_APP_API_BASE_URL}/api/`,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { reverseGeocode } from '../../../actions/geocoding'
-import { useGeolocation } from '@uidotdev/usehooks'
+import { useState } from 'react'
 import {
   getItemFromSessionStorage,
   setItemToSessionStorage,
 } from 'utils/sessionStorage'
 import { REGISTRATION_STORAGE_KEYS } from '../storageKeys'
-import { Box, FormHelperText, Icon, Typography } from '@mui/material'
-import Loader from 'common/components/Loader'
+import { Box, FormHelperText, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import { validateLocation } from '../utils/validateLocation'
 import LocationInputAutocomplete from './LocationAutocomplete'
 import { Location } from 'types/FirstProfile'
 import { getResolvedAddress } from '../utils/getResolvedAddress'
@@ -20,27 +16,16 @@ import { getResolvedAddress } from '../utils/getResolvedAddress'
 // It can be fixed after MVP (Olga Zavizonnaia)
 // todo: refactoring?
 
-export const checkGeolocationPermission = async () => {
-  if (!navigator.permissions) {
-    return 'unsupported'
-  }
-
-  try {
-    const result = await navigator.permissions.query({ name: 'geolocation' })
-    return result.state // 'granted', 'denied', or 'prompt'
-  } catch (error) {
-    console.error('Error checking geolocation permission:', error)
-    return 'error'
-  }
-}
-
 interface UserLocationProps {
   onLocationChange: (location: Location) => void
 }
 
+// MVP-1: automatic geolocation is disabled, so the browser permission prompt
+// is never requested. The user always enters the location manually.
+// To restore, see git history
+
 const UserLocation = ({ onLocationChange }: UserLocationProps) => {
   const { classes } = useStyles()
-  const { latitude, longitude, error } = useGeolocation()
   const [address, setAddress] = useState<Location | null>(() => {
     const country = getItemFromSessionStorage<string>(
       REGISTRATION_STORAGE_KEYS.country
@@ -61,63 +46,10 @@ const UserLocation = ({ onLocationChange }: UserLocationProps) => {
       lng: getItemFromSessionStorage<number>(REGISTRATION_STORAGE_KEYS.lng)!,
     }
   })
-  const [showManualInput, setShowManualInput] = useState(false)
   const [errorLocation, setErrorLocation] = useState<string | null>(null)
   const [noticeLocation, setNoticeLocation] = useState<string | null>(
     'To change your address, type a street name along with the house number, then wait for suggestions.'
   )
-  const [loading, setLoading] = useState(true)
-
-  // Проверяем разрешение геолокации
-  useEffect(() => {
-    const checkPermission = async () => {
-      const permissionState = await checkGeolocationPermission()
-      if (permissionState === 'denied' || error) {
-        setShowManualInput(true) // Показываем ручной ввод при отказе или ошибке
-      } else {
-        setShowManualInput(false) // Используем автоматическую геолокацию
-      }
-    }
-    checkPermission()
-  }, [error])
-
-  // Получаем адрес с геолокации
-  useEffect(() => {
-    if (latitude && longitude && !showManualInput) {
-      //setAddress({ lat: latitude, lng: longitude })
-      const fetchAddress = async () => {
-        try {
-          const response = await reverseGeocode(latitude, longitude)
-          const { country, city, town, village, road, house_number } =
-            response.address
-
-          const resolvedAddress: Location = {
-            lat: latitude,
-            lng: longitude,
-            country: country || '',
-            city: city || town || village || '',
-            street: road || '',
-            houseNumber: house_number || '',
-          }
-
-          // Validate the address before saving
-          if (validateLocation(resolvedAddress)) {
-            setAddress(resolvedAddress) // Update the state with the selected address
-            onLocationChange(resolvedAddress) // Call the onLocationChange callback to notify parent component
-            setErrorLocation(null)
-          } else {
-            setErrorLocation('Invalid location data: ' + resolvedAddress)
-          }
-        } catch (err) {
-          console.error('Error fetching address:', err)
-          setErrorLocation('Error fetching address: ' + err)
-        } finally {
-          setLoading(false) // Stop loading once address is resolved
-        }
-      }
-      fetchAddress()
-    }
-  }, [latitude, longitude, showManualInput, onLocationChange])
 
   const handleGetManualAddress = (value: any) => {
     // Assume `value` is the selected address object (e.g., from LocationInputAutocomplete)
@@ -156,44 +88,26 @@ const UserLocation = ({ onLocationChange }: UserLocationProps) => {
 
   return (
     <Box>
-      {loading && !showManualInput && (
-        <Box className={classes.loaderWrapper}>
-          <Loader />
-        </Box>
-      )}
-      {showManualInput && (
-        <Box>
-          <FormHelperText className={classes.helperText}>
-            Please, note! This location will be used as a permanent one
-          </FormHelperText>
+      <FormHelperText className={classes.helperText}>
+        Please, note! This location will be used as a permanent one
+      </FormHelperText>
 
-          <Typography variant="h1" className={classes.headingText}>
-            Select your location
-          </Typography>
+      <Typography variant="h1" className={classes.headingText}>
+        Select your location
+      </Typography>
 
-          <LocationInputAutocomplete
-            onLocationSelected={handleGetManualAddress}
-            onLocationChanged={handleLocationChanged}
-            defaultValue={
-              address?.country
-                ? `${address?.country}, ${address?.city}, ${address?.street}${
-                    address?.houseNumber ? `, ${address.houseNumber}` : ''
-                  }`
-                : 'Search location'
-            }
-          />
-        </Box>
-      )}
-      {!showManualInput && address && !loading && (
-        <>
-          <Box className={classes.textAddress}>
-            <Icon>
-              <img src="/img/icon-search.svg" alt="Close" />
-            </Icon>
-            {`${address.country}, ${address.city}, ${address.street}, ${address.houseNumber}`}
-          </Box>
-        </>
-      )}
+      <LocationInputAutocomplete
+        onLocationSelected={handleGetManualAddress}
+        onLocationChanged={handleLocationChanged}
+        defaultValue={
+          address?.country
+            ? `${address?.country}, ${address?.city}, ${address?.street}${
+                address?.houseNumber ? `, ${address.houseNumber}` : ''
+              }`
+            : 'Search location'
+        }
+      />
+
       <FormHelperText error={true}>{errorLocation}</FormHelperText>
       <FormHelperText error={false}>{noticeLocation}</FormHelperText>
     </Box>
@@ -203,18 +117,6 @@ const UserLocation = ({ onLocationChange }: UserLocationProps) => {
 export default UserLocation
 
 const useStyles = makeStyles()((theme) => ({
-  loaderWrapper: {
-    position: 'relative',
-    width: 'auto',
-    height: 100,
-  },
-  textAddress: {
-    display: 'flex',
-    gap: 12,
-    borderBottom: '2px solid #C5C5C5',
-    paddingBottom: 10,
-    color: theme.customPalette.colorActiveGrey,
-  },
   messageText: {
     fontSize: 12,
     lineHeight: '22px',
