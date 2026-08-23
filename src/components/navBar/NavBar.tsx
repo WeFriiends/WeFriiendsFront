@@ -10,9 +10,7 @@ export function NavBar() {
   const location = useLocation()
   const { classes } = useStyles()
   const hasUnreadMessages = useConversationsStore((state) =>
-    state.conversations.some(
-      (conversation) => Number(conversation.messageCount) > 0
-    )
+    state.conversations.some((conversation) => conversation.messageCount > 0)
   )
 
   return (

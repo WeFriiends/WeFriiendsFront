@@ -23,7 +23,7 @@ export function ChatContainer({ chat }: ChatContainerProps) {
   // Driven by the conversation itself, so it works regardless of which
   // messages are currently loaded in the paginated window.
   useEffect(() => {
-    if (Number(chat.messageCount) > 0) {
+    if (chat.messageCount > 0) {
       useConversationsStore
         .getState()
         .markConversationAsRead(chat.conversationRef)

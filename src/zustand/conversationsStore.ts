@@ -154,8 +154,8 @@ export const useConversationsStore = create<ConversationsState>()(
                 conversationData,
                 currentUserId
               )
-                ? '1'
-                : '0',
+                ? 1
+                : 0,
               conversationRef: doc.id,
               lastMessageSeen:
                 conversationData.lastMessageSeen !== undefined
@@ -274,12 +274,14 @@ export const useConversationsStore = create<ConversationsState>()(
                   name: profile?.name || `Friend`,
                   age: profile?.age?.toString() || `--`,
                   lastMessage: conversationData.lastMessage || '',
+                  // For MVP-1 Firestore doesn't yet store an unread count—we use 1/0 as a flag.
+                  // Replace with a real unreadCount when the backend starts returning it.
                   messageCount: isConversationUnread(
                     conversationData,
                     currentUserId
                   )
-                    ? '1'
-                    : '0',
+                    ? 1
+                    : 0,
                   conversationRef: doc.id,
                   lastMessageSeen:
                     conversationData.lastMessageSeen !== undefined
