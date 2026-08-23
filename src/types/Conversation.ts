@@ -4,7 +4,7 @@ export interface Conversation {
   name: string
   age: string
   lastMessage: string
-  messageCount: string
+  messageCount: number
   conversationRef: string
   lastMessageSeen: boolean
 }
