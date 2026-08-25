@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
 import { useAuthStore, useProfileStore } from 'zustand/store'
+import { useSnackbarStore } from 'zustand/snackbarStore'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import UploadSlot from './UploadSlot'
 import { PhotoModal } from './PhotoModal'
@@ -69,7 +70,11 @@ const UploadPhotos = () => {
           setIsDeleteModalOpened={() => setDeleteId(null)}
           deleteChosenPic={() => {
             if (!token) return
-            deletePhoto(deleteId, token)
+            deletePhoto(deleteId, token).catch(() => {
+              useSnackbarStore
+                .getState()
+                .showSnackbar('Failed to delete photo', 'error')
+            })
             setDeleteId(null)
           }}
         />

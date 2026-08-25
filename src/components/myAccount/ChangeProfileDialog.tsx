@@ -59,7 +59,7 @@ const ChangeProfileDialog = forwardRef(
     const handleSaveClick = async () => {
       setIsSaving(true)
       try {
-        await uploadNewPhotos(token!)
+        const photos = await uploadNewPhotos(token!)
 
         const savedReasons = getItemFromSessionStorage<string[]>(
           PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
@@ -84,6 +84,7 @@ const ChangeProfileDialog = forwardRef(
 
         await updateProfile(
           {
+            ...(photos.length ? { photos } : {}),
             preferences,
             ...(savedReasons ? { reasons: savedReasons } : {}),
           },
