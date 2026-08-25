@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance'
-import { REPORT_ENDPOINTS } from './endpoints'
+import { REPORT_ENDPOINT } from './endpoints'
 import { blockUser } from './blockService'
+import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 export interface ReportData {
   reportedUserId: string
@@ -11,11 +12,9 @@ export interface ReportData {
 
 export const sendReport = async (reportData: ReportData) => {
   try {
-    //  блокируем пользователя (удаляем матч и чат)
     await blockUser(reportData.reportedUserId, reportData.reporterUserId)
 
-    // отправляем жалобу
-    const response = await axiosInstance.post(REPORT_ENDPOINTS.create, {
+    const response = await axiosInstance.post(REPORT_ENDPOINT, {
       ...reportData,
       createdAt: new Date().toISOString(),
       status: 'pending',
@@ -23,6 +22,6 @@ export const sendReport = async (reportData: ReportData) => {
     return response.data
   } catch (error) {
     console.error('Error sending report:', error)
-    throw error
+    throw new Error(getApiErrorMessage(error) || 'Failed to send report')
   }
 }

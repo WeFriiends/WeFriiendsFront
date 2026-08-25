@@ -53,9 +53,8 @@ export const ReportForm: React.FC<ReportFormProps> = ({
       // Удаляем пользователя из всех списков
       updateUserListsAfterBlock(reportedUserId)
       onSuccess()
-    } catch (err) {
+    } catch {
       setError('Failed to send report. Please try again.')
-      console.error(err)
     } finally {
       setIsLoading(false)
     }
