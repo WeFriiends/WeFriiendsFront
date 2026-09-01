@@ -11,17 +11,30 @@ export interface ReportData {
 }
 
 export const sendReport = async (reportData: ReportData) => {
-  try {
-    await blockUser(reportData.reportedUserId, reportData.reporterUserId)
+  let response
 
-    const response = await axiosInstance.post(REPORT_ENDPOINT, {
+  // The report goes first: a failed block must never silently swallow
+  // the complaint, and a failed report must never leave the user blocked.
+  try {
+    response = await axiosInstance.post(REPORT_ENDPOINT, {
       ...reportData,
       createdAt: new Date().toISOString(),
       status: 'pending',
     })
-    return response.data
   } catch (error) {
     console.error('Error sending report:', error)
     throw new Error(getApiErrorMessage(error) || 'Failed to send report')
   }
+
+  try {
+    await blockUser(reportData.reportedUserId, reportData.reporterUserId)
+  } catch (error) {
+    console.error('Error blocking user after report:', error)
+    throw new Error(
+      getApiErrorMessage(error) ||
+        'Your report was sent, but we could not block this user. Please try blocking again.'
+    )
+  }
+
+  return response.data
 }
