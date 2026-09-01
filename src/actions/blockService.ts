@@ -11,12 +11,13 @@ export const blockUser = async (
     blockerUserId,
   })
 
-  // Only after a confirmed block we delete the chat, so a failed
-  // request can never leave the conversation deleted without a block.
   try {
     await deleteConversation(blockerUserId, blockedUserId)
-  } catch {
-    // There might be no chat between the users — not an error
+  } catch (error) {
+    console.error('Error deleting the chat after block:', error)
+    throw new Error(
+      'The user is blocked, but the chat could not be deleted. Please try again.'
+    )
   }
 
   return response.data

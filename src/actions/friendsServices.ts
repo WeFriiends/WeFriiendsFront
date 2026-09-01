@@ -3,7 +3,7 @@ import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
 import { FriendsMatch } from 'types/Matches'
 import { db } from 'services/firebase'
-import { doc, deleteDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, deleteDoc, collection, getDoc, getDocs } from 'firebase/firestore'
 import {
   DISLIKES_ENDPOINT,
   LIKE_ENDPOINTS,
@@ -94,8 +94,9 @@ export const removeFriend = async (
       try {
         await deleteConversation(currentUserId, friendId)
       } catch (error) {
-        // Игнорим ошибку удаления чата (его могло не быть)
-        console.log('ℹ️ Чат не найден или уже удален')
+        // The match is already removed, so a failed chat deletion
+        // must not fail the whole operation — but it is a real error.
+        console.error('Error deleting the chat after removing a friend:', error)
       }
     }
 
@@ -114,12 +115,22 @@ export const removeFriend = async (
   }
 }
 
+/**
+ * Deletes the conversation between two users together with its messages.
+ * A missing conversation is not an error — there is simply nothing to delete.
+ * Any real failure (permissions, network) is thrown to the caller.
+ */
 export const deleteConversation = async (
   currentUserId: string,
   friendId: string
 ): Promise<void> => {
   const chatId = [currentUserId, friendId].sort().join('_')
   const conversationRef = doc(db, 'conversations', chatId)
+
+  const conversationSnap = await getDoc(conversationRef)
+  if (!conversationSnap.exists()) {
+    return
+  }
 
   // 1. Get all the messages
   const messagesRef = collection(db, 'conversations', chatId, 'messages')

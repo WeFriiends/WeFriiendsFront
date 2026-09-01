@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   Box,
   Typography,
@@ -9,8 +9,10 @@ import {
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import ReportInputRadio from './ReportInputRadio'
-import { sendReport } from '../../actions/reportService'
+import { sendReport } from 'actions/reportService'
+import { blockUser } from 'actions/blockService'
 import { updateUserListsAfterBlock } from 'utils/updateUserLists'
+import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 type ReportFormProps = {
   onSuccess: () => void
@@ -31,6 +33,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({
   const [selectedReason, setSelectedReason] = useState('spam')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const isReportSent = useRef(false)
 
   const MAX_SYMBOLS = 500
 
@@ -44,20 +47,27 @@ export const ReportForm: React.FC<ReportFormProps> = ({
     setError('')
 
     try {
-      await sendReport({
-        reportedUserId,
-        reporterUserId,
-        reason: selectedReason,
-        comment,
-      })
+      // The report goes first: a failed block must never swallow the
+      // complaint, and a failed report must never leave the user blocked.
+      // The flag keeps a retry after a failed block from sending it twice.
+      if (!isReportSent.current) {
+        await sendReport({
+          reportedUserId,
+          reporterUserId,
+          reason: selectedReason,
+          comment,
+        })
+        isReportSent.current = true
+      }
+
+      await blockUser(reportedUserId, reporterUserId)
+
       // Удаляем пользователя из всех списков
       updateUserListsAfterBlock(reportedUserId)
       onSuccess()
     } catch (error) {
       setError(
-        error instanceof Error && error.message
-          ? error.message
-          : 'Failed to send report. Please try again.'
+        getApiErrorMessage(error) || 'Failed to send report. Please try again.'
       )
     } finally {
       setIsLoading(false)
