@@ -36,7 +36,7 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
             {conversation.lastMessage}
           </Typography>
         </Box>
-        {conversation.messageCount === '1' && <UnreadMessageIndicator />}
+        {conversation.messageCount > 0 && <UnreadMessageIndicator />}
       </Box>
     </button>
   )
