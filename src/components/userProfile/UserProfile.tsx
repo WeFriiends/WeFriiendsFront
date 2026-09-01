@@ -18,9 +18,13 @@ import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface UserProfileProps {
   user: UserProfileData
+  onUserBlocked?: () => void
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({
+  user,
+  onUserBlocked,
+}) => {
   const { classes } = useStyles()
   const reportDialogRef = useRef<{ handleOpenReportDialog: () => void }>(null)
 
@@ -163,6 +167,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 ref={reportDialogRef}
                 reportedUserId={user?.id || user?._id || ''}
                 reporterUserId={currentUserId || ''}
+                onBlocked={onUserBlocked}
               />
               <Typography className={classes.textReport}>
                 Don’t worry, {user.name} won’t know about it

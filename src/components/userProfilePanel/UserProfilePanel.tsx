@@ -41,7 +41,7 @@ export function UserProfilePanel({
         {data && (
           <Box className={classes.contentWrapper}>
             <Box className={classes.scrollableContent}>
-              <UserProfile user={data} />
+              <UserProfile user={data} onUserBlocked={onClose} />
             </Box>
             {actions && <Box>{actions}</Box>}
           </Box>

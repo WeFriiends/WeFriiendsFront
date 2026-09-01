@@ -76,7 +76,10 @@ export default function MessagesPage() {
               )}
 
               {selectedProfile && friendsData && (
-                <UserProfile user={friendsData} />
+                <UserProfile
+                  user={friendsData}
+                  onUserBlocked={handleCloseFriendProfile}
+                />
               )}
             </>
           ) : (
@@ -89,7 +92,10 @@ export default function MessagesPage() {
                 onClose={handleCloseFriendProfile}
               >
                 {selectedProfile && friendsData && (
-                  <UserProfile user={friendsData} />
+                  <UserProfile
+                    user={friendsData}
+                    onUserBlocked={handleCloseFriendProfile}
+                  />
                 )}
               </MobileProfileDrawer>
             </>

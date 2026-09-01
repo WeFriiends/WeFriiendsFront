@@ -33,7 +33,10 @@ export default function SwipesPage() {
         <Box className={classes.stickyRightCol}>
           {isMdUp && friendsData && (
             <Box className={classes.wrapperFriendDesktop}>
-              <UserProfile user={friendsData} />
+              <UserProfile
+                user={friendsData}
+                onUserBlocked={handleCloseFriendProfile}
+              />
               <UserProfileButton chatId={friendsData.id} />
             </Box>
           )}
@@ -45,7 +48,10 @@ export default function SwipesPage() {
             >
               {friendsData && (
                 <>
-                  <UserProfile user={friendsData} />
+                  <UserProfile
+                    user={friendsData}
+                    onUserBlocked={handleCloseFriendProfile}
+                  />
                   <UserProfileButton chatId={friendsData.id} />
                 </>
               )}

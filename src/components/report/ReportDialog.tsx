@@ -8,12 +8,15 @@ import ReportReceived from './ReportReceived'
 interface ReportDialogProps {
   reportedUserId?: string
   reporterUserId?: string
+  onBlocked?: () => void
 }
+
+const VIEWS_AFTER_BLOCK = ['userIsBlocked', 'reportReceived']
 
 export const ReportDialog = forwardRef<
   { handleOpenReportDialog: () => void },
   ReportDialogProps
->(({ reportedUserId = '', reporterUserId = '' }, ref) => {
+>(({ reportedUserId = '', reporterUserId = '', onBlocked }, ref) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentView, setCurrentView] = useState('chooseAction')
   const [modalHeight, setModalHeight] = useState<370 | 320 | 605 | undefined>(
@@ -25,6 +28,9 @@ export const ReportDialog = forwardRef<
   }
 
   const handleClose = () => {
+    if (VIEWS_AFTER_BLOCK.includes(currentView)) {
+      onBlocked?.()
+    }
     setIsModalVisible(false)
     setCurrentView('chooseAction')
   }

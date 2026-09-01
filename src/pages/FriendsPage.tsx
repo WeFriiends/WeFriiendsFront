@@ -37,7 +37,10 @@ export default function FriendsPage() {
         <Box className={classes.stickyRightCol}>
           {isMdUp && friendsData && (
             <Box className={classes.wrapperFriendDesktop}>
-              <UserProfile user={friendsData} />
+              <UserProfile
+                user={friendsData}
+                onUserBlocked={handleCloseFriendProfile}
+              />
               <UserProfileButton chatId={friendsData.id} />
             </Box>
           )}
@@ -49,7 +52,10 @@ export default function FriendsPage() {
             >
               {friendsData && (
                 <>
-                  <UserProfile user={friendsData} />
+                  <UserProfile
+                    user={friendsData}
+                    onUserBlocked={handleCloseFriendProfile}
+                  />
                   <UserProfileButton chatId={friendsData.id} />
                 </>
               )}
