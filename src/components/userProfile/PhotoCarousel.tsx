@@ -38,6 +38,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         <Carousel
           key={items.length}
           autoPlay={false}
+          swipe={hasMultiplePhotos}
           // display arrows if 2+ pics
           navButtonsAlwaysVisible={hasMultiplePhotos}
           navButtonsProps={{
