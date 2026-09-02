@@ -58,8 +58,9 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           IndicatorIcon={
             hasMultiplePhotos ? (
               <div
+                className="indicator"
                 style={{
-                  width: 85,
+                  width: '100%',
                   height: 3,
                   backgroundColor: 'rgba(255,255,255,0.5)',
                 }}
@@ -70,7 +71,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
             style: hasMultiplePhotos
               ? {
                   backgroundColor: 'white',
-                  borderRadius: 0,
                 }
               : {
                   display: 'none',
@@ -79,7 +79,10 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           indicatorIconButtonProps={{
             style: hasMultiplePhotos
               ? {
-                  marginRight: '3px',
+                  flex: 1,
+                  padding: 0,
+                  margin: 0,
+                  borderRadius: 0,
                 }
               : {
                   display: 'none',
@@ -92,9 +95,11 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
                   top: 0,
                   left: 0,
                   right: 0,
-                  zIndex: 200,
+                  width: '100%',
+                  padding: 0,
                   display: 'flex',
-                  justifyContent: 'center',
+                  gap: '4px',
+                  zIndex: 200,
                 }
               : {
                   display: 'none',
