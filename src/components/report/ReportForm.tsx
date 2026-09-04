@@ -53,7 +53,6 @@ export const ReportForm: React.FC<ReportFormProps> = ({
       if (!isReportSent.current) {
         await sendReport({
           reportedUserId,
-          reporterUserId,
           reason: selectedReason,
           comment,
         })

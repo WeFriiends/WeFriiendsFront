@@ -8,7 +8,6 @@ export const blockUser = async (
 ) => {
   const response = await axiosInstance.post(BLOCK_ENDPOINT, {
     blockedUserId,
-    blockerUserId,
   })
 
   try {

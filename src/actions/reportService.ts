@@ -4,7 +4,6 @@ import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 export interface ReportData {
   reportedUserId: string
-  reporterUserId: string
   reason: string
   comment: string
 }
