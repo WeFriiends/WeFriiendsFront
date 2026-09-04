@@ -84,11 +84,9 @@ interface ProfileActions {
   deleteProfile: (token: string | null) => Promise<void>
   addPhoto: (photo: string) => void
   removePhoto: (photoId: string) => void
-  uploadNewPhotos: (token: string) => Promise<void>
+  uploadNewPhotos: (token: string) => Promise<string[]>
   deletePhoto: (id: string, token: string) => Promise<void>
-  addPhotoToData: (photoUrl: string) => void
   removePhotoFromData: (photoUrl: string) => void
-  replacePhotoInData: (oldUrl: string, newUrl: string) => void
 }
 
 const initialState: ProfileState & {
@@ -296,18 +294,6 @@ export const useProfileStore = create<ProfileStore>()(
           })
         },
 
-        addPhotoToData: (photoUrl: string) => {
-          set((state) => {
-            if (!state.data) return state
-            return {
-              data: {
-                ...state.data,
-                photos: [...state.data.photos, photoUrl],
-              },
-            }
-          })
-        },
-
         removePhotoFromData: (photoUrl: string) => {
           set((state) => {
             if (!state.data) return state
@@ -320,64 +306,53 @@ export const useProfileStore = create<ProfileStore>()(
           })
         },
 
-        replacePhotoInData: (oldUrl: string, newUrl: string) => {
-          set((state) => {
-            if (!state.data) return state
-            return {
-              data: {
-                ...state.data,
-                photos: state.data.photos.map((p) =>
-                  p === oldUrl ? newUrl : p
-                ),
-              },
-            }
-          })
-        },
-
         uploadNewPhotos: async (token: string) => {
-          const { tempPhotos, addPhotoToData, replacePhotoInData } = get()
+          const { tempPhotos } = get()
           const newPhotos = tempPhotos.filter((p) => p.blobFile)
-          if (newPhotos.length === 0) return
 
-          const formData = new FormData()
-          newPhotos.forEach((p) => formData.append('images', p.blobFile!))
+          let uploadedUrls: string[] = []
+          if (newPhotos.length > 0) {
+            const formData = new FormData()
+            newPhotos.forEach((p) => formData.append('images', p.blobFile!))
 
-          const { data: cloudinaryUrls } = await axios.post<string[]>(
-            `${API_BASE}/${PHOTO_ENDPOINTS.upload}`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-
-          for (let i = 0; i < cloudinaryUrls.length; i++) {
-            const photoUrl = cloudinaryUrls[i]
-            const photo = newPhotos[i]
-
-            if (photo.replacedUrl) {
-              await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
-                data: { photoUrl: photo.replacedUrl },
-                headers: { Authorization: `Bearer ${token}` },
-              })
-              await axios.post(
-                `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
-                { photoUrl },
-                { headers: { Authorization: `Bearer ${token}` } }
-              )
-              replacePhotoInData(photo.replacedUrl, photoUrl)
-            } else {
-              await axios.post(
-                `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
-                { photoUrl },
-                { headers: { Authorization: `Bearer ${token}` } }
-              )
-              addPhotoToData(photoUrl)
-            }
+            const { data } = await axios.post<string[]>(
+              `${API_BASE}/${PHOTO_ENDPOINTS.upload}`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+            uploadedUrls = data
           }
-          set({ tempPhotos: [] })
+
+          // The upload endpoint answers in the order the files were sent, so
+          // the two lists are paired by index. Bail out instead of writing a
+          // blob: URL into the profile if that ever stops holding
+          if (uploadedUrls.length !== newPhotos.length) {
+            throw new Error('Photo upload returned an unexpected URL count')
+          }
+
+          // A replaced photo lives on in Cloudinary until it is destroyed
+          // explicitly — saving the profile only rewrites the list of URLs
+          for (const photo of newPhotos) {
+            if (!photo.replacedUrl) continue
+            await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
+              data: { photoUrl: photo.replacedUrl },
+              headers: { Authorization: `Bearer ${token}` },
+            })
+          }
+
+          // Slot order is the photo order — index 0 is the avatar. Returned
+          // for the caller to save in one go, so no photo can lose its place
+          const uploadedByTempId = new Map(
+            newPhotos.map((p, i) => [p.id, uploadedUrls[i]])
+          )
+          return tempPhotos
+            .map((p) => uploadedByTempId.get(p.id) ?? p.url)
+            .filter((url): url is string => Boolean(url))
         },
 
         deletePhoto: async (id: string, token: string) => {
