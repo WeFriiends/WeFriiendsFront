@@ -1,5 +1,5 @@
 import { Box, Slide, useMediaQuery, useTheme } from '@mui/material'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { useGetUserById } from 'hooks/useGetUserById'
 
 import { ReactNode } from 'react'
@@ -41,7 +41,7 @@ export function UserProfilePanel({
         {data && (
           <Box className={classes.contentWrapper}>
             <Box className={classes.scrollableContent}>
-              <UserProfile user={data} />
+              <UserProfile user={data} onUserBlocked={onClose} />
             </Box>
             {actions && <Box>{actions}</Box>}
           </Box>
