@@ -1,6 +1,7 @@
 import { AppState, Auth0Provider } from '@auth0/auth0-react'
 import { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { APP_ROUTES } from 'routes/appRoutes'
 import AuthTokenAndStoreProvider from './AuthTokenAndStoreProvider'
 
 interface Auth0ProviderWithNavigateProps {
@@ -14,13 +15,13 @@ export const Auth0ProviderWithNavigate = ({
 
   const domain = process.env.REACT_APP_AUTH0_DOMAIN
   const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID
-  const redirectUri = process.env.REACT_APP_AUTH0_CALLBACK_URL
+  const redirectUri = `${window.location.origin}/${APP_ROUTES.callback}`
 
   const onRedirectCallback = (appState?: AppState) => {
-    navigate(appState?.returnTo || window.location.origin)
+    navigate(appState?.returnTo || APP_ROUTES.home)
   }
 
-  if (!(domain && clientId && redirectUri)) {
+  if (!(domain && clientId)) {
     return null
   }
 
