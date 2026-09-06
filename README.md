@@ -114,7 +114,6 @@ The following environment variables are required:
 
 - `REACT_APP_AUTH0_DOMAIN`: Auth0 domain
 - `REACT_APP_AUTH0_CLIENT_ID`: Auth0 client ID
-- `REACT_APP_AUTH0_CALLBACK_URL`: Auth0 callback URL
 - `REACT_APP_API_BASE_URL`: Base URL for API requests (default: http://localhost:8080)
 
 Repos Web FE and Auth should be located in the same directory, otherwise you need to adapt values `volumes` in
@@ -175,7 +174,6 @@ Before deploying, make sure your production environment variables are properly s
    ```
    REACT_APP_AUTH0_DOMAIN=your-auth0-domain
    REACT_APP_AUTH0_CLIENT_ID=your-auth0-client-id
-   REACT_APP_AUTH0_CALLBACK_URL=https://your-domain.com/callback
    REACT_APP_FIREBASE_API_KEY=your-firebase-api-key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your-firebase-auth-domain
    REACT_APP_FIREBASE_PROJECT_ID=your-firebase-project-id
@@ -252,7 +250,7 @@ If you're using a new domain or subdomain:
 
 - **404 Errors on Routes**: Make sure the `.htaccess` file is properly configured
 - **API Connection Issues**: Verify that your `REACT_APP_API_BASE_URL` is correctly set
-- **Authentication Problems**: Check Auth0 configuration and callback URLs. If after login you're redirected to http://localhost:3000/callback instead of your production URL, make sure to update the REACT_APP_AUTH0_CALLBACK_URL in your .env file to use your production domain (e.g., https://frontend.wefriiends.com/callback)
+- **Authentication Problems**: Check the Auth0 application configuration. The app derives the Auth0 `redirect_uri` at runtime from `window.location.origin`, so every origin the app is served from — the production domain, Netlify deploy previews and `http://localhost:3000` — must be listed in **Allowed Callback URLs**, **Allowed Logout URLs** and **Allowed Web Origins**.
 - **Firebase Connection Issues**: Verify Firebase configuration variables
 
 ### Updating Your Deployment
