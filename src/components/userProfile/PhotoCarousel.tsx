@@ -59,7 +59,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           IndicatorIcon={
             hasMultiplePhotos ? (
               <div
-                className="indicator"
                 style={{
                   width: '100%',
                   height: 3,
