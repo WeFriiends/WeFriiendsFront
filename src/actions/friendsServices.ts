@@ -3,7 +3,7 @@ import { UserProfileData } from 'types/UserProfileData'
 import axiosInstance from './axiosInstance'
 import { FriendsMatch } from 'types/Matches'
 import { db } from 'services/firebase'
-import { doc, deleteDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, deleteDoc, collection, getDoc, getDocs } from 'firebase/firestore'
 import {
   DISLIKES_ENDPOINT,
   LIKE_ENDPOINTS,
@@ -78,38 +78,59 @@ export const removeFriend = async (
   friendId: string,
   currentUserId?: string
 ): Promise<void> => {
-  const response = await axiosInstance.delete('matches', {
-    data: {
-      user2_id: friendId,
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  try {
+    const response = await axiosInstance.delete('matches', {
+      data: {
+        user2_id: friendId,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-  mutate('matches')
+    mutate('matches')
 
-  if (currentUserId) {
-    try {
-      await deleteConversation(currentUserId, friendId)
-    } catch {
-      // Игнорируем ошибку удаления диалога
+    if (currentUserId) {
+      try {
+        await deleteConversation(currentUserId, friendId)
+      } catch (error) {
+        // The match is already removed, so a failed chat deletion
+        // must not fail the whole operation — but it is a real error.
+        console.error('Error deleting the chat after removing a friend:', error)
+      }
     }
-  }
 
-  if (response.status >= 200 && response.status < 300) {
-    return
-  } else {
-    throw new Error(`Failed to remove friend. Status: ${response.status}`)
+    if (response.status >= 200 && response.status < 300) {
+      return
+    } else {
+      throw new Error(`Failed to remove friend. Status: ${response.status}`)
+    }
+  } catch (error: any) {
+    // Если матч не найден (404) - не считаем ошибкой
+    if (error.response?.status === 404 || error.response?.status === 400) {
+      // Матч не найден, пропускаем удаление
+      return
+    }
+    throw error
   }
 }
 
+/**
+ * Deletes the conversation between two users together with its messages.
+ * A missing conversation is not an error — there is simply nothing to delete.
+ * Any real failure (permissions, network) is thrown to the caller.
+ */
 export const deleteConversation = async (
   currentUserId: string,
   friendId: string
 ): Promise<void> => {
   const chatId = [currentUserId, friendId].sort().join('_')
   const conversationRef = doc(db, 'conversations', chatId)
+
+  const conversationSnap = await getDoc(conversationRef)
+  if (!conversationSnap.exists()) {
+    return
+  }
 
   // 1. Get all the messages
   const messagesRef = collection(db, 'conversations', chatId, 'messages')

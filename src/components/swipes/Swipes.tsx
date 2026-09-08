@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material'
 import { Match } from 'components/findMatch/Match'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { useEffect, useState, useRef } from 'react'
 import { makeStyles } from 'tss-react/mui'
@@ -36,10 +36,10 @@ const Swipes = () => {
   const [sessionFriends, setSessionFriends] = useState<UserProfileData[]>()
 
   useEffect(() => {
-    if (potentialFriends && sessionFriends === undefined) {
+    if (potentialFriends) {
       setSessionFriends(potentialFriends.filter((f) => !f.likedByMe))
     }
-  }, [potentialFriends, sessionFriends])
+  }, [potentialFriends])
 
   // Fetch potential friends when profile is loaded
   useEffect(() => {
@@ -48,14 +48,49 @@ const Swipes = () => {
     }
   }, [profile, fetchPotentialFriends])
 
+  const previousSessionFriendsRef = useRef<UserProfileData[]>()
+
   useEffect(() => {
-    if (!sessionFriends?.length) {
+    if (!sessionFriends) {
       return
     }
+
+    const previousSessionFriends = previousSessionFriendsRef.current
+    previousSessionFriendsRef.current = sessionFriends
+
+    if (!sessionFriends.length) {
+      setNoPotentialFriends(true)
+      return
+    }
+
     setNoPotentialFriends(false)
-    setFriendsData(sessionFriends[0])
-    setCurrentPotentialFriend(sessionFriends[0])
-  }, [sessionFriends])
+
+    // The card being shown is still in the list (e.g. a background
+    // refetch) — keep the swipe position as is.
+    const isCurrentCardStillInTheList = sessionFriends.some(
+      (friend) => friend.id === currentPotentialFriend.id
+    )
+    if (isCurrentCardStillInTheList) {
+      return
+    }
+
+    if (!previousSessionFriends) {
+      // Initial load — nothing was shown yet.
+      setFriendsData(sessionFriends[0])
+      setCurrentPotentialFriend(sessionFriends[0])
+      return
+    }
+
+    const previousIndex = previousSessionFriends.findIndex(
+      (friend) => friend.id === currentPotentialFriend.id
+    )
+    const nextIndex = Math.min(
+      Math.max(previousIndex, 0),
+      sessionFriends.length - 1
+    )
+    setFriendsData(sessionFriends[nextIndex])
+    setCurrentPotentialFriend(sessionFriends[nextIndex])
+  }, [sessionFriends, currentPotentialFriend.id])
 
   const goToNextPotentialFriend = (currentUserProfile: UserProfileData) => {
     if (!sessionFriends?.length) {

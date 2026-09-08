@@ -1,22 +1,44 @@
-import React from 'react'
+import { useState } from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import theme from '../../styles/createTheme'
+import { blockUser } from '../../actions/blockService'
+import { updateUserListsAfterBlock } from 'utils/updateUserLists'
+import { useSnackbarStore } from 'zustand/snackbarStore'
+import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 type ReportActionProps = {
   chooseBlock: () => void
   chooseReport: () => void
+  reportedUserId: string
+  reporterUserId: string
 }
 
-const ReportAction: React.FC<ReportActionProps> = ({
+export const ReportAction: React.FC<ReportActionProps> = ({
   chooseBlock,
   chooseReport,
+  reportedUserId,
+  reporterUserId,
 }) => {
   const { classes } = useStyles()
+  const [isBlocking, setIsBlocking] = useState(false)
 
-  const handleBlock = () => {
-    // TODO: Add API and code for user blocking
-    chooseBlock()
+  const handleBlock = async () => {
+    setIsBlocking(true)
+    try {
+      await blockUser(reportedUserId, reporterUserId)
+      updateUserListsAfterBlock(reportedUserId)
+      chooseBlock()
+    } catch (error) {
+      useSnackbarStore
+        .getState()
+        .showSnackbar(
+          getApiErrorMessage(error) ||
+            'Failed to block this user. Please try again.',
+          'error'
+        )
+    } finally {
+      setIsBlocking(false)
+    }
   }
 
   const handleReport = () => {
@@ -40,8 +62,9 @@ const ReportAction: React.FC<ReportActionProps> = ({
           disableFocusRipple
           disableRipple
           disableElevation
+          disabled={isBlocking}
         >
-          Block
+          {isBlocking ? 'Blocking...' : 'Block'}
         </Button>
         <Button
           onClick={handleReport}
@@ -49,6 +72,7 @@ const ReportAction: React.FC<ReportActionProps> = ({
           disableFocusRipple
           disableRipple
           disableElevation
+          disabled={isBlocking}
         >
           Report
         </Button>
@@ -57,9 +81,7 @@ const ReportAction: React.FC<ReportActionProps> = ({
   )
 }
 
-export default ReportAction
-
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   reportContainer: {
     display: 'grid',
   },
@@ -100,4 +122,4 @@ const useStyles = makeStyles()({
       color: theme.palette.common.white,
     },
   },
-})
+}))

@@ -29,6 +29,7 @@ interface MatchesActions {
   stopPeriodicFetching: () => void
   addFriend: (idFriend: string) => Promise<number | undefined>
   removeFriend: (idFriend: string, currentUserId?: string) => Promise<void>
+  refreshMatches: () => Promise<void>
 }
 
 type MatchesStore = MatchesState & MatchesActions
@@ -45,6 +46,7 @@ interface PotentialFriendsActions {
   refreshPotentialFriends: () => Promise<void>
   handleLike: (idPotentialFriend: string) => Promise<number | undefined>
   handleDislike: (idPotentialFriend: string) => Promise<number | undefined>
+  setPotentialFriends: (friends: UserProfileData[] | undefined) => void
 }
 
 type PotentialFriendsStore = PotentialFriendsState & PotentialFriendsActions
@@ -129,6 +131,10 @@ export const useMatchesStore = create<MatchesStore>()(
           })
           throw error
         }
+      },
+
+      refreshMatches: async () => {
+        await get().fetchMatches()
       },
     }),
     { name: 'matches-store' }
@@ -217,6 +223,8 @@ export const usePotentialFriendsStore = create<PotentialFriendsStore>()(
           return undefined
         }
       },
+
+      setPotentialFriends: (friends) => set({ potentialFriends: friends }),
     }),
     { name: 'potential-friends-store' }
   )

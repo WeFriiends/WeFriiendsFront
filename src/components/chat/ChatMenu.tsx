@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { db } from 'services/firebase'
 import { deleteDoc, doc, getDoc } from 'firebase/firestore'
 import { DeleteContactModal } from './DeleteContactModal'
+import { ReportDialog } from 'components/report/ReportDialog'
 
 interface ChatMenuProps {
   id: string
@@ -16,6 +17,10 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const open = Boolean(anchorEl)
+
+  const reportDialogRef = React.useRef<{ handleOpenReportDialog: () => void }>(
+    null
+  )
 
   const { user } = useAuth0()
   const currentUserId = user?.sub
@@ -74,6 +79,11 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
     setIsModalOpen(false)
   }
 
+  const handleReportAndBlock = () => {
+    setAnchorEl(null)
+    reportDialogRef.current?.handleOpenReportDialog()
+  }
+
   return (
     <div>
       <Button
@@ -98,8 +108,12 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
-        <MenuItem onClick={handleDeleteContact}>delete contact</MenuItem>
-        <MenuItem onClick={handleClose}>report and block</MenuItem>
+        <MenuItem className={classes.menuItem} onClick={handleDeleteContact}>
+          delete contact
+        </MenuItem>
+        <MenuItem className={classes.menuItem} onClick={handleReportAndBlock}>
+          report and block
+        </MenuItem>
       </Menu>
 
       <DeleteContactModal
@@ -107,11 +121,16 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
       />
+      <ReportDialog
+        ref={reportDialogRef}
+        reportedUserId={id}
+        reporterUserId={currentUserId || ''}
+      />
     </div>
   )
 }
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   chatMenu: {
     '& .MuiList-root': {
       paddingTop: 21,
@@ -123,4 +142,16 @@ const useStyles = makeStyles()({
       borderRadius: 10,
     },
   },
-})
+  menuItem: {
+    fontFamily: 'Inter',
+    fontWeight: 500,
+    fontSize: '14px',
+    lineHeight: '22px',
+    letterSpacing: '0%',
+    color: theme.palette.text.primary,
+    '&:hover': {
+      color: theme.palette.primary.main,
+      backgroundColor: 'transparent',
+    },
+  },
+}))

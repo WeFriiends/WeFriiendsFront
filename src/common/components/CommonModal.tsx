@@ -9,7 +9,7 @@ type CommonModalProps = {
   isOpened: boolean
   modalDescriptionID?: string
   onClose: () => void
-  height?: number | string
+  height?: number | 'auto' | string
   width?: number
   contentOverflow?: 'auto' | 'visible' | 'hidden'
 } & (
@@ -39,7 +39,14 @@ export const CommonModal = ({
       aria-describedby={modalDescriptionID}
       onClose={onClose}
     >
-      <Box className={classes.wrapper} sx={{ height, width }}>
+      <Box
+        className={classes.wrapper}
+        sx={{
+          height: height || 'auto',
+          width: width || 370,
+          maxHeight: '90vh',
+        }}
+      >
         <IconButton
           disableRipple
           aria-label="close modal"

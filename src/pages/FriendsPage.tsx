@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import UserProfile from 'components/userProfile/UserProfile'
+import { UserProfile } from 'components/userProfile/UserProfile'
 import { UserProfileButton } from 'components/userProfile/UserProfileButton'
 import { UserProfileData } from 'types/UserProfileData'
 import { Friends } from 'components/tabsMessagesFriends/Friends'
@@ -37,7 +37,10 @@ export default function FriendsPage() {
         <Box className={classes.stickyRightCol}>
           {isMdUp && friendsData && (
             <Box className={classes.wrapperFriendDesktop}>
-              <UserProfile user={friendsData} />
+              <UserProfile
+                user={friendsData}
+                onUserBlocked={handleCloseFriendProfile}
+              />
               <UserProfileButton chatId={friendsData.id} />
             </Box>
           )}
@@ -49,7 +52,10 @@ export default function FriendsPage() {
             >
               {friendsData && (
                 <>
-                  <UserProfile user={friendsData} />
+                  <UserProfile
+                    user={friendsData}
+                    onUserBlocked={handleCloseFriendProfile}
+                  />
                   <UserProfileButton chatId={friendsData.id} />
                 </>
               )}

@@ -6,6 +6,7 @@ export type ProfilePhoto = string
 
 export interface UserProfileData {
   id: string
+  _id?: string
   name: string
   age: string
   photos: ProfilePhoto[]
