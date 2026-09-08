@@ -1,8 +1,10 @@
-import React from 'react'
+import { useState } from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { blockUser } from '../../actions/blockService'
 import { updateUserListsAfterBlock } from 'utils/updateUserLists'
+import { useSnackbarStore } from 'zustand/snackbarStore'
+import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
 
 type ReportActionProps = {
   chooseBlock: () => void
@@ -18,14 +20,24 @@ export const ReportAction: React.FC<ReportActionProps> = ({
   reporterUserId,
 }) => {
   const { classes } = useStyles()
+  const [isBlocking, setIsBlocking] = useState(false)
 
   const handleBlock = async () => {
+    setIsBlocking(true)
     try {
       await blockUser(reportedUserId, reporterUserId)
       updateUserListsAfterBlock(reportedUserId)
       chooseBlock()
     } catch (error) {
-      console.error('❌ Ошибка при блокировке:', error)
+      useSnackbarStore
+        .getState()
+        .showSnackbar(
+          getApiErrorMessage(error) ||
+            'Failed to block this user. Please try again.',
+          'error'
+        )
+    } finally {
+      setIsBlocking(false)
     }
   }
 
@@ -50,8 +62,9 @@ export const ReportAction: React.FC<ReportActionProps> = ({
           disableFocusRipple
           disableRipple
           disableElevation
+          disabled={isBlocking}
         >
-          Block
+          {isBlocking ? 'Blocking...' : 'Block'}
         </Button>
         <Button
           onClick={handleReport}
@@ -59,6 +72,7 @@ export const ReportAction: React.FC<ReportActionProps> = ({
           disableFocusRipple
           disableRipple
           disableElevation
+          disabled={isBlocking}
         >
           Report
         </Button>
