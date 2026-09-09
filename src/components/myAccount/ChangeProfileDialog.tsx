@@ -59,7 +59,7 @@ const ChangeProfileDialog = forwardRef(
     const handleSaveClick = async () => {
       setIsSaving(true)
       try {
-        const photos = await uploadNewPhotos(token!)
+        const { photos, replacedUrls } = await uploadNewPhotos(token!)
 
         const savedReasons = getItemFromSessionStorage<string[]>(
           PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
@@ -81,6 +81,12 @@ const ChangeProfileDialog = forwardRef(
           pets: getArr('pets'),
           interests: getArr('interests'),
         }
+
+        // Before the save: DELETE /photos rejects a URL the profile no
+        // longer lists, and the patch below overwrites that list
+        await useProfileStore
+          .getState()
+          .deleteReplacedPhotos(replacedUrls, token!)
 
         await updateProfile(
           {
@@ -135,6 +141,7 @@ const ChangeProfileDialog = forwardRef(
           <PrimaryButton
             label={isSaving ? 'Saving...' : 'Save'}
             onClickHandler={handleSaveClick}
+            disabled={isSaving}
           />
         </Box>
       </CommonModal>

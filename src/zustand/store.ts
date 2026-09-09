@@ -40,6 +40,11 @@ interface Profile {
   _id?: string
 }
 
+interface UploadedPhotos {
+  photos: string[]
+  replacedUrls: string[]
+}
+
 interface PhotoFields {
   tempPhotos: UserPicsType[]
   cloudUrls: string[]
@@ -84,7 +89,8 @@ interface ProfileActions {
   deleteProfile: (token: string | null) => Promise<void>
   addPhoto: (photo: string) => void
   removePhoto: (photoId: string) => void
-  uploadNewPhotos: (token: string) => Promise<string[]>
+  uploadNewPhotos: (token: string) => Promise<UploadedPhotos>
+  deleteReplacedPhotos: (urls: string[], token: string) => Promise<void>
   deletePhoto: (id: string, token: string) => Promise<void>
   removePhotoFromData: (photoUrl: string) => void
 }
@@ -177,12 +183,17 @@ export const useProfileStore = create<ProfileStore>()(
 
         replaceTempPhoto: (id, newPhoto) =>
           set((s) => {
-            const old = s.tempPhotos.find((p) => p.id === id)
-            if (old?.url?.startsWith('blob:')) URL.revokeObjectURL(old.url)
-            const updated =
-              old?.url && !old.url.startsWith('blob:')
-                ? { ...newPhoto, replacedUrl: old.url }
-                : newPhoto
+            const previous = s.tempPhotos.find((p) => p.id === id)
+            if (previous?.blobFile && previous.url) {
+              URL.revokeObjectURL(previous.url)
+            }
+            const replacedUrl = previous?.blobFile
+              ? previous.replacedUrl
+              : previous?.url
+            const updated = {
+              ...newPhoto,
+              ...(replacedUrl ? { replacedUrl } : {}),
+            }
             return {
               tempPhotos: s.tempPhotos.map((p) => (p.id === id ? updated : p)),
             }
@@ -335,24 +346,45 @@ export const useProfileStore = create<ProfileStore>()(
             throw new Error('Photo upload returned an unexpected URL count')
           }
 
-          // A replaced photo lives on in Cloudinary until it is destroyed
-          // explicitly — saving the profile only rewrites the list of URLs
-          for (const photo of newPhotos) {
-            if (!photo.replacedUrl) continue
-            await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
-              data: { photoUrl: photo.replacedUrl },
-              headers: { Authorization: `Bearer ${token}` },
-            })
-          }
-
           // Slot order is the photo order — index 0 is the avatar. Returned
           // for the caller to save in one go, so no photo can lose its place
           const uploadedByTempId = new Map(
             newPhotos.map((p, i) => [p.id, uploadedUrls[i]])
           )
-          return tempPhotos
+          const photos = tempPhotos
             .map((p) => uploadedByTempId.get(p.id) ?? p.url)
             .filter((url): url is string => Boolean(url))
+
+          // Reported, not deleted: the caller has to spend these before it
+          // overwrites the photo list — see deleteReplacedPhotos
+          const replacedUrls = newPhotos
+            .map((p) => p.replacedUrl)
+            .filter((url): url is string => Boolean(url))
+
+          return { photos, replacedUrls }
+        },
+
+        deleteReplacedPhotos: async (urls: string[], token: string) => {
+          if (urls.length === 0) return
+
+          // Best-effort: a failure only orphans a file in Cloudinary, and
+          // must not block the save that follows
+          const results = await Promise.allSettled(
+            urls.map((photoUrl) =>
+              axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
+                data: { photoUrl },
+                headers: { Authorization: `Bearer ${token}` },
+              })
+            )
+          )
+          results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+              console.error(
+                `Failed to delete replaced photo ${urls[i]}:`,
+                result.reason
+              )
+            }
+          })
         },
 
         deletePhoto: async (id: string, token: string) => {
