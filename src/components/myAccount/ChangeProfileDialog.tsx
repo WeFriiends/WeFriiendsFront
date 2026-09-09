@@ -25,8 +25,7 @@ const ChangeProfileDialog = forwardRef(
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    const { uploadNewPhotos, getProfile, updateProfile, data } =
-      useProfileStore()
+    const { uploadNewPhotos, updateProfile, data } = useProfileStore()
     const { token } = useAuthStore()
 
     const prefs = data?.preferences
@@ -97,7 +96,6 @@ const ChangeProfileDialog = forwardRef(
           token!
         )
 
-        await getProfile(token!)
         handleClose()
       } catch (error) {
         console.error('Profile update error:', error)

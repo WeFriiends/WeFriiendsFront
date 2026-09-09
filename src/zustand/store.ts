@@ -47,7 +47,6 @@ interface UploadedPhotos {
 
 interface PhotoFields {
   tempPhotos: UserPicsType[]
-  cloudUrls: string[]
   setTempPhotos: (photos: UserPicsType[]) => void
   clearTempPhotos: () => void
   addTempPhoto: (photo: UserPicsType) => void
@@ -87,8 +86,6 @@ interface ProfileActions {
     token: string | null
   ) => Promise<{ status: number }>
   deleteProfile: (token: string | null) => Promise<void>
-  addPhoto: (photo: string) => void
-  removePhoto: (photoId: string) => void
   uploadNewPhotos: (token: string) => Promise<UploadedPhotos>
   deleteReplacedPhotos: (urls: string[], token: string) => Promise<void>
   deletePhoto: (id: string, token: string) => Promise<void>
@@ -97,7 +94,6 @@ interface ProfileActions {
 
 const initialState: ProfileState & {
   tempPhotos: UserPicsType[]
-  cloudUrls: string[]
 } = {
   loading: true,
   success: false,
@@ -106,7 +102,6 @@ const initialState: ProfileState & {
   hasProfile: null,
   errorData: null,
   tempPhotos: [],
-  cloudUrls: [],
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -162,7 +157,6 @@ export const useProfileStore = create<ProfileStore>()(
         ...initialState,
 
         setTempPhotos: (photos) => set({ tempPhotos: photos }),
-        setCloudUrls: (urls: string[]) => set({ cloudUrls: urls }),
         clearTempPhotos: () => set({ tempPhotos: [] }),
 
         addTempPhoto: (photo) =>
@@ -214,7 +208,7 @@ export const useProfileStore = create<ProfileStore>()(
               { ...profileData, photos: tempPhotos },
               token || ''
             )
-            set({ tempPhotos: [], cloudUrls: [] })
+            set({ tempPhotos: [] })
             clearLocalStorage(['userPreferences'])
             set({
               loading: false,
@@ -275,35 +269,6 @@ export const useProfileStore = create<ProfileStore>()(
 
         deleteProfile: async (token) =>
           await fetchData(() => deleteProfile(token), 'deleteProfile'),
-
-        addPhoto: (photo: string) => {
-          set((state) => {
-            if (!state.data) return state
-            return {
-              data: {
-                ...state.data,
-                photos: [
-                  ...state.data.photos.filter((p) => p !== photo),
-                  photo,
-                ],
-              },
-            }
-          })
-        },
-
-        removePhoto: (photoUrl: string) => {
-          set((state) => {
-            if (!state.data) return state
-            return {
-              data: {
-                ...state.data,
-                photos: [
-                  ...(state.data.photos.filter((p) => p !== photoUrl) || []),
-                ],
-              },
-            }
-          })
-        },
 
         removePhotoFromData: (photoUrl: string) => {
           set((state) => {
