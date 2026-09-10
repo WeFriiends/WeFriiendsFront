@@ -9,14 +9,14 @@ export function useStartChatWith() {
   const createConversation = useConversationsStore(
     (state) => state.createConversation
   )
-  const setSelectedChatId = useChatStore((state) => state.setSelectedChatId)
+  const openConversation = useChatStore((state) => state.openConversation)
 
   return async function (id: string) {
     try {
       const currentUserId = user?.sub
       if (currentUserId && id) {
-        await createConversation(currentUserId, id)
-        setSelectedChatId(id)
+        const conversationRef = await createConversation(currentUserId, id)
+        openConversation(id, conversationRef)
       } else {
         console.error('Missing user IDs for chat:', { currentUserId, id })
       }
