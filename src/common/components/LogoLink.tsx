@@ -26,7 +26,7 @@ const useStyles = makeStyles()((theme) => ({
   img: {
     height: 36,
     [theme.breakpoints.up('lg')]: {
-      height: 50,
+      height: 48,
     },
   },
 }))
