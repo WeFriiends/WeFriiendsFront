@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 import AuthPagesWrapper from '../firstProfile/AuthPagesWrapper'
-import clsx from 'clsx'
 import { StyledCheckbox } from 'common/components/StyledCheckbox'
 
 const UserAuthentication = () => {
@@ -69,15 +68,23 @@ const UserAuthentication = () => {
         disableFocusRipple
         disableRipple
         disableElevation
-        className={clsx(classes.btnConnect, !checked && classes.btnDisabled)}
+        className={classes.btnConnect}
         onClick={handleSignUp}
         disabled={!checked}
       >
         Create account
       </Button>
       <div className={classes.agreementWrapper}>
-        <StyledCheckbox checked={checked} handleChange={handleChange} />
-        <Typography variant="body2" className={classes.agreement}>
+        <StyledCheckbox
+          checked={checked}
+          handleChange={handleChange}
+          inputProps={{ 'aria-labelledby': 'terms-agreement' }}
+        />
+        <Typography
+          id="terms-agreement"
+          variant="body2"
+          className={classes.agreement}
+        >
           By creating an account, I agree with{' '}
           <Link
             className={classes.link}
@@ -136,13 +143,11 @@ const useStyles = makeStyles()({
     '&:hover, &:active': {
       backgroundColor: theme.customPalette.authBtnBgHover,
     },
-  },
-
-  btnDisabled: {
-    backgroundColor: '#FFFFFF',
-    color: '#FB8F67 !important',
-    borderRadius: 10,
-    border: '2px solid #FB8F67',
+    '&.Mui-disabled': {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.textDisabled,
+      border: `2px solid ${theme.palette.borderDisabled}`,
+    },
   },
   agreementWrapper: {
     display: 'flex',
@@ -150,16 +155,11 @@ const useStyles = makeStyles()({
     justifyContent: 'flex-start',
     marginBottom: 52,
   },
-  checkbox: {
-    padding: 0,
-    margin: 0,
-    marginRight: 10,
-  },
   agreement: {
     fontSize: 12,
     lineHeight: 1.2,
     fontWeight: 400,
-    color: '#444444',
+    color: theme.palette.text.primary,
   },
   link: {
     color: theme.palette.secondary.main,
@@ -172,11 +172,11 @@ const useStyles = makeStyles()({
     fontSize: 18,
     lineHeight: 1.2,
     fontWeight: 400,
-    color: '#444444',
+    color: theme.palette.text.primary,
     textAlign: 'center',
   },
   signInTextLink: {
-    color: '#FB8F67',
+    color: theme.palette.primary.light,
     textDecoration: 'none',
     '&:hover, &:active': {
       textDecoration: 'underline',
