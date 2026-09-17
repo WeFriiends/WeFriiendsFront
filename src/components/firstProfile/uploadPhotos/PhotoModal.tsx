@@ -33,6 +33,14 @@ export const PhotoModal = ({
           autoPlay={false}
           navButtonsAlwaysVisible={items?.length > 1}
           NavButton={items?.length > 1 ? undefined : () => null}
+          navButtonsProps={{
+            style: {
+              padding: '12px',
+              color: '#444444',
+              background: 'white',
+              opacity: '0.5',
+            },
+          }}
           NextIcon={<ArrowForwardIos style={{ fontSize: 23 }} />}
           PrevIcon={<ArrowBackIosNew style={{ fontSize: 23 }} />}
           IndicatorIcon={null}
