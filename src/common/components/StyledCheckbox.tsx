@@ -2,29 +2,24 @@ import { Checkbox } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
-
-type Props = {
-  checked: boolean
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  inputProps?: {
-    'aria-labelledby'?: string
-    [key: string]: any
-  }
-}
+import type { CheckboxProps } from '@mui/material'
 
 export const StyledCheckbox = ({
+  className,
   checked,
-  handleChange,
+  onChange,
   inputProps,
-}: Props) => {
-  const { classes } = useStyles()
+  ...props
+}: CheckboxProps) => {
+  const { classes, cx } = useStyles()
 
   return (
     <Checkbox
-      className={classes.checkbox}
+      className={cx(classes.checkbox, className)}
       checked={checked}
-      onChange={handleChange}
+      onChange={onChange}
       inputProps={inputProps}
+      {...props}
       icon={
         <span
           style={{

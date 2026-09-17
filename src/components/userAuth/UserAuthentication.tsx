@@ -77,7 +77,7 @@ const UserAuthentication = () => {
       <div className={classes.agreementWrapper}>
         <StyledCheckbox
           checked={checked}
-          handleChange={handleChange}
+          onChange={handleChange}
           inputProps={{ 'aria-labelledby': 'terms-agreement' }}
         />
         <Typography
