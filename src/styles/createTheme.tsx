@@ -5,6 +5,7 @@ const fish = '#FB8F67'
 const red = '#F1562A'
 const grey = '#444444'
 const green = '#1D878C'
+const neutralGrey = '#AFB1B6'
 
 const theme = {
   spacing: 5,
@@ -29,6 +30,8 @@ const theme = {
     text: {
       primary: grey,
     },
+    borderDisabled: neutralGrey,
+    textDisabled: neutralGrey,
   },
   typography: {
     fontFamily: ['Inter', 'sans-serif'].join(','),
@@ -103,5 +106,15 @@ declare module '@mui/material/styles' {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface ThemeOptions extends CustomTheme {}
+
+  interface Palette {
+    borderDisabled: string
+    textDisabled: string
+  }
+
+  interface PaletteOptions {
+    borderDisabled?: string
+    textDisabled?: string
+  }
 }
 export default createTheme(theme)
