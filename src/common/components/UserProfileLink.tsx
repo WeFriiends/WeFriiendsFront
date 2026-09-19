@@ -1,82 +1,74 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Avatar, Button, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { useProfileStore } from 'zustand/store'
 import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
+import { APP_ROUTES } from 'routes/appRoutes'
+
+const MY_ACCOUNT_PATH = `/${APP_ROUTES.myAccount}`
 
 export function UserProfileLink() {
-  const { data: profile, loading } = useProfileStore()
-  const avatarSrc = profile?.photos?.[0] ?? DEFAULT_PROFILE_PHOTO
-  const { classes } = useStyles()
+  const { pathname } = useLocation()
+  const { classes, cx } = useStyles()
+  const name = useProfileStore((state) => state.data?.name)
+  const avatarSrc =
+    useProfileStore((state) => state.data?.photos?.[0]) ?? DEFAULT_PROFILE_PHOTO
 
   return (
     <Button
       variant="text"
       component={Link}
-      to="/my-account"
+      to={MY_ACCOUNT_PATH}
       disableRipple
-      className={`${classes.userDetails} ${
-        location.pathname === '/my-account' && classes.userDetailsActive
-      }`}
-    >
-      <Avatar src={avatarSrc} sx={{ width: 56, height: 56 }} />
-      {!loading ? (
-        <Typography className={classes.name}>
-          {profile?.name || 'Loading...'}
-        </Typography>
-      ) : (
-        <Typography className={classes.name}>Loading...</Typography>
+      className={cx(
+        classes.userDetails,
+        pathname === MY_ACCOUNT_PATH && classes.userDetailsActive
       )}
+    >
+      <Avatar src={avatarSrc} sx={{ width: 60, height: 60 }} />
+      <Typography className={classes.name}>{name || 'Loading...'}</Typography>
     </Button>
   )
 }
 
-const useStyles = makeStyles()((theme) => ({
-  name: {
-    fontSize: 28,
-    fontWeight: 600,
-    lineHeight: '40px',
-    color: '#F1562A',
-    position: 'relative',
-    wordBreak: 'break-word',
-    [theme.breakpoints.up('lg')]: {
-      fontSize: 32,
+const useStyles = makeStyles()((theme) => {
+  const { headerTopOffset, headerHighlightBottom } = theme.customDimensions
+
+  return {
+    name: {
+      fontSize: 20,
+      fontWeight: 600,
+      lineHeight: '120%',
+      color: theme.palette.primary.dark,
+      overflowWrap: 'anywhere',
+      [theme.breakpoints.up('lg')]: {
+        fontSize: 24,
+      },
     },
-  },
-  userDetails: {
-    display: 'none',
-    textDecoration: 'none',
-    maxWidth: 285,
-    textTransform: 'none',
-    textAlign: 'left',
-    maxHeight: 56,
-    gap: '25px',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-    '&:before': {
-      content: '""',
-      position: 'absolute',
-      top: -35,
-      left: -20,
-      right: 0,
-      bottom: -40,
-      zIndex: 0,
+    userDetails: {
+      display: 'none',
+      textDecoration: 'none',
+      textTransform: 'none',
+      textAlign: 'left',
+      gap: '25px',
       borderRadius: '0 0 10px 10px',
       transition: '0.3s background-color',
+      [theme.breakpoints.up('md')]: {
+        display: 'flex',
+        justifyContent: 'start',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        width: 307,
+        flexShrink: 0,
+        padding: `${headerTopOffset}px 4px ${headerHighlightBottom}px 20px`,
+        margin: `${-headerTopOffset}px 0 ${-headerHighlightBottom}px 0`,
+      },
+      '&:hover, &.Mui-focusVisible': {
+        backgroundColor: theme.customPalette.authBtnBg,
+      },
     },
-    '&:hover:before': {
-      backgroundColor: '#FFF1EC',
+    userDetailsActive: {
+      backgroundColor: theme.customPalette.authBtnBg,
     },
-  },
-  userDetailsActive: {
-    position: 'relative',
-    '&:before': {
-      backgroundColor: '#FFF1EC',
-    },
-  },
-}))
+  }
+})

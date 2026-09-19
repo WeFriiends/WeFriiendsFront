@@ -26,6 +26,9 @@ export function NavigationLink({
       sx={{
         '& .MuiBadge-badge': {
           backgroundColor: theme.palette.primary.main,
+          height: 10,
+          minWidth: 10,
+          borderRadius: '50%',
         },
       }}
     >
