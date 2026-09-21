@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import { APP_ROUTES } from 'routes/appRoutes'
 
 export function LogoLink() {
   const { classes } = useStyles()
   return (
-    <Box className={classes.logo} component={Link} to="/friends">
+    <Box
+      className={classes.logo}
+      component={Link}
+      to={`/${APP_ROUTES.friends}`}
+    >
       <Box
         component="img"
         src="/img/logo.svg"
@@ -24,9 +29,10 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   img: {
+    display: 'block',
     height: 36,
     [theme.breakpoints.up('lg')]: {
-      height: 48,
+      height: 40,
     },
   },
 }))

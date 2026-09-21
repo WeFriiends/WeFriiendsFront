@@ -38,7 +38,7 @@ const useStyles = makeStyles()((theme) => ({
     padding: 0,
     [theme.breakpoints.up('md')]: {
       flex: 1,
-      width: 'auto',
+      maxWidth: 320,
     },
     [theme.breakpoints.down('md')]: {
       paddingInline: 32,
