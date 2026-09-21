@@ -7,6 +7,8 @@ const grey = '#444444'
 const green = '#1D878C'
 const neutralGrey = '#AFB1B6'
 
+const headerHighlightBottom = 40
+
 const theme = {
   spacing: 5,
   breakpoints: {
@@ -74,6 +76,10 @@ const theme = {
       md: 340,
       lg: 450,
     },
+    headerHeight: 62,
+    headerTopOffset: 30,
+    headerHighlightBottom,
+    contentGap: headerHighlightBottom + 40,
   },
   components: {
     MuiBackdrop: {

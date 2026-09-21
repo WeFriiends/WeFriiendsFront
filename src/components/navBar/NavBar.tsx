@@ -37,10 +37,8 @@ const useStyles = makeStyles()((theme) => ({
     margin: 0,
     padding: 0,
     [theme.breakpoints.up('md')]: {
+      flex: 1,
       maxWidth: 320,
-    },
-    [theme.breakpoints.up('lg')]: {
-      maxWidth: 420,
     },
     [theme.breakpoints.down('md')]: {
       paddingInline: 32,
