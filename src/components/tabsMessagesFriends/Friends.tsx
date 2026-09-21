@@ -15,9 +15,10 @@ import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
+  isMdUp?: boolean
 }
 
-export function Friends({ onClick }: FriendsProps) {
+export function Friends({ onClick, isMdUp }: FriendsProps) {
   const { classes } = useStyles()
   const { matches: userFriends } = useMatchesStore()
   const { fetchUserProfile } = useUserProfileStore()
@@ -64,7 +65,9 @@ export function Friends({ onClick }: FriendsProps) {
           key={element.id}
           className={classnames([
             { [classes.friendsPhotoItem]: true },
-            { [classes.fotoBorder]: element.id === selectedFriendId },
+            {
+              [classes.fotoBorder]: element.id === selectedFriendId && isMdUp,
+            },
           ])}
           onClick={() => handleClick(element)}
           sx={{ opacity: loading === element.id ? 0.7 : 1 }}

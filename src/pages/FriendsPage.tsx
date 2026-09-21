@@ -31,7 +31,7 @@ export default function FriendsPage() {
         }`}
       >
         <TabsMessagesFriends />
-        <Friends onClick={selectFriend} />
+        <Friends onClick={selectFriend} isMdUp={isMdUp} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
