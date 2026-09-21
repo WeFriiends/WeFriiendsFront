@@ -36,16 +36,19 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
       return
     }
 
+    const textToSend = messageText
+
+    setMessageText('')
+
     try {
       await sendMessage(chatId, {
         senderId: userId,
         receiverId: chat.id,
-        text: messageText,
+        text: textToSend,
         isSeen: false,
       })
-
-      setMessageText('')
     } catch (error) {
+      setMessageText(textToSend)
       console.error('Failed to send message:', error)
     }
   }
