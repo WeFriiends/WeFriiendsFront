@@ -15,20 +15,18 @@ import { DEFAULT_PROFILE_PHOTO } from 'data/constants'
 
 interface FriendsProps {
   onClick: (userProfileData: UserProfileData) => void
-  isMdUp?: boolean
+  selectedFriendId: string | undefined
 }
 
-export function Friends({ onClick, isMdUp }: FriendsProps) {
+export function Friends({ onClick, selectedFriendId }: FriendsProps) {
   const { classes } = useStyles()
   const { matches: userFriends } = useMatchesStore()
   const { fetchUserProfile } = useUserProfileStore()
-  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
   const defaultPhoto = DEFAULT_PROFILE_PHOTO
 
   const handleClick = async (friend: FriendsMatch) => {
-    setSelectedFriendId(friend.id)
     setLoading(friend.id)
 
     const selectedFriend: UserProfileDataShort = {
@@ -66,7 +64,7 @@ export function Friends({ onClick, isMdUp }: FriendsProps) {
           className={classnames([
             { [classes.friendsPhotoItem]: true },
             {
-              [classes.fotoBorder]: element.id === selectedFriendId && isMdUp,
+              [classes.fotoBorder]: element.id === selectedFriendId,
             },
           ])}
           onClick={() => handleClick(element)}
