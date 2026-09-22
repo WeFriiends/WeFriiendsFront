@@ -123,9 +123,6 @@ const useStyles = makeStyles()((theme) => ({
       alignItems: 'stretch',
       flexDirection: 'row',
     },
-    [theme.breakpoints.up('lg')]: {
-      paddingBottom: 0,
-    },
   },
   twoColumnLayoutColLeft: {
     maxWidth: '100%',

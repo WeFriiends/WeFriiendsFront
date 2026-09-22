@@ -28,9 +28,13 @@ const useStyles = makeStyles()((theme) => ({
     width: '100%',
     margin: '0 auto',
     maxWidth: 1024,
-    padding: '0 30px',
+    paddingInline: 30,
+    paddingBottom: theme.customDimensions.contentBottomOffset,
     [theme.breakpoints.down('lg')]: {
-      padding: '0 20px',
+      paddingInline: 20,
+    },
+    [theme.breakpoints.up('md')]: {
+      paddingBottom: 0,
     },
   },
 }))

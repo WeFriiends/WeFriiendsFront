@@ -24,7 +24,7 @@ const useStyles = makeStyles()((theme) => ({
     background: theme.palette.common.white,
     [theme.breakpoints.down('md')]: {
       position: 'fixed',
-      minHeight: 60,
+      minHeight: theme.customDimensions.mobileNavHeight,
       boxShadow: '0 0 7px 1px rgba(179, 179, 179, 0.14)',
     },
     [theme.breakpoints.up('md')]: {
