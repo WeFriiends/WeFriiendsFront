@@ -27,7 +27,7 @@ export default function SwipesPage() {
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box className={classes.twoColumnLayoutColLeft}>
         <TabsMessagesFriends />
-        <Friends onClick={selectFriend} />
+        <Friends onClick={selectFriend} selectedFriendId={friendsData?.id} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
