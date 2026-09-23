@@ -8,6 +8,7 @@ const green = '#1D878C'
 const neutralGrey = '#AFB1B6'
 
 const headerHighlightBottom = 40
+const mobileNavHeight = 60
 
 const theme = {
   spacing: 5,
@@ -77,7 +78,9 @@ const theme = {
       lg: 450,
     },
     headerHeight: 62,
+    mobileNavHeight,
     headerTopOffset: 30,
+    contentBottomOffset: mobileNavHeight + 40,
     headerHighlightBottom,
     contentGap: headerHighlightBottom + 40,
   },

@@ -81,11 +81,9 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 24,
-    paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
       alignItems: 'stretch',
       flexDirection: 'row',
-      paddingBottom: 0,
     },
   },
   twoColumnLayoutColLeft: {
