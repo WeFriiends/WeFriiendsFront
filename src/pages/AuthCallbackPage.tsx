@@ -2,6 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import Loader from 'common/components/Loader'
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { APP_ROUTES } from 'routes/appRoutes'
 import { useProfileStore } from '../zustand/store'
 
 const AuthCallbackPage = () => {
@@ -18,7 +19,7 @@ const AuthCallbackPage = () => {
       if (gender === 'male') {
         navigate('/no-friends-in-your-area')
       } else {
-        navigate('/friends')
+        navigate(`/${APP_ROUTES.swipes}`)
       }
     }
   }, [hasProfile, loading, navigate, gender])
