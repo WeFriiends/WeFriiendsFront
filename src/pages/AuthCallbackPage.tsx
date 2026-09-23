@@ -14,10 +14,10 @@ const AuthCallbackPage = () => {
   const { hasProfile, loading } = useProfileStore()
   useEffect(() => {
     if (hasProfile === false) {
-      navigate('/fill-profile')
+      navigate(`/${APP_ROUTES.fillProfile}`)
     } else if (hasProfile === true) {
       if (gender === 'male') {
-        navigate('/no-friends-in-your-area')
+        navigate(`/${APP_ROUTES.noFriendsInYourArea}`)
       } else {
         navigate(`/${APP_ROUTES.swipes}`)
       }
@@ -38,20 +38,20 @@ const AuthCallbackPage = () => {
         const { message, errorDescription, code, state } = urlSearchParams()
 
         if (message?.includes('Your email was verified')) {
-          navigate('/email-confirmed')
+          navigate(`/${APP_ROUTES.emailConfirmed}`)
         } else if (message?.includes('This URL can be used only once')) {
-          navigate('/email-already-confirmed')
+          navigate(`/${APP_ROUTES.emailAlreadyConfirmed}`)
         } else if (
           errorDescription?.includes(
             'Please verify your email before logging in'
           )
         ) {
-          navigate('/account-created')
+          navigate(`/${APP_ROUTES.accountCreated}`)
         } else if (code && state) {
           await handleRedirectCallback()
         } else {
           if (!isAuthenticated) {
-            navigate('/')
+            navigate(APP_ROUTES.home)
           }
           console.error('No valid callback parameters found in URL: ', {
             message,

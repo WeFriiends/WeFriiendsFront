@@ -111,7 +111,7 @@ const routes: RouteObject[] = [
   },
   { path: 'notice-no-likes', element: <NoticeNoLikes /> },
   { path: 'notice-no-users', element: <NoticeNoUsers /> },
-  { path: 'no-friends-in-your-area', element: <ErrorMensSearch /> },
+  { path: APP_ROUTES.noFriendsInYourArea, element: <ErrorMensSearch /> },
   { path: 'invite', element: <Invitation /> },
   {
     path: APP_ROUTES.notFound,

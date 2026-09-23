@@ -5,6 +5,7 @@ export const APP_ROUTES = {
   accountCreated: 'account-created',
   emailAlreadyConfirmed: 'email-already-confirmed',
   fillProfile: 'fill-profile',
+  noFriendsInYourArea: 'no-friends-in-your-area',
   account: 'account',
   friends: 'friends',
   swipes: 'swipes',
