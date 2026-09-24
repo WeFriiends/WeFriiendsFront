@@ -228,8 +228,8 @@ const useStyles = makeStyles()(() => ({
   },
   counter: {
     position: 'absolute',
-    bottom: 8,
-    right: 12,
+    bottom: 4,
+    right: 10,
     color: 'gray',
   },
   textareaRoot: {
@@ -237,6 +237,9 @@ const useStyles = makeStyles()(() => ({
     borderRadius: '20px',
     outline: 'none',
     backgroundColor: 'transparent',
+    '&.MuiInputBase-multiline': {
+      paddingBottom: 25,
+    },
   },
   errorBox: {
     width: '100%',
