@@ -18,7 +18,7 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
   const userId = user?.sub || ''
   const [messageText, setMessageText] = useState('')
   const { conversations } = useConversationsStore()
-  const { sendMessage, loading } = useChatStore()
+  const { sendMessage, isMessageSending } = useChatStore()
 
   async function handleSendMessage() {
     // Find the conversation with the matching ID to get the conversationRef
@@ -72,9 +72,9 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
       <Button
         onClick={handleSendMessage}
         className={classes.sendBtn}
-        disabled={loading || !messageText.trim()}
+        disabled={isMessageSending || !messageText.trim()}
       >
-        {loading ? 'Sending...' : 'Send'}
+        {isMessageSending ? 'Sending...' : 'Send'}
       </Button>
     </Box>
   )

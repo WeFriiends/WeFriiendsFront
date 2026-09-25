@@ -35,6 +35,7 @@ interface ChatState {
   // messagesCache: Record<string, Chat>
   messagesCache: Record<string, Chat | undefined>
   loading: boolean
+  isMessageSending: boolean
   error: Error | null
   paginationCursor: Record<string, DocumentSnapshot | null>
   // Map of conversati on IDs to unsubscribe functions
@@ -105,6 +106,7 @@ export const useChatStore = create<ChatState>()(
         currentChat: null,
         messagesCache: {},
         loading: false,
+        isMessageSending: false,
         error: null,
         paginationCursor: {},
         subscriptions: {},
@@ -469,7 +471,7 @@ export const useChatStore = create<ChatState>()(
         },
 
         sendMessage: async (conversationId, message) => {
-          set({ loading: true, error: null })
+          set({ isMessageSending: true, error: null })
           try {
             // Add message to the messages subcollection
             const messagesRef = collection(
@@ -499,7 +501,7 @@ export const useChatStore = create<ChatState>()(
             // We don't need to update the local state here
             // The onSnapshot listener will handle updating the UI when Firebase sends the update
             // This prevents the duplicate message issue
-            set({ loading: false })
+            set({ isMessageSending: false })
 
             // Log for debugging
             console.log(
@@ -509,7 +511,7 @@ export const useChatStore = create<ChatState>()(
             console.error('❌ Error sending message:', error)
             set({
               error: error instanceof Error ? error : new Error(String(error)),
-              loading: false,
+              isMessageSending: false,
             })
           }
         },
