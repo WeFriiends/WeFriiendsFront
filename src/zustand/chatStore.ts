@@ -106,6 +106,7 @@ export const useChatStore = create<ChatState>()(
         currentChat: null,
         messagesCache: {},
         loading: false,
+        isMessageSending: false,
         error: null,
         paginationCursor: {},
         subscriptions: {},
