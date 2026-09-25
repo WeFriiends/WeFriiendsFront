@@ -29,6 +29,7 @@ import { Location } from 'types/FirstProfile'
 import dayjs, { type Dayjs } from 'dayjs'
 import AuthPagesWrapper from './AuthPagesWrapper'
 import axios from 'axios'
+import { APP_ROUTES } from 'routes/appRoutes'
 
 const ProfileCarousel = () => {
   const token = useAuthStore((s) => s.token)
@@ -221,7 +222,7 @@ const ProfileCarousel = () => {
       clearSessionStorage(Object.values(REGISTRATION_STORAGE_KEYS))
       clearTempPhotos()
 
-      window.location.href = '/friends'
+      window.location.href = `/${APP_ROUTES.swipes}`
     } catch (error) {
       console.error('Profile creation error:', error)
       setIsCreating(false)

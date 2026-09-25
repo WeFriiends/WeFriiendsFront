@@ -6,11 +6,7 @@ import { APP_ROUTES } from 'routes/appRoutes'
 export function LogoLink() {
   const { classes } = useStyles()
   return (
-    <Box
-      className={classes.logo}
-      component={Link}
-      to={`/${APP_ROUTES.friends}`}
-    >
+    <Box className={classes.logo} component={Link} to={`/${APP_ROUTES.swipes}`}>
       <Box
         component="img"
         src="/img/logo.svg"
