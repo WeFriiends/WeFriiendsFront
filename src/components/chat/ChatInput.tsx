@@ -93,7 +93,7 @@ const useStyles = makeStyles()((theme) => ({
   textArea: {
     fontFamily: 'Inter',
     fontSize: 20,
-    lineHeight: '18px',
+    lineHeight: 1.4,
     fontWeight: 400,
     padding: 10,
     borderRadius: 10,
