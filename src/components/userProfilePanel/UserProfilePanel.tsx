@@ -26,7 +26,7 @@ export function UserProfilePanel({
   const theme = useTheme()
   const { classes } = useStyles()
   const { data, isLoading, error, mutate } = useGetUserById(selectedUserId)
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const renderContent = () => {
     if (!selectedUserId) return null
