@@ -31,6 +31,7 @@ export const PhotoModal = ({
         <Carousel
           index={imageIndex}
           autoPlay={false}
+          swipe={items?.length > 1}
           navButtonsAlwaysVisible={items?.length > 1}
           NavButton={items?.length > 1 ? undefined : () => null}
           navButtonsProps={{
