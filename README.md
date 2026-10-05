@@ -104,8 +104,6 @@ file with generic/common app styles (Titles, buttons etc.)
 
 ### `Local development`
 
-For convinient development locally was created and set up docker compose file. It's a solution also to avoid CORS error.
-
 #### Important!
 
 To run the project .env file should be created based on the file .env.sample. Keys ask on the FE slack channel
@@ -115,27 +113,6 @@ The following environment variables are required:
 - `REACT_APP_AUTH0_DOMAIN`: Auth0 domain
 - `REACT_APP_AUTH0_CLIENT_ID`: Auth0 client ID
 - `REACT_APP_API_BASE_URL`: Base URL for API requests (default: http://localhost:8080)
-
-Repos Web FE and Auth should be located in the same directory, otherwise you need to adapt values `volumes` in
-docker-compose file accordingly.
-
-`docker-compose up` is command to run the project using docker-compose file.
-
-# Connection to cloud DB
-
-Connection Mongo DB string to use for production purposes
-To connect to the cloud database change value of env variable STORAGE_CONNECTION_STRING.
-In `docker-compose.yml`:
-
-```
-    - STORAGE_CONNECTION_STRING=mongodb+srv://wefriiends-backup:wefriiends2023@cluster0.wir50id.mongodb.net/authorization?retryWrites=true&w=majority
-```
-
-To run the project use command:
-
-```
-docker-compose up
-```
 
 # Deploying to Namecheap Shared Hosting
 
