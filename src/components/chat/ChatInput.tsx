@@ -6,7 +6,6 @@ import { Conversation } from 'types/Conversation'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { Chat } from 'types/Chat'
-import { useSnackbarStore } from 'zustand/snackbarStore'
 
 interface ChatInputProps {
   chat: Conversation
@@ -50,9 +49,7 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
       })
     } catch (error) {
       setMessageText(textToSend)
-      useSnackbarStore
-        .getState()
-        .showSnackbar('Не удалось отправить сообщение', 'error')
+      console.error('Failed to send message:', error)
     }
   }
 
