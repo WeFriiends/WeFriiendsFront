@@ -30,6 +30,9 @@ const theme = {
     secondary: {
       main: green,
     },
+    info: {
+      main: green,
+    },
     text: {
       primary: grey,
     },

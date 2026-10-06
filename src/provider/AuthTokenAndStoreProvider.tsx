@@ -14,6 +14,8 @@ import {
   isSessionEndedError,
   setAuthHandlers,
 } from 'actions/authHeaders'
+import { setItemToSessionStorage } from 'utils/sessionStorage'
+import { SESSION_EXPIRED_STORAGE_KEY } from 'data/constants'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -26,7 +28,10 @@ const AuthTokenAndStoreProvider = ({
     useAuth0()
   const { token, setToken } = useAuthStore()
 
-  setAuthHandlers(getAccessTokenSilently, () => handleLogout(logout))
+  setAuthHandlers(getAccessTokenSilently, () => {
+    setItemToSessionStorage(SESSION_EXPIRED_STORAGE_KEY, true)
+    handleLogout(logout)
+  })
 
   const {
     data: profile,

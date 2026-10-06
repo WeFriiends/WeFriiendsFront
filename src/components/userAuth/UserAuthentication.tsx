@@ -8,6 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 import AuthPagesWrapper from '../firstProfile/AuthPagesWrapper'
 import { StyledCheckbox } from 'common/components/StyledCheckbox'
+import { useSnackbarStore } from 'zustand/snackbarStore'
+import { SESSION_EXPIRED_STORAGE_KEY } from 'data/constants'
+import {
+  clearSessionStorage,
+  getItemFromSessionStorage,
+} from 'utils/sessionStorage'
 
 const UserAuthentication = () => {
   const { classes } = useStyles()
@@ -20,6 +26,14 @@ const UserAuthentication = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked)
   }
+
+  useEffect(() => {
+    if (!getItemFromSessionStorage<boolean>(SESSION_EXPIRED_STORAGE_KEY)) return
+    clearSessionStorage([SESSION_EXPIRED_STORAGE_KEY])
+    useSnackbarStore
+      .getState()
+      .showSnackbar('Your session has expired. Please log in again.', 'info')
+  }, [])
 
   // Redirect if logged in
   useEffect(() => {
