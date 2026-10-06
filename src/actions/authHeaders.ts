@@ -11,7 +11,7 @@ const SESSION_ENDED_ERRORS = [
 
 let accessTokenGetter: AccessTokenGetter | null = null
 let onSessionEnded: (() => void) | null = null
-let isSessionEndHandled = false
+let logoutInProgress = false
 
 export const setAuthHandlers = (
   getter: AccessTokenGetter,
@@ -24,7 +24,13 @@ export const setAuthHandlers = (
 export const isSessionEndedError = (error: unknown): boolean =>
   error instanceof GenericError && SESSION_ENDED_ERRORS.includes(error.error)
 
-export const isSessionEnding = () => isSessionEndHandled
+// Set by every logout, not only on session end: once the SDK cache is cleared,
+// token errors are expected and must not be taken for an expired session
+export const markLogoutStarted = () => {
+  logoutInProgress = true
+}
+
+export const isLogoutInProgress = () => logoutInProgress
 
 // Never resolves: keeps callers pending until the logout redirect unloads the page,
 // so they neither render 401 errors nor start their own redirects
@@ -32,8 +38,8 @@ export const waitForLogoutRedirect = () => new Promise<never>(() => undefined)
 
 // Parallel requests fail together — log out once
 export const handleSessionEnded = () => {
-  if (isSessionEndHandled || !onSessionEnded) return
-  isSessionEndHandled = true
+  if (logoutInProgress || !onSessionEnded) return
+  markLogoutStarted()
   onSessionEnded()
 }
 
@@ -41,7 +47,7 @@ export const handleSessionEnded = () => {
 // and renews it via the refresh token once expired, so call it per request.
 export const getAuthHeaders = async (): Promise<Record<string, string>> => {
   if (!accessTokenGetter) return {}
-  if (isSessionEndHandled) return waitForLogoutRedirect()
+  if (logoutInProgress) return waitForLogoutRedirect()
 
   try {
     const token = await accessTokenGetter()

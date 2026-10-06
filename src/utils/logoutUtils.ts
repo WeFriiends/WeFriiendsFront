@@ -1,5 +1,6 @@
 import { clearLocalStorageByPrefix } from './localStorage'
 import { clearSessionStorage } from './sessionStorage'
+import { markLogoutStarted } from 'actions/authHeaders'
 import { useAuthStore } from '../zustand/store'
 import { AUTH0_STORAGE_PREFIX } from 'data/constants'
 import {
@@ -18,6 +19,8 @@ export const handleLogout = (
   logoutFn: (options: { logoutParams: { returnTo: string } }) => void,
   returnTo: string = window.location.origin + '/'
 ) => {
+  markLogoutStarted()
+
   // Clear localStorage
   clearLocalStorageByPrefix(AUTH0_STORAGE_PREFIX)
 
