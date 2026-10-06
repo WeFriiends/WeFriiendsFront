@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Typography, FormHelperText, Box } from '@mui/material'
 import LocationInputAutocomplete from '../firstProfile/location/LocationAutocomplete'
-import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { useProfileStore } from '../../zustand/store'
 import { getResolvedAddress } from '../firstProfile/utils/getResolvedAddress'
 import { useEffect, useState } from 'react'
 import { Location } from 'types/FirstProfile'
@@ -21,7 +21,6 @@ const LocationControl: React.FC = () => {
   )
 
   const [, setAddress] = useState<Location | null>(null)
-  const token = useAuthStore((state) => state.token)
 
   useEffect(() => {
     if (profile?.location) {
@@ -44,32 +43,27 @@ const LocationControl: React.FC = () => {
     if (resolvedAddress) {
       // Обновляем адрес на сервере
       setErrorLocation('Changing...')
-      if (token) {
-        try {
-          const response = await updateProfileAction({
-            location: {
-              lat: resolvedAddress.lat,
-              lng: resolvedAddress.lng,
-              country: resolvedAddress.country,
-              city: resolvedAddress.city,
-              street: resolvedAddress.street,
-              houseNumber: resolvedAddress.houseNumber,
-            },
-          })
+      try {
+        const response = await updateProfileAction({
+          location: {
+            lat: resolvedAddress.lat,
+            lng: resolvedAddress.lng,
+            country: resolvedAddress.country,
+            city: resolvedAddress.city,
+            street: resolvedAddress.street,
+            houseNumber: resolvedAddress.houseNumber,
+          },
+        })
 
-          if (response.status === 200) {
-            setErrorLocation('')
-            setNoticeLocation('The address has been successfully changed.')
-          } else {
-            setErrorLocation('Failed to update address. Please try again.')
-          }
-        } catch (err) {
-          console.error('Error updating address:', err)
-          setErrorLocation('Failed to update address.')
+        if (response.status === 200) {
+          setErrorLocation('')
+          setNoticeLocation('The address has been successfully changed.')
+        } else {
+          setErrorLocation('Failed to update address. Please try again.')
         }
-      } else {
-        console.error('Token is not available.')
-        setErrorLocation('Authentication error. Please try logging in again.')
+      } catch (err) {
+        console.error('Error updating address:', err)
+        setErrorLocation('Failed to update address.')
       }
     } else {
       setErrorLocation(

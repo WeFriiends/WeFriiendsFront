@@ -1,7 +1,6 @@
 import { clearLocalStorageByPrefix } from './localStorage'
 import { clearSessionStorage } from './sessionStorage'
 import { markLogoutStarted } from 'actions/authHeaders'
-import { useAuthStore } from '../zustand/store'
 import { AUTH0_STORAGE_PREFIX } from 'data/constants'
 import {
   REGISTRATION_STORAGE_KEYS,
@@ -28,10 +27,6 @@ export const handleLogout = (
     ...Object.values(REGISTRATION_STORAGE_KEYS),
     ...Object.values(PROFILE_EDIT_STORAGE_KEYS),
   ])
-
-  // Reset the auth store state
-  const resetAuthStore = useAuthStore.getState().setToken
-  resetAuthStore(null)
 
   // Call Auth0 logout function
   logoutFn({

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useAuthStore, useProfileStore } from '../zustand/store'
+import { useProfileStore } from '../zustand/store'
 import Loader from '../common/components/Loader'
 import { handleLogout as logoutUtil } from '../utils/logoutUtils'
 
@@ -14,37 +14,31 @@ const UserAccount = () => {
     updateProfile: updateProfileAction,
   } = useProfileStore()
 
-  const token = useAuthStore((state) => state.token)
-
   const deleteAccount = async () => {
     // deletes user only from MongoDB
     // todo: delete from auth0
-    if (token) {
-      try {
-        await deleteProfile()
-        logoutUtil(logout)
-      } catch (err) {
-        console.error('Error deleting account:', err)
-      }
+    try {
+      await deleteProfile()
+      logoutUtil(logout)
+    } catch (err) {
+      console.error('Error deleting account:', err)
     }
   }
 
   const handleProfileUpdate = async () => {
-    if (token) {
-      try {
-        await updateProfileAction({
-          location: {
-            lat: 47.0265,
-            lng: 28.8374,
-            country: 'Moldova',
-            city: 'Chișinău',
-            street: 'Alexander Pushkin Street',
-            houseNumber: '33',
-          },
-        })
-      } catch (err) {
-        console.error('Error updating profile:', err)
-      }
+    try {
+      await updateProfileAction({
+        location: {
+          lat: 47.0265,
+          lng: 28.8374,
+          country: 'Moldova',
+          city: 'Chișinău',
+          street: 'Alexander Pushkin Street',
+          houseNumber: '33',
+        },
+      })
+    } catch (err) {
+      console.error('Error updating profile:', err)
     }
   }
 

@@ -22,11 +22,6 @@ import { ApiErrorResponse } from 'types/UserProfileData'
 
 const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
 
-interface AuthState {
-  token: string | null
-  setToken: (token: string | null) => void
-}
-
 interface Profile {
   name: string
   dateOfBirth: string
@@ -97,11 +92,6 @@ const initialState: ProfileState & {
   tempPhotos: [],
   cloudUrls: [],
 }
-
-export const useAuthStore = create<AuthState>()((set) => ({
-  token: null,
-  setToken: (token) => set({ token }),
-}))
 
 export const useProfileStore = create<ProfileStore>()(
   devtools(

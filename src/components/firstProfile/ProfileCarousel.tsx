@@ -13,7 +13,7 @@ import PrimaryButton from 'common/components/PrimaryButton'
 import Loader from 'common/components/Loader'
 import MobileStepper from '@mui/material/MobileStepper'
 import { makeStyles } from 'tss-react/mui'
-import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { useProfileStore } from '../../zustand/store'
 import {
   setItemToSessionStorage,
   getItemFromSessionStorage,
@@ -33,7 +33,6 @@ import { getAuthHeaders } from 'actions/authHeaders'
 import { APP_ROUTES } from 'routes/appRoutes'
 
 const ProfileCarousel = () => {
-  const token = useAuthStore((s) => s.token)
   const { tempPhotos, clearTempPhotos } = useProfileStore()
   const {
     activeStep,
@@ -151,10 +150,6 @@ const ProfileCarousel = () => {
     new File([blob], fileName, { type: blob.type, lastModified: Date.now() })
 
   const onSubmit = async () => {
-    if (!token) {
-      console.error('Token is absent.')
-      return
-    }
     setIsCreating(true)
 
     try {

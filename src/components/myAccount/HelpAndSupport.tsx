@@ -4,7 +4,7 @@ import IconNewTab from '../../common/svg/IconNewTab'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { useProfileStore } from '../../zustand/store'
 import { handleLogout as logoutUtil } from '../../utils/logoutUtils'
 import { InviteFriendModal } from './InviteFriendModal'
 
@@ -12,7 +12,6 @@ const HelpAndSupport: React.FC = () => {
   const { classes } = useStyles()
   const { logout } = useAuth0()
   const { deleteProfile } = useProfileStore()
-  const token = useAuthStore((state) => state.token)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 
   const handleLogout = () => {
@@ -22,13 +21,11 @@ const HelpAndSupport: React.FC = () => {
   const deleteAccount = async () => {
     // deletes user only from MongoDB
     // todo: delete from auth0
-    if (token) {
-      try {
-        await deleteProfile()
-        logoutUtil(logout)
-      } catch (err) {
-        console.error('Error deleting account:', err)
-      }
+    try {
+      await deleteProfile()
+      logoutUtil(logout)
+    } catch (err) {
+      console.error('Error deleting account:', err)
     }
   }
 

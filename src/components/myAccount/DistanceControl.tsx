@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Typography, FormHelperText } from '@mui/material'
 import RangeSliderDistance from './RangeSliderDistance'
 import { useEffect, useRef, useState } from 'react'
-import { useAuthStore, useProfileStore } from '../../zustand/store'
+import { useProfileStore } from '../../zustand/store'
 import { makeStyles } from 'tss-react/mui'
 
 type DistanceControlProps = {
@@ -17,8 +17,6 @@ const DistanceControl: React.FC<DistanceControlProps> = ({ shortLabel }) => {
     loading,
     updateProfile: updateProfileAction,
   } = useProfileStore()
-
-  const token = useAuthStore((state) => state.token)
 
   const [friendsDistance, setFriendsDistance] = useState<number>(0)
   const [noticeFriendsDistance, setNoticeFriendsDistance] = useState<
@@ -39,13 +37,6 @@ const DistanceControl: React.FC<DistanceControlProps> = ({ shortLabel }) => {
 
     timeoutSliderChange.current = setTimeout(async () => {
       setNoticeFriendsDistance('Loading...')
-
-      if (!token) {
-        setNoticeFriendsDistance(
-          'Authentication error. Please try logging in again.'
-        )
-        return
-      }
 
       try {
         const response = await updateProfileAction({

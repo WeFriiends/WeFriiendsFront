@@ -57,7 +57,7 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
       handleSessionEnded()
       return waitForLogoutRedirect()
     }
-    console.error('Failed to get access token:', error)
-    return {}
+
+    throw error
   }
 }
