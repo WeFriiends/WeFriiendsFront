@@ -55,13 +55,10 @@ const AgeRangeControl = () => {
       }
 
       try {
-        const response = await updateProfileAction(
-          {
-            friendsAgeMin: updatedAgeRange[0],
-            friendsAgeMax: updatedAgeRange[1],
-          },
-          token
-        )
+        const response = await updateProfileAction({
+          friendsAgeMin: updatedAgeRange[0],
+          friendsAgeMax: updatedAgeRange[1],
+        })
 
         if (response.status === 200) {
           setNoticeAgeRange(null)

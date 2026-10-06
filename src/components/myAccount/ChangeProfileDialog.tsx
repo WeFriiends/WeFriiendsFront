@@ -8,7 +8,7 @@ import {
   getItemFromSessionStorage,
 } from 'utils/sessionStorage'
 import { makeStyles } from 'tss-react/mui'
-import { useAuthStore, useProfileStore } from 'zustand/store'
+import { useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
 import type { ProfilePreferences, SavedPreferences } from 'types/FirstProfile'
 import { useSnackbarStore } from 'zustand/snackbarStore'
@@ -27,7 +27,6 @@ const ChangeProfileDialog = forwardRef(
     const { classes } = useStyles()
     const { uploadNewPhotos, getProfile, updateProfile, data } =
       useProfileStore()
-    const { token } = useAuthStore()
 
     const prefs = data?.preferences
     const initialPreferences: SavedPreferences | undefined = prefs
@@ -59,7 +58,7 @@ const ChangeProfileDialog = forwardRef(
     const handleSaveClick = async () => {
       setIsSaving(true)
       try {
-        await uploadNewPhotos(token!)
+        await uploadNewPhotos()
 
         const savedReasons = getItemFromSessionStorage<string[]>(
           PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
@@ -82,15 +81,12 @@ const ChangeProfileDialog = forwardRef(
           interests: getArr('interests'),
         }
 
-        await updateProfile(
-          {
-            preferences,
-            ...(savedReasons ? { reasons: savedReasons } : {}),
-          },
-          token!
-        )
+        await updateProfile({
+          preferences,
+          ...(savedReasons ? { reasons: savedReasons } : {}),
+        })
 
-        await getProfile(token!)
+        await getProfile()
         handleClose()
       } catch (error) {
         console.error('Profile update error:', error)

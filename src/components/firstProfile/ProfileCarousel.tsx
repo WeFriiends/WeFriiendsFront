@@ -29,6 +29,7 @@ import { Location } from 'types/FirstProfile'
 import dayjs, { type Dayjs } from 'dayjs'
 import AuthPagesWrapper from './AuthPagesWrapper'
 import axios from 'axios'
+import { getAuthHeaders } from 'actions/authHeaders'
 import { APP_ROUTES } from 'routes/appRoutes'
 
 const ProfileCarousel = () => {
@@ -213,7 +214,7 @@ const ProfileCarousel = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            ...(await getAuthHeaders()),
             'Content-Type': 'multipart/form-data',
           },
         }

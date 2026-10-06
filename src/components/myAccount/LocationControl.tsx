@@ -46,19 +46,16 @@ const LocationControl: React.FC = () => {
       setErrorLocation('Changing...')
       if (token) {
         try {
-          const response = await updateProfileAction(
-            {
-              location: {
-                lat: resolvedAddress.lat,
-                lng: resolvedAddress.lng,
-                country: resolvedAddress.country,
-                city: resolvedAddress.city,
-                street: resolvedAddress.street,
-                houseNumber: resolvedAddress.houseNumber,
-              },
+          const response = await updateProfileAction({
+            location: {
+              lat: resolvedAddress.lat,
+              lng: resolvedAddress.lng,
+              country: resolvedAddress.country,
+              city: resolvedAddress.city,
+              street: resolvedAddress.street,
+              houseNumber: resolvedAddress.houseNumber,
             },
-            token
-          )
+          })
 
           if (response.status === 200) {
             setErrorLocation('')

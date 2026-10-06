@@ -24,7 +24,7 @@ const HelpAndSupport: React.FC = () => {
     // todo: delete from auth0
     if (token) {
       try {
-        await deleteProfile(token)
+        await deleteProfile()
         logoutUtil(logout)
       } catch (err) {
         console.error('Error deleting account:', err)

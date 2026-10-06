@@ -21,7 +21,7 @@ const UserAccount = () => {
     // todo: delete from auth0
     if (token) {
       try {
-        await deleteProfile(token)
+        await deleteProfile()
         logoutUtil(logout)
       } catch (err) {
         console.error('Error deleting account:', err)
@@ -32,19 +32,16 @@ const UserAccount = () => {
   const handleProfileUpdate = async () => {
     if (token) {
       try {
-        await updateProfileAction(
-          {
-            location: {
-              lat: 47.0265,
-              lng: 28.8374,
-              country: 'Moldova',
-              city: 'Chișinău',
-              street: 'Alexander Pushkin Street',
-              houseNumber: '33',
-            },
+        await updateProfileAction({
+          location: {
+            lat: 47.0265,
+            lng: 28.8374,
+            country: 'Moldova',
+            city: 'Chișinău',
+            street: 'Alexander Pushkin Street',
+            houseNumber: '33',
           },
-          token
-        )
+        })
       } catch (err) {
         console.error('Error updating profile:', err)
       }

@@ -9,6 +9,7 @@ import { useConversationsStore } from '../zustand/conversationsStore'
 import { handleLogout } from '../utils/logoutUtils'
 import { ApiErrorResponse } from 'types/UserProfileData'
 import { subscribeToMatches } from '../services/matches'
+import { setAccessTokenGetter } from 'actions/authHeaders'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -20,6 +21,9 @@ const AuthTokenAndStoreProvider = ({
   const { isAuthenticated, getAccessTokenSilently, user, isLoading, logout } =
     useAuth0()
   const { token, setToken } = useAuthStore()
+
+  setAccessTokenGetter(getAccessTokenSilently)
+
   const {
     data: profile,
     getProfile,
@@ -62,7 +66,7 @@ const AuthTokenAndStoreProvider = ({
         // проверяем, что первый профиль заполнен и записываем в стор
         if (!hasCheckedProfile.current && token) {
           hasCheckedProfile.current = true // Помечаем, что запрос происходит
-          await checkProfile(token) // Дождаться завершения запроса после этого можно проверять hasProfile в стор
+          await checkProfile() // Дождаться завершения запроса после этого можно проверять hasProfile в стор
         }
         if (
           !profile && // стор не наполнен
@@ -71,7 +75,7 @@ const AuthTokenAndStoreProvider = ({
           !hasFetchedProfile.current // ранее не наполняли стор
         ) {
           hasFetchedProfile.current = true // Помечаем, что запрос происходит
-          getProfile(token)
+          getProfile()
         }
       } catch (error: unknown) {
         const apiError = error as ApiErrorResponse

@@ -48,10 +48,9 @@ const DistanceControl: React.FC<DistanceControlProps> = ({ shortLabel }) => {
       }
 
       try {
-        const response = await updateProfileAction(
-          { friendsDistance: newFriendsDistance },
-          token
-        )
+        const response = await updateProfileAction({
+          friendsDistance: newFriendsDistance,
+        })
         if (response.status === 200) {
           setErrorFriendsDistance(null)
           setNoticeFriendsDistance(null)

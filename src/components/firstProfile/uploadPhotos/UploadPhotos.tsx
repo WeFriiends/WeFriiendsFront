@@ -69,7 +69,7 @@ const UploadPhotos = () => {
           setIsDeleteModalOpened={() => setDeleteId(null)}
           deleteChosenPic={() => {
             if (!token) return
-            deletePhoto(deleteId, token)
+            deletePhoto(deleteId)
             setDeleteId(null)
           }}
         />
