@@ -9,7 +9,11 @@ import { useConversationsStore } from '../zustand/conversationsStore'
 import { handleLogout } from '../utils/logoutUtils'
 import { ApiErrorResponse } from 'types/UserProfileData'
 import { subscribeToMatches } from '../services/matches'
-import { setAccessTokenGetter } from 'actions/authHeaders'
+import {
+  handleSessionEnded,
+  isSessionEndedError,
+  setAuthHandlers,
+} from 'actions/authHeaders'
 
 interface AuthTokenAndStoreProviderProps {
   children: ReactNode
@@ -22,7 +26,7 @@ const AuthTokenAndStoreProvider = ({
     useAuth0()
   const { token, setToken } = useAuthStore()
 
-  setAccessTokenGetter(getAccessTokenSilently)
+  setAuthHandlers(getAccessTokenSilently, () => handleLogout(logout))
 
   const {
     data: profile,
@@ -55,6 +59,10 @@ const AuthTokenAndStoreProvider = ({
           setToken(accessToken)
         }
       } catch (error) {
+        if (isSessionEndedError(error)) {
+          handleSessionEnded()
+          return
+        }
         // если не пришли данные профиля с бэка, по причине что бэк не залогинен
         console.error(
           'Consent or Login required (message from backend):',
