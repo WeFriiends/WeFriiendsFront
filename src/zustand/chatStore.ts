@@ -513,6 +513,8 @@ export const useChatStore = create<ChatState>()(
               error: error instanceof Error ? error : new Error(String(error)),
               isMessageSending: false,
             })
+
+            throw new Error(String(error))
           }
         },
 
