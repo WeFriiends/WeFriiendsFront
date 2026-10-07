@@ -52,7 +52,7 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
       setMessageText(textToSend)
       useSnackbarStore
         .getState()
-        .showSnackbar('Не удалось отправить сообщение', 'error')
+        .showSnackbar('Failed to send message', 'error')
     }
   }
 
