@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
+import { devtools } from 'zustand/middleware'
 import {
   createProfile as apiCreateProfile,
   getProfile,
@@ -15,16 +15,12 @@ import {
 import { clearLocalStorage } from 'utils/localStorage'
 import { usePotentialFriendsStore } from './friendsStore'
 import axios, { AxiosResponse } from 'axios'
-import { MAX_PROFILE_PHOTOS, AUTH_STORAGE_KEY } from 'data/constants'
+import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import { PHOTO_ENDPOINTS } from 'actions/endpoints'
+import { getAuthHeaders } from 'actions/authHeaders'
 import { ApiErrorResponse } from 'types/UserProfileData'
 
 const API_BASE = `${process.env.REACT_APP_API_BASE_URL}/api`
-
-interface AuthState {
-  token: string | null
-  setToken: (token: string | null) => void
-}
 
 interface Profile {
   name: string
@@ -69,23 +65,15 @@ interface ProfileState {
 }
 
 interface ProfileActions {
-  createProfile: (
-    profileData: Omit<Profile, 'photos'>,
-    token: string | null
-  ) => Promise<void>
-  getProfile: (token: string | null) => Promise<void>
-  checkProfile: (
-    token: string | null
-  ) => Promise<AxiosResponse | ApiErrorResponse>
-  updateProfile: (
-    profileData: Partial<Profile>,
-    token: string | null
-  ) => Promise<{ status: number }>
-  deleteProfile: (token: string | null) => Promise<void>
+  createProfile: (profileData: Omit<Profile, 'photos'>) => Promise<void>
+  getProfile: () => Promise<void>
+  checkProfile: () => Promise<AxiosResponse | ApiErrorResponse>
+  updateProfile: (profileData: Partial<Profile>) => Promise<{ status: number }>
+  deleteProfile: () => Promise<void>
   addPhoto: (photo: string) => void
   removePhoto: (photoId: string) => void
-  uploadNewPhotos: (token: string) => Promise<void>
-  deletePhoto: (id: string, token: string) => Promise<void>
+  uploadNewPhotos: () => Promise<void>
+  deletePhoto: (id: string) => Promise<void>
   addPhotoToData: (photoUrl: string) => void
   removePhotoFromData: (photoUrl: string) => void
   replacePhotoInData: (oldUrl: string, newUrl: string) => void
@@ -104,18 +92,6 @@ const initialState: ProfileState & {
   tempPhotos: [],
   cloudUrls: [],
 }
-
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      token: null,
-      setToken: (token) => set({ token }),
-    }),
-    {
-      name: AUTH_STORAGE_KEY,
-    }
-  )
-)
 
 export const useProfileStore = create<ProfileStore>()(
   devtools(
@@ -197,14 +173,11 @@ export const useProfileStore = create<ProfileStore>()(
             return { tempPhotos: s.tempPhotos.filter((p) => p.id !== id) }
           }),
 
-        createProfile: async (profileData, token) => {
+        createProfile: async (profileData) => {
           set({ loading: true, error: false, success: false })
           try {
             const { tempPhotos } = get()
-            await apiCreateProfile(
-              { ...profileData, photos: tempPhotos },
-              token || ''
-            )
+            await apiCreateProfile({ ...profileData, photos: tempPhotos })
             set({ tempPhotos: [], cloudUrls: [] })
             clearLocalStorage(['userPreferences'])
             set({
@@ -217,10 +190,10 @@ export const useProfileStore = create<ProfileStore>()(
           }
         },
 
-        getProfile: async (token) =>
-          await fetchData(() => getProfile(token), 'getProfile'),
+        getProfile: async () =>
+          await fetchData(() => getProfile(), 'getProfile'),
 
-        checkProfile: async (token) => {
+        checkProfile: async () => {
           set({
             loading: true,
             success: false,
@@ -229,7 +202,7 @@ export const useProfileStore = create<ProfileStore>()(
             errorData: null,
           })
           try {
-            const response = await checkProfile(token)
+            const response = await checkProfile()
             if (response.status >= 200 && response.status < 300) {
               const isProfileComplete = response.status === 200
               set({
@@ -246,9 +219,9 @@ export const useProfileStore = create<ProfileStore>()(
           }
         },
 
-        updateProfile: async (profileData, token) => {
+        updateProfile: async (profileData) => {
           const response = await fetchData(
-            () => updateProfile(profileData, token),
+            () => updateProfile(profileData),
             'updateProfile'
           )
           if (
@@ -264,8 +237,8 @@ export const useProfileStore = create<ProfileStore>()(
           return response
         },
 
-        deleteProfile: async (token) =>
-          await fetchData(() => deleteProfile(token), 'deleteProfile'),
+        deleteProfile: async () =>
+          await fetchData(() => deleteProfile(), 'deleteProfile'),
 
         addPhoto: (photo: string) => {
           set((state) => {
@@ -334,10 +307,12 @@ export const useProfileStore = create<ProfileStore>()(
           })
         },
 
-        uploadNewPhotos: async (token: string) => {
+        uploadNewPhotos: async () => {
           const { tempPhotos, addPhotoToData, replacePhotoInData } = get()
           const newPhotos = tempPhotos.filter((p) => p.blobFile)
           if (newPhotos.length === 0) return
+
+          const authHeaders = await getAuthHeaders()
 
           const formData = new FormData()
           newPhotos.forEach((p) => formData.append('images', p.blobFile!))
@@ -348,7 +323,7 @@ export const useProfileStore = create<ProfileStore>()(
             {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
+                ...authHeaders,
               },
             }
           )
@@ -360,19 +335,19 @@ export const useProfileStore = create<ProfileStore>()(
             if (photo.replacedUrl) {
               await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
                 data: { photoUrl: photo.replacedUrl },
-                headers: { Authorization: `Bearer ${token}` },
+                headers: authHeaders,
               })
               await axios.post(
                 `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
                 { photoUrl },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: authHeaders }
               )
               replacePhotoInData(photo.replacedUrl, photoUrl)
             } else {
               await axios.post(
                 `${API_BASE}/${PHOTO_ENDPOINTS.base}`,
                 { photoUrl },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: authHeaders }
               )
               addPhotoToData(photoUrl)
             }
@@ -380,7 +355,7 @@ export const useProfileStore = create<ProfileStore>()(
           set({ tempPhotos: [] })
         },
 
-        deletePhoto: async (id: string, token: string) => {
+        deletePhoto: async (id: string) => {
           const { tempPhotos, removePhotoFromData } = get()
           const photo = tempPhotos.find((p) => p.id === id)
           if (!photo) return
@@ -388,7 +363,7 @@ export const useProfileStore = create<ProfileStore>()(
           if (!photo.blobFile && photo.url) {
             await axios.delete(`${API_BASE}/${PHOTO_ENDPOINTS.base}`, {
               data: { photoUrl: photo.url },
-              headers: { Authorization: `Bearer ${token}` },
+              headers: await getAuthHeaders(),
             })
             removePhotoFromData(photo.url)
           }

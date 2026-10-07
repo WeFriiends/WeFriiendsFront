@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { getUserById } from './api'
-import { useAuthStore } from './store'
 import { ProfilePhoto } from 'types/UserProfileData'
 
 // Define UserProfile interface
@@ -76,7 +75,6 @@ export const useUserProfileStore = create<UserProfilesState>()(
           !loading[userId] &&
           isCacheValid(userId)
         ) {
-          console.log(`♻️Found cached profile for user: ${userId}`)
           return profileCache[userId].profile
         }
 
@@ -87,16 +85,7 @@ export const useUserProfileStore = create<UserProfilesState>()(
         }))
 
         try {
-          // console.log(`Fetching profile for user: ${userId}`)
-
-          // Get the authentication token
-          const { token } = useAuthStore.getState()
-          // console.log(`Token from useAuthStore: ${token ? 'Available' : 'Not available'}`)
-
-          // Fetch the profile with the token
-          const profile = await getUserById(userId, token)
-
-          // console.log(`Profile fetched:`, profile)
+          const profile = await getUserById(userId)
 
           // Update the store with the fetched profile and timestamp
           set((state) => ({

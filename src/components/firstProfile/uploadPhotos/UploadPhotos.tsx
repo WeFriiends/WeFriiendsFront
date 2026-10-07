@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import createTheme from 'styles/createTheme'
-import { useAuthStore, useProfileStore } from 'zustand/store'
+import { useProfileStore } from 'zustand/store'
 import { MAX_PROFILE_PHOTOS } from 'data/constants'
 import UploadSlot from './UploadSlot'
 import { PhotoModal } from './PhotoModal'
@@ -13,7 +13,6 @@ import { useRestorePhotos } from './useRestorePhotos'
 const UploadPhotos = () => {
   const { classes, cx } = useStyles()
   const { tempPhotos, deletePhoto } = useProfileStore()
-  const { token } = useAuthStore()
 
   useRestorePhotos()
 
@@ -68,8 +67,7 @@ const UploadPhotos = () => {
           isOpened
           setIsDeleteModalOpened={() => setDeleteId(null)}
           deleteChosenPic={() => {
-            if (!token) return
-            deletePhoto(deleteId, token)
+            deletePhoto(deleteId)
             setDeleteId(null)
           }}
         />
