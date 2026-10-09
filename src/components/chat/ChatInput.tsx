@@ -37,7 +37,7 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
       return
     }
 
-    const textToSend = messageText
+    const textToSend = messageText.trim()
 
     setMessageText('')
 

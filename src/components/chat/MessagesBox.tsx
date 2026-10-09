@@ -151,6 +151,8 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: '14px',
     lineHeight: '18.2px',
     color: theme.palette.text.primary,
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'break-word',
   },
   messageDate: {
     fontFamily: 'Inter, sans-serif',
