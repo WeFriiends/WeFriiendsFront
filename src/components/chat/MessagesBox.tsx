@@ -2,9 +2,9 @@ import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { Message } from 'types/Chat'
 import { useAuth0 } from '@auth0/auth0-react'
-import { formatTime } from 'utils/formatTime'
+import { formatTime, formatMessageDate } from 'utils/formatTime'
 import { scrollbarStyles } from 'styles/globalScrollbar'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useLayoutEffect } from 'react'
 import { useChatStore } from 'zustand/chatStore'
 import Loader from 'common/components/Loader'
 import { db } from 'services/firebase'
@@ -22,15 +22,21 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const { user } = useAuth0()
   const userId = user?.sub || ''
   const { loading, loadOlderMessages } = useChatStore()
+
   const topRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const prevMessagesLengthRef = useRef(messages.length)
+  const scrollHeightBeforeLoadRef = useRef(0)
 
   const theme = useTheme()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && containerRef.current) {
+          scrollHeightBeforeLoadRef.current = containerRef.current.scrollHeight
           loadOlderMessages()
         }
       },
@@ -42,9 +48,35 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
     return () => observer.disconnect()
   }, [loadOlderMessages])
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView()
-  }, [messages, loading])
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const prevLength = prevMessagesLengthRef.current
+    const currentLength = messages.length
+
+    const isInitialLoad = prevLength === 0
+    const hasLoadedOlderMessages = scrollHeightBeforeLoadRef.current > 0
+    const hasNewMessages = currentLength > prevLength
+
+    if (hasLoadedOlderMessages) {
+      const heightDifference =
+        container.scrollHeight - scrollHeightBeforeLoadRef.current
+      container.scrollTop += heightDifference
+      scrollHeightBeforeLoadRef.current = 0
+    } else if (isInitialLoad) {
+      bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+    } else if (hasNewMessages) {
+      const maxScrollTop = container.scrollHeight - container.clientHeight
+      const isAtBottom = container.scrollTop <= maxScrollTop
+
+      if (isAtBottom) {
+        bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+      }
+    }
+
+    prevMessagesLengthRef.current = currentLength
+  }, [messages])
 
   useEffect(() => {
     if (!userId || messages.length === 0) return
@@ -63,8 +95,6 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
         )
       )
 
-      if (updates.length === 0) return
-
       try {
         await Promise.all(updates)
       } catch (error) {
@@ -75,49 +105,75 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
     markMessagesAsRead()
   }, [messages, userId])
 
+  const groupedMessages = messages.reduce<
+    { date: string; messages: Message[] }[]
+  >((groups, message) => {
+    const date = formatMessageDate(message.timestamp)
+    const lastGroup = groups[groups.length - 1]
+
+    if (lastGroup?.date === date) {
+      lastGroup.messages.push(message)
+    } else {
+      groups.push({ date, messages: [message] })
+    }
+
+    return groups
+  }, [])
+
   return (
-    <Box className={classes.messagesArea}>
+    <Box ref={containerRef} className={classes.messagesArea}>
       {loading && messages.length === 0 && <Loader />}
+
       <div className={classes.observer} ref={topRef} />
-      {messages.map((message) => {
-        const isMessageMine = message.senderId === userId
-        return (
-          <Box
-            key={message.messageId}
-            className={`${classes.message} ${
-              isMessageMine ? classes.sentMessage : classes.receivedMessage
-            }`}
-          >
-            <Typography className={classes.messageText}>
-              {message.message}
-            </Typography>
 
-            <Typography
-              className={`${classes.messageDate} ${
-                isMessageMine ? classes.sentDate : classes.receivedDate
-              }`}
-            >
-              <span>{formatTime(message.timestamp)}</span>
+      {groupedMessages.map((group, groupIndex) => (
+        <Box
+          key={`${group.date}-${groupIndex}`}
+          className={classes.messageGroup}
+        >
+          <Typography className={classes.dateDivider}>{group.date}</Typography>
 
-              {isMessageMine && (
-                <span className={classes.statusIcons}>
-                  {message.isSeen ? (
-                    <DoubleCheck color={theme.palette.primary.main} />
-                  ) : (
-                    <SingleCheck color={theme.palette.text.primary} />
+          {group.messages.map((message) => {
+            const isMessageMine = message.senderId === userId
+
+            return (
+              <Box
+                key={message.messageId}
+                className={`${classes.message} ${
+                  isMessageMine ? classes.sentMessage : classes.receivedMessage
+                }`}
+              >
+                <Typography className={classes.messageText}>
+                  {message.message}
+                </Typography>
+
+                <Typography
+                  className={`${classes.messageDate} ${
+                    isMessageMine ? classes.sentDate : classes.receivedDate
+                  }`}
+                >
+                  <span>{formatTime(message.timestamp)}</span>
+
+                  {isMessageMine && (
+                    <span className={classes.statusIcons}>
+                      {message.isSeen ? (
+                        <DoubleCheck color={theme.palette.primary.main} />
+                      ) : (
+                        <SingleCheck color={theme.palette.text.primary} />
+                      )}
+                    </span>
                   )}
-                </span>
-              )}
-            </Typography>
+                </Typography>
+              </Box>
+            )
+          })}
+        </Box>
+      ))}
 
-            <div ref={bottomRef} />
-          </Box>
-        )
-      })}
+      <div ref={bottomRef} />
     </Box>
   )
 }
-
 const useStyles = makeStyles()((theme) => ({
   messagesArea: {
     display: 'flex',
@@ -133,9 +189,21 @@ const useStyles = makeStyles()((theme) => ({
       minHeight: 'auto',
     },
   },
+  messageGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  dateDivider: {
+    margin: '16px 0',
+    fontSize: '12px',
+    color: theme.palette.text.secondary,
+    textAlign: 'center',
+  },
   message: {
     maxWidth: '85%',
     padding: '12px',
+    marginBottom: '8px',
     borderRadius: '10px',
     wordWrap: 'break-word',
   },
