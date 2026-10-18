@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { useUserProfileStore } from 'zustand/userProfileStore'
 import { UserProfileData } from 'types/UserProfileData'
 import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
+import Loader from 'common/components/Loader'
 import { mapProfileToData } from 'utils/mapProfileToData'
 
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
@@ -27,6 +28,8 @@ export default function MessagesPage() {
   const selectedChat = selectedChatId
     ? conversations.find((conv) => conv.id === selectedChatId)
     : null
+  const currentChat = useChatStore((state) => state.currentChat)
+  const isChatOpening = Boolean(selectedChatId && !selectedChat && currentChat)
 
   useEffect(() => {
     if (!selectedProfile) {
@@ -60,7 +63,7 @@ export default function MessagesPage() {
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box
         className={`${classes.twoColumnLayoutColLeft} ${
-          selectedChatId ? 'stopScrollHideOnMobile' : ''
+          selectedChat || isChatOpening ? 'stopScrollHideOnMobile' : ''
         }`}
       >
         <TabsMessagesFriends />
@@ -86,6 +89,7 @@ export default function MessagesPage() {
             // MOBILE
             <>
               {selectedChat && <ChatContainer chat={selectedChat} />}
+              {isChatOpening && <Loader />}
 
               <MobileProfileDrawer
                 open={!!selectedProfile}
