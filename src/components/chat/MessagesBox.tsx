@@ -29,54 +29,72 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
 
   const prevMessagesLengthRef = useRef(messages.length)
   const scrollHeightBeforeLoadRef = useRef(0)
+  const isAtBottomRef = useRef(true)
 
   const theme = useTheme()
+
+  const handleScroll = () => {
+    const container = containerRef.current
+    if (!container) return
+
+    const distanceToBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight
+    isAtBottomRef.current = distanceToBottom <= 50
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && containerRef.current) {
+        if (entry.isIntersecting && containerRef.current && !loading) {
           scrollHeightBeforeLoadRef.current = containerRef.current.scrollHeight
           loadOlderMessages()
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0 }
     )
 
-    if (topRef.current) observer.observe(topRef.current)
+    const currentTopRef = topRef.current
+    if (currentTopRef) {
+      observer.observe(currentTopRef)
+    }
 
-    return () => observer.disconnect()
-  }, [loadOlderMessages])
+    return () => {
+      if (currentTopRef) {
+        observer.unobserve(currentTopRef)
+      }
+    }
+  }, [loadOlderMessages, loading])
+
+  const isFirstMountRef = useRef(true)
 
   useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const prevLength = prevMessagesLengthRef.current
     const currentLength = messages.length
-
-    const isInitialLoad = prevLength === 0
     const hasLoadedOlderMessages = scrollHeightBeforeLoadRef.current > 0
-    const hasNewMessages = currentLength > prevLength
+    const lastMessage = messages[messages.length - 1]
+    const isOwnMessage = lastMessage?.senderId === userId
 
     if (hasLoadedOlderMessages) {
       const heightDifference =
         container.scrollHeight - scrollHeightBeforeLoadRef.current
       container.scrollTop += heightDifference
       scrollHeightBeforeLoadRef.current = 0
-    } else if (isInitialLoad) {
+    } else if (isFirstMountRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: 'auto' })
-    } else if (hasNewMessages) {
-      const maxScrollTop = container.scrollHeight - container.clientHeight
-      const isAtBottom = container.scrollTop <= maxScrollTop
-
-      if (isAtBottom) {
-        bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+      isFirstMountRef.current = false
+    } else {
+      const hasNewMessages = currentLength > prevMessagesLengthRef.current
+      if (hasNewMessages) {
+        if (isOwnMessage || isAtBottomRef.current) {
+          bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+        }
       }
     }
 
     prevMessagesLengthRef.current = currentLength
-  }, [messages])
+  }, [messages, userId])
 
   useEffect(() => {
     if (!userId || messages.length === 0) return
@@ -121,16 +139,17 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   }, [])
 
   return (
-    <Box ref={containerRef} className={classes.messagesArea}>
+    <Box
+      ref={containerRef}
+      onScroll={handleScroll}
+      className={classes.messagesArea}
+    >
       {loading && messages.length === 0 && <Loader />}
 
       <div className={classes.observer} ref={topRef} />
 
-      {groupedMessages.map((group, groupIndex) => (
-        <Box
-          key={`${group.date}-${groupIndex}`}
-          className={classes.messageGroup}
-        >
+      {groupedMessages.map((group) => (
+        <Box key={`${group.date}`} className={classes.messageGroup}>
           <Typography className={classes.dateDivider}>{group.date}</Typography>
 
           {group.messages.map((message) => {
@@ -203,9 +222,12 @@ const useStyles = makeStyles()((theme) => ({
   message: {
     maxWidth: '85%',
     padding: '12px',
-    marginBottom: '8px',
     borderRadius: '10px',
     wordWrap: 'break-word',
+    gap: '10px',
+    [theme.breakpoints.up('md')]: {
+      gap: '14px',
+    },
   },
   sentMessage: {
     alignSelf: 'flex-end',

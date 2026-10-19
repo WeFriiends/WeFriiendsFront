@@ -29,6 +29,7 @@ export function ChatContainer({ chat }: ChatContainerProps) {
         .markConversationAsRead(chat.conversationRef)
     }
   }, [chat.messageCount, chat.conversationRef])
+
   return (
     <Box className={classes.container}>
       <ChatHeader chat={chat} />
@@ -36,7 +37,11 @@ export function ChatContainer({ chat }: ChatContainerProps) {
         <>
           {chatData.messages.length === 0 && !loading && <StartChatting />}
 
-          <MessagesBox messages={chatData.messages} />
+          <MessagesBox
+            key={chat.conversationRef}
+            messages={chatData.messages}
+          />
+
           <ChatInput chat={chat} chatData={chatData} />
         </>
       </Box>
