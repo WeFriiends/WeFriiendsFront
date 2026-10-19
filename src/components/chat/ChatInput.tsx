@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Box, Button, TextareaAutosize } from '@mui/material'
+import { Box, IconButton, TextareaAutosize } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { Conversation } from 'types/Conversation'
 import { useChatStore } from 'zustand/chatStore'
 import { useConversationsStore } from 'zustand/conversationsStore'
 import { Chat } from 'types/Chat'
 import { useSnackbarStore } from 'zustand/snackbarStore'
+import { IconSend } from 'common/svg/IconSend'
 
 interface ChatInputProps {
   chat: Conversation
@@ -72,13 +73,14 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
           }
         }}
       />
-      <Button
+      <IconButton
+        aria-label="Send message"
         onClick={handleSendMessage}
         className={classes.sendBtn}
         disabled={isMessageSending || !messageText.trim()}
       >
-        {isMessageSending ? 'Sending...' : 'Send'}
-      </Button>
+        <IconSend />
+      </IconButton>
     </Box>
   )
 }
@@ -86,9 +88,10 @@ export function ChatInput({ chat, chatData }: ChatInputProps) {
 const useStyles = makeStyles()((theme) => ({
   sendMessageSection: {
     display: 'flex',
-    gap: 10,
-    bottom: 0,
-    alignItems: 'end',
+    alignItems: 'flex-end',
+    borderRadius: 10,
+    backgroundColor: theme.palette.common.white,
+    border: `1px solid ${theme.customPalette.colorInputGrey}`,
     [theme.breakpoints.up('md')]: {
       margin: 0,
     },
@@ -99,11 +102,12 @@ const useStyles = makeStyles()((theme) => ({
     lineHeight: 1.4,
     fontWeight: 400,
     padding: 10,
-    borderRadius: 10,
     outline: 'none',
-    flexGrow: 10,
-    backgroundColor: theme.palette.common.white,
-    border: '1px solid #C5C5C5',
+    flexGrow: 1,
+    resize: 'none',
+    border: 0,
+    backgroundColor: 'transparent',
+    color: theme.palette.text.primary,
     '&::placeholder': {
       color: theme.customPalette.colorPlaceholderText,
       opacity: 1,
@@ -113,25 +117,13 @@ const useStyles = makeStyles()((theme) => ({
     },
     [theme.breakpoints.up('md')]: {
       padding: 11,
-      backgroundColor: '#eee',
-      color: theme.palette.text.primary,
-      border: 0,
     },
   },
   sendBtn: {
-    border: '1px solid' + theme.palette.primary.dark,
-    width: 86,
-    height: 40,
-    borderRadius: 10,
-    padding: '6px 40.5px',
-    textTransform: 'lowercase',
-    fontSize: 16,
-    lineHeight: '40px',
-    fontWeight: 600,
-    color: theme.palette.primary.dark,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-      color: theme.palette.common.white,
+    margin: 4,
+    color: theme.palette.secondary.main,
+    '&.Mui-disabled': {
+      color: theme.customPalette.colorPlaceholderText,
     },
   },
 }))
