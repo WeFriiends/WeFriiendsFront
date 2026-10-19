@@ -51,7 +51,7 @@ const useStyles = makeStyles()((theme) => ({
     top: 0,
     right: 0,
     left: 0,
-    bottom: 56,
+    bottom: 0,
     background: theme.palette.common.white,
     position: 'fixed',
     [theme.breakpoints.up('md')]: {
@@ -66,9 +66,9 @@ const useStyles = makeStyles()((theme) => ({
     gap: '20px',
     flexGrow: 1,
     padding: '24px 24px',
-    marginBottom: '16px',
     minHeight: 0,
     [theme.breakpoints.up('md')]: {
+      marginBottom: '16px',
       height: 'calc(100vh - 220px)',
       maxHeight: 'calc(100vh - 240px)',
       padding: 0,

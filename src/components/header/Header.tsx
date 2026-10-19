@@ -1,13 +1,27 @@
+import { useLocation } from 'react-router-dom'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { NavBar } from '../navBar/NavBar'
 import { UserProfileLink } from '../../common/components/UserProfileLink'
 import { LogoLink } from 'common/components/LogoLink'
+import { useChatStore } from 'zustand/chatStore'
+import { APP_ROUTES } from 'routes/appRoutes'
 
 export function Header() {
   const { classes } = useStyles()
+  const location = useLocation()
+  const isChatOpen = useChatStore((state) => !!state.selectedChatId)
+  // selectedChatId survives leaving the page, so the route check keeps the tab bar on other pages
+  const hideOnMobile =
+    isChatOpen && location.pathname === `/${APP_ROUTES.messages}`
+
   return (
-    <Box component="header" className={classes.header}>
+    <Box
+      component="header"
+      className={`${classes.header} ${
+        hideOnMobile ? classes.hiddenOnMobile : ''
+      }`}
+    >
       <LogoLink />
       <NavBar />
       <UserProfileLink />
@@ -37,6 +51,11 @@ const useStyles = makeStyles()((theme) => ({
       width: '100%',
       margin: '0 auto',
       maxWidth: 1024,
+    },
+  },
+  hiddenOnMobile: {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
     },
   },
 }))
