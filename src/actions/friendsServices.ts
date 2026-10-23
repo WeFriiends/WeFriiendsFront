@@ -9,7 +9,7 @@ import {
   LIKE_ENDPOINTS,
   MATCHES_ENDPOINT,
 } from './endpoints'
-import { getApiErrorMessage } from 'helpers/getApiErrorMessage'
+import { getApiErrorMessage, parseApiError } from 'helpers/getApiErrorMessage'
 
 export const getFriends = async (
   url: string
@@ -74,12 +74,21 @@ export const addDislike = async (
   }
 }
 
+// Backend answers 404 for any removeMatch failure (DB errors included),
+// so only this exact message means the match is really gone.
+const MATCH_NOT_FOUND_MESSAGE = 'There is no such match'
+
+const isMatchAlreadyRemoved = (error: unknown): boolean => {
+  const { status, message } = parseApiError(error)
+  return status === 404 && message === MATCH_NOT_FOUND_MESSAGE
+}
+
 export const removeFriend = async (
   friendId: string,
   currentUserId?: string
 ): Promise<void> => {
   try {
-    const response = await axiosInstance.delete('matches', {
+    await axiosInstance.delete('matches', {
       data: {
         user2_id: friendId,
       },
@@ -87,31 +96,18 @@ export const removeFriend = async (
         'Content-Type': 'application/json',
       },
     })
-
-    mutate('matches')
-
-    if (currentUserId) {
-      try {
-        await deleteConversation(currentUserId, friendId)
-      } catch (error) {
-        // The match is already removed, so a failed chat deletion
-        // must not fail the whole operation — but it is a real error.
-        console.error('Error deleting the chat after removing a friend:', error)
-      }
+  } catch (error) {
+    if (!isMatchAlreadyRemoved(error)) {
+      throw error
     }
+  }
 
-    if (response.status >= 200 && response.status < 300) {
-      return
-    } else {
-      throw new Error(`Failed to remove friend. Status: ${response.status}`)
-    }
-  } catch (error: any) {
-    // Если матч не найден (404) - не считаем ошибкой
-    if (error.response?.status === 404 || error.response?.status === 400) {
-      // Матч не найден, пропускаем удаление
-      return
-    }
-    throw error
+  mutate('matches')
+
+  // A failure here is safe to retry: the next call gets "no such match"
+  // from the backend and deletes the chat again.
+  if (currentUserId) {
+    await deleteConversation(currentUserId, friendId)
   }
 }
 
