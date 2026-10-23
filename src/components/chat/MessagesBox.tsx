@@ -9,10 +9,9 @@ import { useChatStore } from 'zustand/chatStore'
 import Loader from 'common/components/Loader'
 import { db } from 'services/firebase'
 import { updateDoc, doc } from 'firebase/firestore'
-import { SingleCheck } from 'common/svg/SingleCheck'
 import { DoubleCheck } from 'common/svg/DoubleCheck'
+import { SingleCheck } from 'common/svg/SingleCheck'
 import { useTheme } from '@mui/material/styles'
-
 interface MessagesBoxProps {
   messages: Message[]
 }
@@ -30,6 +29,10 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
   const prevMessagesLengthRef = useRef(messages.length)
   const scrollHeightBeforeLoadRef = useRef(0)
   const isAtBottomRef = useRef(true)
+
+  const prevFirstMessageIdRef = useRef<string | null>(
+    messages[0]?.messageId || null
+  )
 
   const theme = useTheme()
 
@@ -72,7 +75,12 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
     if (!container) return
 
     const currentLength = messages.length
-    const hasLoadedOlderMessages = scrollHeightBeforeLoadRef.current > 0
+    const currentFirstMessageId = messages[0]?.messageId || null
+
+    const hasLoadedOlderMessages =
+      scrollHeightBeforeLoadRef.current > 0 &&
+      currentFirstMessageId !== prevFirstMessageIdRef.current
+
     const lastMessage = messages[messages.length - 1]
     const isOwnMessage = lastMessage?.senderId === userId
 
@@ -81,19 +89,26 @@ export function MessagesBox({ messages }: MessagesBoxProps) {
         container.scrollHeight - scrollHeightBeforeLoadRef.current
       container.scrollTop += heightDifference
       scrollHeightBeforeLoadRef.current = 0
-    } else if (isFirstMountRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: 'auto' })
-      isFirstMountRef.current = false
     } else {
-      const hasNewMessages = currentLength > prevMessagesLengthRef.current
-      if (hasNewMessages) {
-        if (isOwnMessage || isAtBottomRef.current) {
-          bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+      if (scrollHeightBeforeLoadRef.current > 0) {
+        scrollHeightBeforeLoadRef.current = 0
+      }
+
+      if (isFirstMountRef.current) {
+        bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+        isFirstMountRef.current = false
+      } else {
+        const hasNewMessages = currentLength > prevMessagesLengthRef.current
+        if (hasNewMessages) {
+          if (isOwnMessage || isAtBottomRef.current) {
+            bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+          }
         }
       }
     }
 
     prevMessagesLengthRef.current = currentLength
+    prevFirstMessageIdRef.current = currentFirstMessageId
   }, [messages, userId])
 
   useEffect(() => {
@@ -211,7 +226,10 @@ const useStyles = makeStyles()((theme) => ({
   messageGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: '10px',
+    [theme.breakpoints.up('md')]: {
+      gap: '14px',
+    },
   },
   dateDivider: {
     margin: '16px 0',
@@ -224,10 +242,6 @@ const useStyles = makeStyles()((theme) => ({
     padding: '12px',
     borderRadius: '10px',
     wordWrap: 'break-word',
-    gap: '10px',
-    [theme.breakpoints.up('md')]: {
-      gap: '14px',
-    },
   },
   sentMessage: {
     alignSelf: 'flex-end',
