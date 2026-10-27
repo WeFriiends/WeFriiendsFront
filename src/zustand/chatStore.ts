@@ -36,7 +36,6 @@ interface ChatState {
   messagesCache: Record<string, Chat | undefined>
   loading: boolean
   isMessageSending: boolean
-  error: Error | null
   paginationCursor: Record<string, DocumentSnapshot | null>
   // Map of conversati on IDs to unsubscribe functions
   subscriptions: Record<string, () => void>
@@ -107,7 +106,6 @@ export const useChatStore = create<ChatState>()(
         messagesCache: {},
         loading: false,
         isMessageSending: false,
-        error: null,
         paginationCursor: {},
         subscriptions: {},
         conversationSubscriptions: {},
@@ -147,7 +145,7 @@ export const useChatStore = create<ChatState>()(
           }
 
           console.log('Refreshing messages for conversation:', conversationId)
-          set({ loading: true, error: null })
+          set({ loading: true })
 
           try {
             // Create a query for messages in this conversation
@@ -206,7 +204,6 @@ export const useChatStore = create<ChatState>()(
           } catch (error) {
             console.error('Error refreshing messages:', error)
             set({
-              error: error instanceof Error ? error : new Error(String(error)),
               loading: false,
             })
           }
@@ -358,15 +355,13 @@ export const useChatStore = create<ChatState>()(
               } catch (error) {
                 console.error('Error processing messages snapshot:', error)
                 set({
-                  error:
-                    error instanceof Error ? error : new Error(String(error)),
                   loading: false,
                 })
               }
             },
             (error) => {
               console.error('Error in messages snapshot listener:', error)
-              set({ error, loading: false })
+              set({ loading: false })
             }
           )
 
@@ -471,7 +466,7 @@ export const useChatStore = create<ChatState>()(
         },
 
         sendMessage: async (conversationId, message) => {
-          set({ isMessageSending: true, error: null })
+          set({ isMessageSending: true })
           try {
             // Add message to the messages subcollection
             const messagesRef = collection(
@@ -510,7 +505,6 @@ export const useChatStore = create<ChatState>()(
           } catch (error) {
             console.error('❌ Error sending message:', error)
             set({
-              error: error instanceof Error ? error : new Error(String(error)),
               isMessageSending: false,
             })
 
