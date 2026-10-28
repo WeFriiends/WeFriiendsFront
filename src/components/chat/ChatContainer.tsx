@@ -35,7 +35,9 @@ export function ChatContainer({ chat }: ChatContainerProps) {
       <ChatHeader chat={chat} />
       <Box className={classes.innerContainer}>
         <>
-          {chatData.messages.length === 0 && !loading && <StartChatting />}
+          {chatData.messages.length === 0 && !loading && (
+            <StartChatting ctaText="Start chatting now!" />
+          )}
 
           <MessagesBox
             key={chat.conversationRef}
