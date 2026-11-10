@@ -1,5 +1,4 @@
-# React
-FROM node:latest AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 ARG REACT_APP_AUTH0_DOMAIN
@@ -29,13 +28,8 @@ ENV REACT_APP_AUTH0_DOMAIN=$REACT_APP_AUTH0_DOMAIN \
 COPY package*.json ./
 RUN npm install
 COPY . .
-
-ENV NODE_OPTIONS="--max-old-space-size=1024"
-
 RUN npm run build
-
-# Nginx
-FROM alpine
-WORKDIR /var/www/frontend
-COPY --from=builder /app/build .
-CMD ["sh", "-c", "echo 'Static files are ready in volume'"]
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
