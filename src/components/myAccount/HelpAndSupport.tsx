@@ -52,7 +52,7 @@ const HelpAndSupport: React.FC = () => {
     },
     {
       text: 'Terms of use',
-      href: 'https://wefriiends.com/documents/privacy.html',
+      href: 'https://wefriiends.com/documents/terms.html',
     },
   ]
 
