@@ -1,16 +1,19 @@
 import { Box, Button, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
+import { useAuth0 } from '@auth0/auth0-react'
 import Logo from 'components/logo/Logo'
+import { APP_ROUTES } from 'routes/appRoutes'
 import theme from '../styles/createTheme'
-import { useNavigate } from 'react-router-dom'
 
 const EmailVerifiedMessage = () => {
   const { classes } = useStyles()
-  const navigate = useNavigate()
+  const { loginWithRedirect } = useAuth0()
 
-  const handleGoToHomePage = () => {
-    navigate('/')
-  }
+  const handleStart = () =>
+    loginWithRedirect({
+      appState: { returnTo: APP_ROUTES.callback },
+      authorizationParams: { screen_hint: 'login' },
+    })
 
   return (
     <Box className={classes.mainBox}>
@@ -21,7 +24,7 @@ const EmailVerifiedMessage = () => {
       <Button
         className={classes.startButton}
         variant="contained"
-        onClick={handleGoToHomePage}
+        onClick={handleStart}
       >
         let’s start!
       </Button>
