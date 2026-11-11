@@ -118,11 +118,6 @@ const useStyles = makeStyles()({
     '&:hover, &:active': {
       backgroundColor: theme.customPalette.authBtnBgHover,
     },
-    '&.Mui-disabled': {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.textDisabled,
-      border: `2px solid ${theme.palette.borderDisabled}`,
-    },
   },
   signInText: {
     fontSize: 18,
