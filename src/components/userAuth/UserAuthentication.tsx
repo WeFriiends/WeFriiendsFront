@@ -102,7 +102,7 @@ const UserAuthentication = () => {
           By creating an account, I agree with{' '}
           <Link
             className={classes.link}
-            href="https://wefriiends.com/documents/privacy.html"
+            href="https://wefriiends.com/documents/terms.html"
             target="_blank"
             rel="noopener"
           >
