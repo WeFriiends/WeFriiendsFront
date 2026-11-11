@@ -3,16 +3,18 @@ import { makeStyles } from 'tss-react/mui'
 
 interface StartChattingProps {
   ctaText: string
+  titleText?: string
 }
 
-export function StartChatting({ ctaText }: StartChattingProps) {
+export function StartChatting({ ctaText, titleText }: StartChattingProps) {
   const { classes } = useStyles()
   return (
     <Box>
       <Box className={classes.container}>
-        <Typography className={classes.text}>
-          Connect with others by sharing your thoughts or experiences.
-        </Typography>
+        {titleText && (
+          <Typography className={classes.text}>{titleText}</Typography>
+        )}
+
         <Typography className={classes.text}>{ctaText}</Typography>
       </Box>
       <Box className={classes.icons}>

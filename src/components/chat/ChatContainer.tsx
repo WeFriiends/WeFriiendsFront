@@ -36,7 +36,10 @@ export function ChatContainer({ chat }: ChatContainerProps) {
       <Box className={classes.innerContainer}>
         <>
           {chatData.messages.length === 0 && !loading && (
-            <StartChatting ctaText="Start chatting now!" />
+            <StartChatting
+              titleText="Connect with others by sharing your thoughts or experiences."
+              ctaText="Start chatting now!"
+            />
           )}
 
           <MessagesBox
