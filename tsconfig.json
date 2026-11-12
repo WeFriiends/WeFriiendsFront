@@ -19,8 +19,7 @@
     "baseUrl": "./src",
     "noFallthroughCasesInSwitch": true,
     "useDefineForClassFields": true,
-    "checkJs": false,
-
+    "checkJs": false
   },
   "include": ["src"]
 }
