@@ -1,7 +1,7 @@
 import { useRoutes } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material'
 import { SWRConfig } from 'swr'
-import theme from "styles/createTheme"
+import theme from 'styles/createTheme'
 import routes from 'routes/Routes'
 import { Auth0ProviderWithNavigate } from 'provider/Auth0ProviderWithNavigate'
 import GenderRedirectGuard from 'components/userAuth/GenderRedirectGuard'
