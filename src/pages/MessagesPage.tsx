@@ -13,6 +13,7 @@ import { MobileProfileDrawer } from 'common/components/MobileProfileDrawer'
 import Loader from 'common/components/Loader'
 import { mapProfileToData } from 'utils/mapProfileToData'
 import { StartChatting } from 'components/chat/StartChatting'
+import { SwipesWithFilters } from 'components/swipes/SwipesWithFilters'
 
 // Note: subscription to messages is now handled in the chatStore.setSelectedChatId function
 // Note: unsubscription on tab/app close is handled globally in chatStore.ts
@@ -24,7 +25,7 @@ export default function MessagesPage() {
   const { fetchUserProfile } = useUserProfileStore()
 
   const { selectedChatId, selectedProfile, setSelectedProfile } = useChatStore()
-  const { conversations } = useConversationsStore()
+  const { conversations, loading } = useConversationsStore()
   const selectedChat = selectedChatId
     ? conversations.find((conv) => conv.id === selectedChatId)
     : null
@@ -107,7 +108,11 @@ export default function MessagesPage() {
 
           {!selectedChat && isMdUp && (
             <Box>
-              <StartChatting ctaText="Select a chat and start chatting!" />
+              {conversations.length === 0 && !loading ? (
+                <SwipesWithFilters />
+              ) : (
+                <StartChatting ctaText="Select a chat and start chatting!" />
+              )}
             </Box>
           )}
         </Box>
