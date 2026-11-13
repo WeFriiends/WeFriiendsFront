@@ -129,7 +129,7 @@ const UserAuthentication = () => {
             underline="none"
             rel="noopener"
           >
-            Sign in
+            Sign in (check)
           </Link>
         </Typography>
       </div>
