@@ -2,6 +2,8 @@ name: Build frontend
 
 on:
   push:
+    branches:
+      - 'WFW-869fg2z0p_GitHub-actions-integration-for-automated-deployment'
     tags:
       - 'v*.*.*'
       - 'v*'
@@ -58,3 +60,21 @@ jobs:
             REACT_APP_FIREBASE_MEASUREMENT_ID=${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
             REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}
             REACT_APP_FIREBASE_DATABASE_URL=${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd ${{ secrets.PROD_FRONTEND_DERECTORY }}
+            git pull origin main || true
+            echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose pull frontend
+            docker compose up -d --force-recreate frontend
+            docker image prune -f
