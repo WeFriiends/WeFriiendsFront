@@ -1,15 +1,21 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 
-export function StartChatting() {
+interface StartChattingProps {
+  ctaText: string
+  titleText?: string
+}
+
+export function StartChatting({ ctaText, titleText }: StartChattingProps) {
   const { classes } = useStyles()
   return (
     <Box>
       <Box className={classes.container}>
-        <Typography className={classes.text}>
-          Connect with others by sharing your thoughts or experiences.
-        </Typography>
-        <Typography className={classes.text}>Start chatting now!</Typography>
+        {titleText && (
+          <Typography className={classes.text}>{titleText}</Typography>
+        )}
+
+        <Typography className={classes.text}>{ctaText}</Typography>
       </Box>
       <Box className={classes.icons}>
         <img src="/img/messages/friendly.svg" alt="friendly" />
