@@ -1,17 +1,17 @@
-import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
+import type { IconProps } from 'common/types/iconTypes'
 
 type IconChatProps = IconProps & {
   width?: number // Specific prop for LightningIcon
   height?: number
 }
 
-const IconChat: React.FC<IconChatProps> = ({
+const IconChat = ({
   color = theme.palette.primary.main,
   width,
   height,
-}) => {
+}: IconChatProps) => {
   const { classes } = useStyles()
 
   return (
