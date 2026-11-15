@@ -41,7 +41,7 @@
     "eject": "react-scripts eject",
     "prettify": "prettier --write .",
     "lint:eslint:fix": "eslint --ignore-path .gitignore --fix",
-    "lint": "eslint --ignore-path .gitignore --ext .ts,.tsx,.js,.jsx src",
+    "lint": "eslint --ignore-path .gitignore --ext .ts,.tsx,.js,.jsx src --max-warnings 0",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test:ci": "react-scripts test --watchAll=false --passWithNoTests"
