@@ -16,9 +16,7 @@
 3. 
 
 **Checklist:**
-- [ ] Local tests passed
 - [ ] No extra console logs left
-- [ ] Code is formatted with Prettier
 
 **Screenshots**:
 <!-- Если есть изменения в UI, добавь скриншоты до/после -->
