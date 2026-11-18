@@ -1,9 +1,6 @@
-interface IconProps {
-  color?: string
-  className?: string
-}
+import type { IconProps } from 'common/types/iconTypes'
 
-export function SingleCheck({ color = '#444444', className }: IconProps) {
+export function SingleCheck({ color = '#444444' }: IconProps) {
   return (
     <svg
       width="16"
@@ -11,7 +8,6 @@ export function SingleCheck({ color = '#444444', className }: IconProps) {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         fillRule="evenodd"

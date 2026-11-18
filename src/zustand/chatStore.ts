@@ -72,10 +72,6 @@ export const useChatStore = create<ChatState>()(
 
         if (cachedChat) {
           // If we have the conversation in the cache, update currentChat immediately
-          console.log(
-            'Using cached messages for conversation:',
-            conversationRef
-          )
           set({
             currentChat: cachedChat,
             loading: false,
@@ -83,10 +79,6 @@ export const useChatStore = create<ChatState>()(
         } else {
           // If we don't have the conversation in the cache, create an empty chat object
           // This will be updated when the subscription receives data from Firebase
-          console.log(
-            'Creating empty chat object for conversation:',
-            conversationRef
-          )
           set({
             currentChat: {
               chatId: conversationRef,
@@ -144,7 +136,6 @@ export const useChatStore = create<ChatState>()(
             return
           }
 
-          console.log('Refreshing messages for conversation:', conversationId)
           set({ loading: true })
 
           try {
@@ -378,7 +369,6 @@ export const useChatStore = create<ChatState>()(
           const { paginationCursor } = get()
 
           if (!chatId) {
-            console.log('No active chat')
             return
           }
 
@@ -446,10 +436,6 @@ export const useChatStore = create<ChatState>()(
 
           // Store current chat in cache if it exists
           if (currentChat) {
-            console.log(
-              'Storing messages in cache for conversation:',
-              currentChat.chatId
-            )
             set((state) => ({
               messagesCache: {
                 ...state.messagesCache,
@@ -497,11 +483,6 @@ export const useChatStore = create<ChatState>()(
             // The onSnapshot listener will handle updating the UI when Firebase sends the update
             // This prevents the duplicate message issue
             set({ isMessageSending: false })
-
-            // Log for debugging
-            console.log(
-              '✅ Message sent to Firebase, waiting for snapshot update'
-            )
           } catch (error) {
             console.error('❌ Error sending message:', error)
             set({
@@ -539,7 +520,6 @@ if (typeof window !== 'undefined') {
     // Get the current store state and unsubscribe if needed
     const store = useChatStore.getState()
     if (Object.keys(store.subscriptions).length > 0 && isAppClosing) {
-      console.log('App closing, unsubscribing from all conversations')
       store.unsubscribeFromMessages()
     }
   })
