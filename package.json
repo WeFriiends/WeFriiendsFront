@@ -44,7 +44,12 @@
     "lint": "eslint --ignore-path .gitignore --ext .ts,.tsx,.js,.jsx src --max-warnings 0",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test:ci": "react-scripts test --watchAll=false --passWithNoTests"
+    "test:ci": "react-scripts test --watchAll=false --passWithNoTests",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": "eslint --ignore-path .gitignore --fix",
+    "!(*.ts|*.tsx|*.js|*.jsx)": "prettier --write --ignore-unknown"
   },
   "browserslist": {
     "production": [
@@ -67,6 +72,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.1",
     "prettier": "^2.8.8",
     "prettier-eslint": "^15.0.1",
     "shx": "^0.3.4",
