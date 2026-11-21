@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router'
+import type { RouteObject } from 'react-router-dom'
 import { ComponentType, Suspense, lazy } from 'react'
 import { APP_ROUTES } from './appRoutes'
 import AuthGuard from 'components/userAuth/AuthGuard'

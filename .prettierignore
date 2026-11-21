@@ -1,7 +1,5 @@
 build
 coverage
 node_modules
-dataconnect
-dataconnect-generated
 package-lock.json
 *.md
