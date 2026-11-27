@@ -25,8 +25,7 @@ const ChangeProfileDialog = forwardRef(
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
-    const { uploadNewPhotos, getProfile, updateProfile, data } =
-      useProfileStore()
+    const { uploadNewPhotos, updateProfile, data } = useProfileStore()
 
     const prefs = data?.preferences
     const initialPreferences: SavedPreferences | undefined = prefs
@@ -58,7 +57,7 @@ const ChangeProfileDialog = forwardRef(
     const handleSaveClick = async () => {
       setIsSaving(true)
       try {
-        await uploadNewPhotos()
+        const { photos, replacedUrls } = await uploadNewPhotos()
 
         const savedReasons = getItemFromSessionStorage<string[]>(
           PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
@@ -81,12 +80,16 @@ const ChangeProfileDialog = forwardRef(
           interests: getArr('interests'),
         }
 
+        // Before the save: DELETE /photos rejects a URL the profile no
+        // longer lists, and the patch below overwrites that list
+        await useProfileStore.getState().deleteReplacedPhotos(replacedUrls)
+
         await updateProfile({
+          ...(photos.length ? { photos } : {}),
           preferences,
           ...(savedReasons ? { reasons: savedReasons } : {}),
         })
 
-        await getProfile()
         handleClose()
       } catch (error) {
         console.error('Profile update error:', error)
@@ -130,6 +133,7 @@ const ChangeProfileDialog = forwardRef(
           <PrimaryButton
             label={isSaving ? 'Saving...' : 'Save'}
             onClickHandler={handleSaveClick}
+            disabled={isSaving}
           />
         </Box>
       </CommonModal>
