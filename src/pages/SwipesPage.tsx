@@ -27,7 +27,7 @@ export default function SwipesPage() {
     <Grid item xs={12} className={classes.twoColumnLayoutWrapper}>
       <Box className={classes.twoColumnLayoutColLeft}>
         <TabsMessagesFriends />
-        <Friends onClick={selectFriend} />
+        <Friends onClick={selectFriend} selectedFriendId={friendsData?.id} />
       </Box>
       <Box className={classes.twoColumnLayoutColRight}>
         <Box className={classes.stickyRightCol}>
@@ -81,11 +81,9 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 24,
-    paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
       alignItems: 'stretch',
       flexDirection: 'row',
-      paddingBottom: 0,
     },
   },
   twoColumnLayoutColLeft: {

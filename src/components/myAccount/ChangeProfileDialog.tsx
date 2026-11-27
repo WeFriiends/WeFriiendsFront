@@ -8,7 +8,7 @@ import {
   getItemFromSessionStorage,
 } from 'utils/sessionStorage'
 import { makeStyles } from 'tss-react/mui'
-import { useAuthStore, useProfileStore } from 'zustand/store'
+import { useProfileStore } from 'zustand/store'
 import Interests from 'components/firstProfile/interests/Interests'
 import type { ProfilePreferences, SavedPreferences } from 'types/FirstProfile'
 import { useSnackbarStore } from 'zustand/snackbarStore'
@@ -26,7 +26,6 @@ const ChangeProfileDialog = forwardRef(
     const [isSaving, setIsSaving] = useState(false)
     const { classes } = useStyles()
     const { uploadNewPhotos, updateProfile, data } = useProfileStore()
-    const { token } = useAuthStore()
 
     const prefs = data?.preferences
     const initialPreferences: SavedPreferences | undefined = prefs
@@ -58,7 +57,7 @@ const ChangeProfileDialog = forwardRef(
     const handleSaveClick = async () => {
       setIsSaving(true)
       try {
-        const { photos, replacedUrls } = await uploadNewPhotos(token!)
+        const { photos, replacedUrls } = await uploadNewPhotos()
 
         const savedReasons = getItemFromSessionStorage<string[]>(
           PROFILE_EDIT_STORAGE_KEYS.selectedStatuses
@@ -83,18 +82,13 @@ const ChangeProfileDialog = forwardRef(
 
         // Before the save: DELETE /photos rejects a URL the profile no
         // longer lists, and the patch below overwrites that list
-        await useProfileStore
-          .getState()
-          .deleteReplacedPhotos(replacedUrls, token!)
+        await useProfileStore.getState().deleteReplacedPhotos(replacedUrls)
 
-        await updateProfile(
-          {
-            ...(photos.length ? { photos } : {}),
-            preferences,
-            ...(savedReasons ? { reasons: savedReasons } : {}),
-          },
-          token!
-        )
+        await updateProfile({
+          ...(photos.length ? { photos } : {}),
+          preferences,
+          ...(savedReasons ? { reasons: savedReasons } : {}),
+        })
 
         handleClose()
       } catch (error) {

@@ -1,14 +1,7 @@
-import theme from '../../styles/createTheme'
+import theme from 'styles/createTheme'
+import type { IconProps } from 'common/types/iconTypes'
 
-interface IconProps {
-  color?: string
-  className?: string
-}
-
-export function DoubleCheck({
-  color = theme.palette.primary.main,
-  className,
-}: IconProps) {
+export function DoubleCheck({ color = theme.palette.primary.main }: IconProps) {
   return (
     <svg
       width="16"
@@ -16,7 +9,6 @@ export function DoubleCheck({
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         fillRule="evenodd"

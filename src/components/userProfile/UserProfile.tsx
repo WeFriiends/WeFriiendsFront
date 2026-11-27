@@ -75,15 +75,21 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           <AccordionSummary
             expandIcon={<img alt="arrow down" src="/img/arrow-down.svg" />}
             sx={{
+              '& .MuiAccordionSummary-content': {
+                minWidth: 0,
+              },
               '& .MuiAccordionSummary-content.Mui-expanded': {
                 margin: '12px 0',
               },
             }}
           >
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               <Box sx={{ display: 'flex' }}>
-                <Typography className={classes.name}>
-                  {user.name}, {user.age}
+                <Typography className={classes.name} noWrap>
+                  {user.name}
+                </Typography>
+                <Typography className={classes.name} sx={{ flexShrink: 0 }}>
+                  , {user.age}
                 </Typography>
                 {/* <CircleRoundedIcon
                   className={classes.roundIcon}
@@ -182,7 +188,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
 const useStyles = makeStyles()((theme) => ({
   mainGrid: {
-    display: ' grid',
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr)',
     position: 'relative',
     boxShadow: '0px 0px 7px 1px #B3B3B324',
   },
@@ -204,10 +211,13 @@ const useStyles = makeStyles()((theme) => ({
 
   name: {
     color: theme.palette.primary.main,
-    fontSize: 40,
+    fontSize: 21,
     fontWeight: 600,
-    lineHeight: '40px',
-    [theme.breakpoints.down('sm')]: {
+    lineHeight: 1.25,
+    [theme.breakpoints.up('sm')]: {
+      fontSize: 23,
+    },
+    [theme.breakpoints.up('lg')]: {
       fontSize: 32,
     },
   },

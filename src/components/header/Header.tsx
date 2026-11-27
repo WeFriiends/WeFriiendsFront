@@ -1,13 +1,27 @@
+import { useLocation } from 'react-router-dom'
 import { Box } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import { NavBar } from '../navBar/NavBar'
 import { UserProfileLink } from '../../common/components/UserProfileLink'
 import { LogoLink } from 'common/components/LogoLink'
+import { useChatStore } from 'zustand/chatStore'
+import { APP_ROUTES } from 'routes/appRoutes'
 
 export function Header() {
   const { classes } = useStyles()
+  const location = useLocation()
+  const isChatOpen = useChatStore((state) => !!state.selectedChatId)
+  // selectedChatId survives leaving the page, so the route check keeps the tab bar on other pages
+  const hideOnMobile =
+    isChatOpen && location.pathname === `/${APP_ROUTES.messages}`
+
   return (
-    <Box component="header" className={classes.header}>
+    <Box
+      component="header"
+      className={`${classes.header} ${
+        hideOnMobile ? classes.hiddenOnMobile : ''
+      }`}
+    >
       <LogoLink />
       <NavBar />
       <UserProfileLink />
@@ -24,7 +38,7 @@ const useStyles = makeStyles()((theme) => ({
     background: theme.palette.common.white,
     [theme.breakpoints.down('md')]: {
       position: 'fixed',
-      minHeight: 60,
+      minHeight: theme.customDimensions.mobileNavHeight,
       boxShadow: '0 0 7px 1px rgba(179, 179, 179, 0.14)',
     },
     [theme.breakpoints.up('md')]: {
@@ -32,9 +46,16 @@ const useStyles = makeStyles()((theme) => ({
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: 32,
-      padding: '30px 30px 80px',
+      height: theme.customDimensions.headerHeight,
+      paddingInline: 30,
+      width: '100%',
       margin: '0 auto',
       maxWidth: 1024,
+    },
+  },
+  hiddenOnMobile: {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
     },
   },
 }))

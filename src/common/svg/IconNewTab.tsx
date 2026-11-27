@@ -1,8 +1,8 @@
-import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
+import type { IconProps } from 'common/types/iconTypes'
 
-const IconNewTab: React.FC<IconProps> = ({ color }) => {
+const IconNewTab = ({ color }: IconProps) => {
   const { classes } = useStyles()
   color ??= theme.customPalette.colorInputGrey
 

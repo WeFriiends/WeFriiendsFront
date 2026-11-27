@@ -3,8 +3,8 @@ import { makeStyles } from 'tss-react/mui'
 import { Button, Menu, MenuItem } from '@mui/material'
 import { useMatchesStore } from 'zustand/friendsStore'
 import { useAuth0 } from '@auth0/auth0-react'
-import { db } from 'services/firebase'
-import { deleteDoc, doc, getDoc } from 'firebase/firestore'
+import { useChatStore } from 'zustand/chatStore'
+import { useSnackbarStore } from 'zustand/snackbarStore'
 import { DeleteContactModal } from './DeleteContactModal'
 import { ReportDialog } from 'components/report/ReportDialog'
 
@@ -16,6 +16,7 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
   const { classes } = useStyles()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isDeleting, setIsDeleting] = React.useState(false)
   const open = Boolean(anchorEl)
 
   const reportDialogRef = React.useRef<{ handleOpenReportDialog: () => void }>(
@@ -24,8 +25,6 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
 
   const { user } = useAuth0()
   const currentUserId = user?.sub
-
-  const removeFriend = useMatchesStore((state) => state.removeFriend)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -45,38 +44,22 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
   }
 
   const handleConfirmDelete = async () => {
-    if (id && currentUserId) {
-      // удаляем из Firebase
-      try {
-        const conversationId = `${currentUserId}_${id}`
-        const conversationRef = doc(db, 'conversations', conversationId)
-        const docSnap = await getDoc(conversationRef)
+    if (isDeleting) return
 
-        if (docSnap.exists()) {
-          await deleteDoc(conversationRef)
-        } else {
-          // пробуем другой порядок (на случай если чат создавался с другой стороны)
-          const altConversationId = `${id}_${currentUserId}`
-          const altRef = doc(db, 'conversations', altConversationId)
-          const altDocSnap = await getDoc(altRef)
-
-          if (altDocSnap.exists()) {
-            await deleteDoc(altRef)
-          }
-        }
-      } catch (firebaseError) {
-        console.error('❌ Ошибка при удалении из Firebase:', firebaseError)
-      }
-
-      // удаляем матч
-      try {
-        await removeFriend(id, currentUserId)
-      } catch (removeError) {
-        console.error('❌ Ошибка удаления матча:', removeError)
-      }
+    setIsDeleting(true)
+    try {
+      if (!currentUserId) return
+      await useMatchesStore.getState().removeFriend(id, currentUserId)
+      useChatStore.getState().setSelectedChatId(null)
+    } catch (error) {
+      console.error('Error deleting contact:', error)
+      useSnackbarStore
+        .getState()
+        .showSnackbar('Failed to delete contact. Please try again.', 'error')
+    } finally {
+      setIsDeleting(false)
+      setIsModalOpen(false)
     }
-
-    setIsModalOpen(false)
   }
 
   const handleReportAndBlock = () => {
@@ -120,6 +103,7 @@ export const ChatMenu = ({ id }: ChatMenuProps) => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
       <ReportDialog
         ref={reportDialogRef}

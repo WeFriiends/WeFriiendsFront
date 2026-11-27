@@ -1,15 +1,14 @@
 import axios from 'axios'
+import { getAuthHeaders } from 'actions/authHeaders'
 
 const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api/profile`
 
-const request = async (method, url, data = {}, token = null, params = {}) => {
+const request = async (method, url, data = {}, params = {}) => {
   try {
     const headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-    }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
+      ...(await getAuthHeaders()),
     }
 
     return await axios({
@@ -30,16 +29,14 @@ const request = async (method, url, data = {}, token = null, params = {}) => {
   }
 }
 
-export const createProfile = (profileData, token) =>
-  request('post', '/', profileData, token)
-export const getProfile = (token) => request('get', '/', {}, token)
-export const checkProfile = (token) => request('get', '/check', {}, token)
-export const updateProfile = (profileData, token) =>
-  request('patch', '/', profileData, token)
-export const deleteProfile = (token) => request('delete', '/', {}, token)
-export const getUserById = async (userId, token) => {
+export const createProfile = (profileData) => request('post', '/', profileData)
+export const getProfile = () => request('get', '/')
+export const checkProfile = () => request('get', '/check')
+export const updateProfile = (profileData) => request('patch', '/', profileData)
+export const deleteProfile = () => request('delete', '/')
+export const getUserById = async (userId) => {
   try {
-    const response = await request('get', `/${userId}`, {}, token)
+    const response = await request('get', `/${userId}`)
     return response.data
   } catch (error) {
     console.error(`Error fetching user profile with userId=${userId}:`, error)

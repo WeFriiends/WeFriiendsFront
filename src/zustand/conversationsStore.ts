@@ -75,13 +75,11 @@ export const useConversationsStore = create<ConversationsState>()(
       fetchConversations: async (userId?: string) => {
         // If there's an active subscription, return early as the subscription will handle updates
         if (get().unsubscribe) {
-          // console.log('Using active subscription for conversations data')
           return
         }
 
         // If we don't need to refetch, return early
         if (!get().shouldRefetch(userId)) {
-          // console.log('Using cached conversations data')
           return
         }
 
@@ -108,21 +106,12 @@ export const useConversationsStore = create<ConversationsState>()(
           // Execute the query
           const querySnapshot = await getDocs(conversationsQuery)
 
-          // console.log('🔥 Firebase Query Results:', {
-          //   totalDocuments: querySnapshot.size,
-          //   documents: querySnapshot.docs.map((doc) => ({
-          //     id: doc.id,
-          //     data: doc.data(),
-          //   })),
-          // })
-
           // Get the userProfileStore instance
           const userProfileStore = useUserProfileStore.getState()
 
           // Process the results
           for (const doc of querySnapshot.docs) {
             const conversationData = doc.data() as FirestoreConversation
-            // console.log('Processing conversation document:', {id: doc.id, data: conversationData,})
 
             // Get the other participant's ID
             const otherParticipantId = conversationData.participants.find(
@@ -138,7 +127,6 @@ export const useConversationsStore = create<ConversationsState>()(
             }
 
             // Fetch the user profile
-            // console.log(`Fetching profile for user: ${otherParticipantId}`)
             const profile = await userProfileStore.fetchUserProfile(
               otherParticipantId
             )
@@ -163,12 +151,9 @@ export const useConversationsStore = create<ConversationsState>()(
                   : false,
             }
 
-            // console.log(`Created UserLastMessage with profile data:`, {userId: otherParticipantId, hasProfile: !!profile, userMessage,})
-
             userConversations.push(userMessage)
           }
 
-          console.log('Final processed user conversations:', userConversations)
           set({
             conversations: userConversations,
             loading: false,
@@ -186,9 +171,6 @@ export const useConversationsStore = create<ConversationsState>()(
       subscribeToConversations: (userId) => {
         // Check if we already have an active subscription
         if (get().unsubscribe) {
-          // console.log(
-          //   'Already subscribed to conversations, skipping subscription'
-          // )
           return
         }
 
@@ -196,8 +178,6 @@ export const useConversationsStore = create<ConversationsState>()(
           console.error('No user ID provided for subscription')
           return
         }
-
-        // console.log('Subscribing to conversations for user:', userId)
 
         const currentUserId = userId
 
@@ -217,14 +197,6 @@ export const useConversationsStore = create<ConversationsState>()(
           conversationsQuery,
           async (querySnapshot) => {
             try {
-              console.log('🔥 Firebase Snapshot Update:', {
-                totalDocuments: querySnapshot.size,
-                documents: querySnapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  data: doc.data(),
-                })),
-              })
-
               // Check if this is the first snapshot to fetch new friends
               if (!initialized) {
                 initialized = true
@@ -243,10 +215,6 @@ export const useConversationsStore = create<ConversationsState>()(
               // Process the results
               for (const doc of querySnapshot.docs) {
                 const conversationData = doc.data() as FirestoreConversation
-                // console.log('Processing conversation document:', {
-                //   id: doc.id,
-                //   data: conversationData,
-                // })
 
                 // Get the other participant's ID
                 const otherParticipantId = conversationData.participants.find(
@@ -262,7 +230,6 @@ export const useConversationsStore = create<ConversationsState>()(
                 }
 
                 // Fetch the user profile
-                // console.log(`Fetching profile for user: ${otherParticipantId}`)
                 const profile = await userProfileStore.fetchUserProfile(
                   otherParticipantId
                 )
@@ -289,19 +256,9 @@ export const useConversationsStore = create<ConversationsState>()(
                       : false,
                 }
 
-                // console.log(`Created UserLastMessage with profile data:`, {
-                //   userId: otherParticipantId,
-                //   hasProfile: !!profile,
-                //   userMessage,
-                // })
-
                 userConversations.push(userMessage)
               }
 
-              // console.log(
-              //   'Final processed user conversations:',
-              //   userConversations
-              // )
               set({
                 conversations: userConversations,
                 loading: false,
@@ -327,16 +284,11 @@ export const useConversationsStore = create<ConversationsState>()(
 
         // Store the unsubscribe function
         set({ unsubscribe })
-        // console.log(
-        //   'Successfully subscribed to conversations for user:',
-        //   userId
-        // )
       },
 
       unsubscribeFromConversations: () => {
         const { unsubscribe } = get()
         if (unsubscribe) {
-          // console.log('Unsubscribing from conversations')
           unsubscribe()
           set({ unsubscribe: null })
         }
@@ -370,11 +322,6 @@ export const useConversationsStore = create<ConversationsState>()(
               lastMessageSeen: false,
               createdAt: serverTimestamp(),
             })
-            // console.log('Conversation document created successfully')
-          } else {
-            // console.log(
-            //   'Conversation document already exists, skipping creation'
-            // )
           }
 
           set({ loading: false })
@@ -413,7 +360,6 @@ if (typeof window !== 'undefined') {
     // Get the current store state and unsubscribe if needed
     const store = useConversationsStore.getState()
     if (store.unsubscribe) {
-      //console.log('Browser closing, unsubscribing from conversations')
       store.unsubscribeFromConversations()
     }
   })

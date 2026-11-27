@@ -29,14 +29,24 @@ export function ChatContainer({ chat }: ChatContainerProps) {
         .markConversationAsRead(chat.conversationRef)
     }
   }, [chat.messageCount, chat.conversationRef])
+
   return (
     <Box className={classes.container}>
       <ChatHeader chat={chat} />
       <Box className={classes.innerContainer}>
         <>
-          {chatData.messages.length === 0 && !loading && <StartChatting />}
+          {chatData.messages.length === 0 && !loading && (
+            <StartChatting
+              titleText="Connect with others by sharing your thoughts or experiences."
+              ctaText="Start chatting now!"
+            />
+          )}
 
-          <MessagesBox messages={chatData.messages} />
+          <MessagesBox
+            key={chat.conversationRef}
+            messages={chatData.messages}
+          />
+
           <ChatInput chat={chat} chatData={chatData} />
         </>
       </Box>
@@ -51,7 +61,7 @@ const useStyles = makeStyles()((theme) => ({
     top: 0,
     right: 0,
     left: 0,
-    bottom: 56,
+    bottom: 0,
     background: theme.palette.common.white,
     position: 'fixed',
     [theme.breakpoints.up('md')]: {
@@ -66,9 +76,9 @@ const useStyles = makeStyles()((theme) => ({
     gap: '20px',
     flexGrow: 1,
     padding: '24px 24px',
-    marginBottom: '16px',
     minHeight: 0,
     [theme.breakpoints.up('md')]: {
+      marginBottom: '16px',
       height: 'calc(100vh - 220px)',
       maxHeight: 'calc(100vh - 240px)',
       padding: 0,

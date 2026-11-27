@@ -15,11 +15,6 @@
 2. 
 3. 
 
-**Checklist:**
-- [ ] Local tests passed
-- [ ] No extra console logs left
-- [ ] Code is formatted with Prettier
-
 **Screenshots**:
 <!-- Если есть изменения в UI, добавь скриншоты до/после -->
 <!-- Формат: кликабельное превью 300px (ниже просто вставь ссылки) -->

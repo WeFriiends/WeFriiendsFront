@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router'
+import type { RouteObject } from 'react-router-dom'
 import { ComponentType, Suspense, lazy } from 'react'
 import { APP_ROUTES } from './appRoutes'
 import AuthGuard from 'components/userAuth/AuthGuard'
@@ -111,7 +111,7 @@ const routes: RouteObject[] = [
   },
   { path: 'notice-no-likes', element: <NoticeNoLikes /> },
   { path: 'notice-no-users', element: <NoticeNoUsers /> },
-  { path: 'no-friends-in-your-area', element: <ErrorMensSearch /> },
+  { path: APP_ROUTES.noFriendsInYourArea, element: <ErrorMensSearch /> },
   { path: 'invite', element: <Invitation /> },
   {
     path: APP_ROUTES.notFound,

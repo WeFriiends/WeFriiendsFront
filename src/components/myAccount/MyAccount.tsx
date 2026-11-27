@@ -46,14 +46,10 @@ const useStyles = makeStyles()({
     alignItems: 'center',
     flexWrap: 'wrap',
     flexDirection: 'column',
-    paddingBottom: 100,
     [theme.breakpoints.up('md')]: {
       alignItems: 'start',
       justifyContent: 'space-between',
       flexDirection: 'row',
-    },
-    [theme.breakpoints.up('lg')]: {
-      paddingBottom: 0,
     },
   },
   twoColumnLayoutColLeft: {

@@ -5,6 +5,10 @@ const fish = '#FB8F67'
 const red = '#F1562A'
 const grey = '#444444'
 const green = '#1D878C'
+const neutralGrey = '#AFB1B6'
+
+const headerHighlightBottom = 40
+const mobileNavHeight = 60
 
 const theme = {
   spacing: 5,
@@ -26,9 +30,14 @@ const theme = {
     secondary: {
       main: green,
     },
+    info: {
+      main: green,
+    },
     text: {
       primary: grey,
     },
+    borderDisabled: neutralGrey,
+    textDisabled: neutralGrey,
   },
   typography: {
     fontFamily: ['Inter', 'sans-serif'].join(','),
@@ -71,6 +80,12 @@ const theme = {
       md: 340,
       lg: 450,
     },
+    headerHeight: 62,
+    mobileNavHeight,
+    headerTopOffset: 30,
+    contentBottomOffset: mobileNavHeight + 40,
+    headerHighlightBottom,
+    contentGap: headerHighlightBottom + 40,
   },
   components: {
     MuiBackdrop: {
@@ -103,5 +118,15 @@ declare module '@mui/material/styles' {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface ThemeOptions extends CustomTheme {}
+
+  interface Palette {
+    borderDisabled: string
+    textDisabled: string
+  }
+
+  interface PaletteOptions {
+    borderDisabled?: string
+    textDisabled?: string
+  }
 }
 export default createTheme(theme)

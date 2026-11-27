@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Badge, BottomNavigationAction } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
+import type { IconProps } from 'common/types/iconTypes'
 
 interface NavigationLink {
   to: string
@@ -26,6 +27,9 @@ export function NavigationLink({
       sx={{
         '& .MuiBadge-badge': {
           backgroundColor: theme.palette.primary.main,
+          height: 10,
+          minWidth: 10,
+          borderRadius: '50%',
         },
       }}
     >

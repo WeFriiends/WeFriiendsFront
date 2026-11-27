@@ -7,12 +7,26 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import theme from '../../styles/createTheme'
 import AuthPagesWrapper from '../firstProfile/AuthPagesWrapper'
+import { useSnackbarStore } from 'zustand/snackbarStore'
+import { SESSION_EXPIRED_STORAGE_KEY } from 'data/constants'
+import {
+  clearSessionStorage,
+  getItemFromSessionStorage,
+} from 'utils/sessionStorage'
 
 const UserAuthentication = () => {
   const { classes } = useStyles()
   const commonClasses = commonStyles().classes
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!getItemFromSessionStorage<boolean>(SESSION_EXPIRED_STORAGE_KEY)) return
+    clearSessionStorage([SESSION_EXPIRED_STORAGE_KEY])
+    useSnackbarStore
+      .getState()
+      .showSnackbar('Your session has expired. Please log in again.', 'info')
+  }, [])
 
   // Redirect if logged in
   useEffect(() => {
@@ -61,41 +75,25 @@ const UserAuthentication = () => {
         disableFocusRipple
         disableRipple
         disableElevation
-        onClick={handleLogin}
-        className={classes.btnConnect}
-      >
-        Log in
-      </Button>
-      <Button
-        fullWidth
-        disableFocusRipple
-        disableRipple
-        disableElevation
         className={classes.btnConnect}
         onClick={handleSignUp}
       >
         Create account
       </Button>
-      <Typography variant="body2" className={classes.agreement}>
-        By creating an account, I agree with{' '}
-        <Link
-          className={classes.link}
-          href="https://wefriiends.com/documents/privacy.html"
-          target="_blank"
-          rel="noopener"
-        >
-          {'The Terms of Service '}
-        </Link>
-        and{' '}
-        <Link
-          className={classes.link}
-          href="https://wefriiends.com/documents/privacy.html"
-          target="_blank"
-          rel="noopener"
-        >
-          {'Privacy Policy'}
-        </Link>
-      </Typography>
+      <div>
+        <Typography variant="body2" className={classes.signInText}>
+          Already have an account?{' '}
+          <Link
+            component="button"
+            onClick={handleLogin}
+            className={classes.signInTextLink}
+            underline="none"
+            rel="noopener"
+          >
+            Sign in
+          </Link>
+        </Typography>
+      </div>
     </AuthPagesWrapper>
   )
 }
@@ -121,12 +119,15 @@ const useStyles = makeStyles()({
       backgroundColor: theme.customPalette.authBtnBgHover,
     },
   },
-  agreement: {
-    fontSize: 13,
+  signInText: {
+    fontSize: 18,
     lineHeight: 1.2,
+    fontWeight: 400,
+    color: theme.palette.text.primary,
+    textAlign: 'center',
   },
-  link: {
-    color: theme.palette.secondary.main,
+  signInTextLink: {
+    color: theme.palette.primary.light,
     textDecoration: 'none',
     '&:hover, &:active': {
       textDecoration: 'underline',

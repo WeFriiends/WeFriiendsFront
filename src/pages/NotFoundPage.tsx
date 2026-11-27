@@ -11,7 +11,7 @@ export const NotFoundPage = () => {
     <ErrorPage
       code={404}
       onRetry={() =>
-        navigate(isAuthenticated ? `/${APP_ROUTES.friends}` : APP_ROUTES.home)
+        navigate(isAuthenticated ? `/${APP_ROUTES.swipes}` : APP_ROUTES.home)
       }
     />
   )

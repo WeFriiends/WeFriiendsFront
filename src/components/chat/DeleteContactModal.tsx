@@ -8,12 +8,14 @@ interface DeleteContactModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
+  isDeleting: boolean
 }
 
 export const DeleteContactModal = ({
   isOpen,
   onClose,
   onConfirm,
+  isDeleting,
 }: DeleteContactModalProps) => {
   const { classes } = useStyles()
   const titleId = useId()
@@ -48,6 +50,7 @@ export const DeleteContactModal = ({
           <Button
             className={`${classes.button} ${classes.deleteButton}`}
             onClick={onConfirm}
+            disabled={isDeleting}
             disableFocusRipple
             disableRipple
           >

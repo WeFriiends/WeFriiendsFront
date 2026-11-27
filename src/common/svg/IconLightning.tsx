@@ -1,8 +1,8 @@
-import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import theme from '../../styles/createTheme'
+import type { IconProps } from 'common/types/iconTypes'
 
-const IconLightning: React.FC<IconProps> = ({ color }) => {
+const IconLightning = ({ color }: IconProps) => {
   const { classes } = useStyles()
   color ??= theme.palette.primary.main
 

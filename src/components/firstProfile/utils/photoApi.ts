@@ -1,11 +1,9 @@
 import axios from 'axios'
+import { getAuthHeaders } from 'actions/authHeaders'
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
-export async function uploadFiles(
-  files: File[],
-  token: string
-): Promise<string[]> {
+export async function uploadFiles(files: File[]): Promise<string[]> {
   const fd = new FormData()
   files.forEach((file) => fd.append('images', file))
 
@@ -14,7 +12,7 @@ export async function uploadFiles(
     fd,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(await getAuthHeaders()),
         'Content-Type': 'multipart/form-data',
       },
     }

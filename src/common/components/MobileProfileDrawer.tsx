@@ -63,7 +63,8 @@ const useStyles = makeStyles()(() => ({
     width: '100%',
     height: '100%',
     paddingInline: 20,
-    marginTop: 20,
+    paddingTop: 20,
+    boxSizing: 'border-box',
   },
   mobileContentArea: {
     flexGrow: 1,
